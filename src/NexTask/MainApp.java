@@ -57,41 +57,6 @@ public class MainApp {
 		ADD, COMPLETED, DELETE, EDIT, UNDO, SEARCH, ARCHIVE, DISPLAY, SAVE, INVALID
 	};
 	
-<<<<<<< Updated upstream
-	private static boolean isTimeToExit = false;
-	
-	public static void main(String[] args) throws IOException {
-		Scanner sc = new Scanner(System.in);
-		String fileName = args[0];
-		launchProgram(args);
-		sc.close();
-	}
-
-	public static void launchProgram(String[] args) throws IOException {
-		File nexTaskFile = initialiseFile(args[0]);
-		printWelcomeMsg();
-		executeProgram(nexTaskFile);
-		
-	}
-
-	public static void executeProgram(File nexTaskFile) throws IOException {
-		while (isTimeToExit) {
-			printCommandPrompt();
-			//executeCommand(nexTaskFile, parseCommand());
-		}
-	}
-	
-	private static void printCommandPrompt() {
-		System.out.println(COMMAND_PROMPT);
-	}
-
-	private static File initialiseFile(String fileName) throws IOException {
-		File file = new File(fileName);
-		if (!file.exists()) {
-			file.createNewFile();
-		}
-		return file;
-=======
 	public static void main(String[] args) {
 		MainApp program = new MainApp();
 		program.startProgram();
@@ -104,3 +69,38 @@ public class MainApp {
 		parser = new CommandParser();
 		ui = new UI();
 	}
+	
+	public void startProgram() {
+		ui.displayMessage(WELCOME_MSG);
+		ui.displayMessage(WELCOME_HELP_MSG);
+		this.run();
+	}
+	
+	
+	public void run() {
+		while (true) {
+			ui.displayMessage(COMMAND_PROMPT);
+			Command newCommand = this.getUserCommand();
+			String feedback = logic.executeUserCommand(newCommand);
+			ui.displayMessage(feedback);
+		//	storage.updateOutputFile();
+		}
+	}
+	
+	public Command getUserCommand() {
+		String input = this.getUserInput();
+		return parser.parseUserInput(input);
+	}
+
+	public String getUserInput() {
+		String userInput = "";
+
+		if (this.scanner.hasNextLine()) {
+			userInput = this.scanner.nextLine();
+		} else {
+			System.exit(0);
+		}
+		return userInput;
+	}
+
+}
