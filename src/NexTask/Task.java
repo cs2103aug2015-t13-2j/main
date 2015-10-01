@@ -1,7 +1,7 @@
 
 
 
-public class Task {
+abstract class Task {
 	private String name;
 	private String content;
 	
