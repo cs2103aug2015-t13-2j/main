@@ -51,9 +51,52 @@ public class MainApp {
 		ADD, COMPLETED, DELETE, EDIT, UNDO, SEARCH, ARCHIVE, DISPLAY, SAVE, INVALID
 	};
 	
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
+	private static boolean isTimeToExit = false;
+	
+	public static void main(String[] args) throws IOException {
+		Scanner sc = new Scanner(System.in);
+		String fileName = args[0];
+		launchProgram(args);
+		sc.close();
 	}
 
+	public static void launchProgram(String[] args) throws IOException {
+		File nexTaskFile = initialiseFile(args[0]);
+		printWelcomeMsg();
+		executeProgram(nexTaskFile);
+		
+	}
+
+	public static void executeProgram(File nexTaskFile) throws IOException {
+		while (isTimeToExit) {
+			printCommandPrompt();
+			//executeCommand(nexTaskFile, parseCommand());
+		}
+	}
+	
+	private static void printCommandPrompt() {
+		System.out.println(COMMAND_PROMPT);
+	}
+
+	private static File initialiseFile(String fileName) throws IOException {
+		File file = new File(fileName);
+		if (!file.exists()) {
+			file.createNewFile();
+		}
+		return file;
+	}
+
+	private static void printWelcomeMsg() {
+		System.out.println(WELCOME_MSG);
+	}
+	
+	private static Object parseCommand() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	private static void executeCommand(File nexTaskFile, Object parseCommand) {
+		// TODO Auto-generated method stub
+		
+	}
 }
