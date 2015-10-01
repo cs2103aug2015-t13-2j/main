@@ -26,11 +26,11 @@ public class Controller {
 	};
 	
 	public static void main(String[] args) {
-		MainApp program = new MainApp();
+		Controller program = new Controller();
 		program.startProgram();
 	}
 	
-	public MainApp() {
+	public Controller() {
 		scanner = new Scanner(System.in);
 		logic = new Logic();
 	//	storage = new Storage();
@@ -39,15 +39,15 @@ public class Controller {
 	}
 	
 	public void startProgram() {
-		ui.displayMessage(WELCOME_MSG);
-		ui.displayMessage(WELCOME_HELP_MSG);
+		ui.displayMessage("WELCOME_MSG");
+		ui.displayMessage("WELCOME_HELP_MSG");
 		this.run();
 	}
 	
 	
 	public void run() {
 		while (true) {
-			ui.displayMessage(COMMAND_PROMPT);
+			ui.displayMessage("COMMAND_PROMPT");
 			Command newCommand = this.getUserCommand();
 			String feedback = logic.executeUserCommand(newCommand);
 			ui.displayMessage(feedback);
