@@ -19,7 +19,7 @@ public class MainApp {
 	 * Print Messages
 	 */
 	private static final String COMMAND_PROMPT = "Command: ";
-	private static final String WELCOME_MSG = "Greetings! NexTask is ready for use. Please input command:";
+	private static final String WELCOME_MSG = "Greetings! NexTask is ready for use.";
 	private static final String WELCOME_HELP_MSG = "If you need any help, please type \"help\" to retrieve the help guide!";
 	private static final String COMMAND_ADDED = "Task has been added to %1$s!";
 	private static final String COMMAND_DONE = "Task has been marked as completed!";
@@ -47,10 +47,17 @@ public class MainApp {
 	private static final String UNABLE_TO_DELETE = "Sorry, unable to delete from %1$s!";
 	private static final String UNABLE_TO_SEARCH = "Sorry, unable to find %1$s in %2$s!";
 
+	private Scanner scanner;
+	private Logic logic;
+	//private Storage storage;
+	private UI ui;
+	private CommandParser parser;
+	
 	enum OPERATION {
 		ADD, COMPLETED, DELETE, EDIT, UNDO, SEARCH, ARCHIVE, DISPLAY, SAVE, INVALID
 	};
 	
+<<<<<<< Updated upstream
 	private static boolean isTimeToExit = false;
 	
 	public static void main(String[] args) throws IOException {
@@ -84,19 +91,16 @@ public class MainApp {
 			file.createNewFile();
 		}
 		return file;
-	}
-
-	private static void printWelcomeMsg() {
-		System.out.println(WELCOME_MSG);
-	}
-	
-	private static Object parseCommand() {
-		// TODO Auto-generated method stub
-		return null;
+=======
+	public static void main(String[] args) {
+		MainApp program = new MainApp();
+		program.startProgram();
 	}
 	
-	private static void executeCommand(File nexTaskFile, Object parseCommand) {
-		// TODO Auto-generated method stub
-		
+	public MainApp() {
+		scanner = new Scanner(System.in);
+		logic = new Logic();
+	//	storage = new Storage();
+		parser = new CommandParser();
+		ui = new UI();
 	}
-}
