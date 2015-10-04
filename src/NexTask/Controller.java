@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.io.FileNotFoundException;
 
 public class Controller {
-	
+	private static final int INDEX_OF_CMD_NAME = 0;
 	private Scanner scanner;
 	private Logic logic;
 	//private Storage storage;
@@ -57,8 +57,10 @@ public class Controller {
 	
 	public Command getUserCommand() {
 		String input = this.getUserInput();
-		return parser.parseUserInput(input);
+		return parser.parse(input);
 	}
+	
+
 
 	public String getUserInput() {
 		String userInput = "";

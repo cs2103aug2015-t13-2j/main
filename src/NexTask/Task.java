@@ -8,8 +8,14 @@ abstract class Task {
 		this.name = name;
 	}
 	
+	public String getName() {
+		return this.name;
+	}
+	
 	public void editName(String name){
 		this.name = name;
 	}
+	
+	abstract boolean equals(Task other);
 	
 }
