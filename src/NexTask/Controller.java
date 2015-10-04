@@ -11,10 +11,6 @@ public class Controller {
 	private static UI ui;
 	private CommandParser parser;
 	
-	enum OPERATION {
-		ADD, COMPLETED, DELETE, EDIT, UNDO, SEARCH, ARCHIVE, DISPLAY, SAVE, INVALID
-	};
-	
 	public static void main(String[] args) {
 		Controller program = new Controller();
 		program.startProgram();
