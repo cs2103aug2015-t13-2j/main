@@ -13,23 +13,21 @@ import java.util.ArrayList;
  */
 public class Storage {
     
-    public static final String DEFAULT_SAVE_DIRECTORY = "NexText";
-    private static final String SAVE_DIRECTORY_FORMAT = "%s\\collated";
-    private static final String COLLATED_FILE_PATH_FORMAT = "%s\\%s.txt";
+    private static final String fileName = "NexText.txt";
     private static final String ERROR_FILE_NOT_FOUND = "File was not found: %s";
     private ArrayList<Task> tasks;
     private String savePath;
     
     
     public Storage(String directory, ArrayList<Task> tasks) {
-        this.savePath = String.format(SAVE_DIRECTORY_FORMAT, directory);
+        this.savePath = directory + fileName;
         this.tasks = tasks;
         createSaveDirectory(savePath);      
     }
     
     public Storage() {
-        savePath = DEFAULT_SAVE_DIRECTORY;
-        createSaveDirectory(DEFAULT_SAVE_DIRECTORY);
+        savePath = System.getProperty("user.dir");
+        createSaveDirectory(savePath);
     }
 
     private void createSaveDirectory(String directory) {
@@ -42,7 +40,7 @@ public class Storage {
 
     public void addCollatedFile(String fileName) {
         createSaveDirectory(savePath);
-        try (PrintWriter writer = new PrintWriter(String.format(COLLATED_FILE_PATH_FORMAT, savePath, fileName))) {
+        try (PrintWriter writer = new PrintWriter(savePath)) {
             for (Task line : tasks) {
                 writer.println(line.toString());
             }
@@ -50,4 +48,8 @@ public class Storage {
               System.out.println(String.format(ERROR_FILE_NOT_FOUND, fileName));
           }
       }
+    
+    public String retrive(String fileName){   // Probably don't need this method 		
+    		return fileName;
+    }
   }
