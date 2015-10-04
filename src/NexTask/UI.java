@@ -33,12 +33,16 @@ public class UI {
 	private static final String UNABLE_TO_DELETE = "Sorry, unable to delete from %1$s!";
 	private static final String UNABLE_TO_SEARCH = "Sorry, unable to find %1$s in %2$s!";
 	
+	public void displayMessage(String feedback) {
+		System.out.println(feedback);
+	}
+	
 	public void displayWelcomeMessage() {
 		System.out.println(WELCOME_MSG);
 		System.out.println(WELCOME_HELP_MSG);
 	}
 	
-	public static void printCommandPrompt() {
+	public void printCommandPrompt() {
 		System.out.println(COMMAND_PROMPT);
 	}
 	
@@ -93,5 +97,5 @@ public class UI {
 	public static String printUnableToSearch() {
 		return UNABLE_TO_SEARCH;
 	}
-	
+
 }

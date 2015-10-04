@@ -1,24 +1,14 @@
 package NexTask;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Scanner;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.BufferedWriter;
-import java.io.PrintWriter;
-import java.io.FileReader;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.FileNotFoundException;
+
 
 public class Controller {
 	
 	private Scanner scanner;
 	private Logic logic;
 	//private Storage storage;
-	private UI ui;
+	private static UI ui;
 	private CommandParser parser;
 	
 	enum OPERATION {
@@ -39,18 +29,17 @@ public class Controller {
 	}
 	
 	public void startProgram() {
-		ui.displayMessage("WELCOME_MSG");
-		ui.displayMessage("WELCOME_HELP_MSG");
+		ui.displayWelcomeMessage();
 		this.run();
 	}
 	
 	
 	public void run() {
 		while (true) {
-			ui.displayMessage("COMMAND_PROMPT");
+			ui.printCommandPrompt();
 			Command newCommand = this.getUserCommand();
 			String feedback = logic.executeUserCommand(newCommand);
-			ui.displayMessage(feedback);
+			//ui.displayMessage(feedback);
 		//	storage.updateOutputFile();
 		}
 	}
