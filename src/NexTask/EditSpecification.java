@@ -1,11 +1,23 @@
 package NexTask;
 
+/**
+ * An Edit Specification is made up of three components:
+ * taskNumber: the id of the task you want to edit
+ * fieldToEdit: the field you would like to edit, i.e. name, startdate, etc.
+ * theEdit: the edit you would like to make to that task.
+ * @author Jenny
+ *
+ */
 public class EditSpecification {
 	private int taskNumber;
 	private String fieldToEdit;
 	private String theEdit;
 	
-	public EditSpecification() {}
+	public EditSpecification() {
+		taskNumber = -1;
+		fieldToEdit = "";
+		theEdit = "";
+	}
 	
 	public EditSpecification(int taskNum, String field, String edit) {
 		this.taskNumber = taskNum;

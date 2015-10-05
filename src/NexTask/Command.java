@@ -1,5 +1,16 @@
 package NexTask;
 
+/**
+ * Represents a command object. Each command object has commandName and one
+ * other field initialized. 
+ * For add command, the "task" field will be initialized.
+ * For delete and complete commands, the taskNumber field will be initialized.
+ * For edit command, the editSpecification field will be initialized.
+ * For search command, the searchSpecification will be initialized.
+ * 
+ * @author Jenny
+ *
+ */
 public class Command {
 	private String commandName;
 	private int taskNumber;
@@ -7,6 +18,13 @@ public class Command {
 	private EditSpecification editSpecification;
 	private SearchSpecification searchSpecification;
 
+	public Command() {
+		commandName = "";
+		taskNumber = -3;
+		task = null;
+		editSpecification = null;
+		searchSpecification = null;
+	}
 	public String getCommandName() {
 		return commandName;
 	}

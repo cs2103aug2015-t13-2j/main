@@ -5,6 +5,7 @@ import java.util.Scanner;
 
 public class Controller {
 	private static final int INDEX_OF_CMD_NAME = 0;
+	private static final String INVALID_CMD = "invalid";
 	private Scanner scanner;
 	private Logic logic;
 	//private Storage storage;
@@ -34,12 +35,23 @@ public class Controller {
 		while (true) {
 			ui.printCommandPrompt();
 			Command newCommand = this.getUserCommand();
-			String feedback = logic.executeUserCommand(newCommand);
-			//ui.displayMessage(feedback);
+			if(isValid(newCommand)) {
+				String feedback = logic.executeUserCommand(newCommand);
+			} else {
+				System.out.println("Your command is invalid.");
+			}
+				//ui.displayMessage(feedback);
 		//	storage.updateOutputFile();
 		}
 	}
 	
+	public boolean isValid(Command command) {
+		if(command.getCommandName() != "invalid") {
+			return true;
+		} else {
+			return false;
+		}
+	}
 	public Command getUserCommand() {
 		String input = this.getUserInput();
 		return parser.parse(input);
@@ -49,7 +61,6 @@ public class Controller {
 
 	public String getUserInput() {
 		String userInput = "";
-
 		if (this.scanner.hasNextLine()) {
 			userInput = this.scanner.nextLine();
 		} else {
