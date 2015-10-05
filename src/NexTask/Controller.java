@@ -36,9 +36,9 @@ public class Controller {
 			ui.printCommandPrompt();
 			Command newCommand = this.getUserCommand();
 			if(isValid(newCommand)) {
-				String feedback = logic.executeUserCommand(newCommand);
+				logic.executeUserCommand(newCommand);
 			} else {
-				System.out.println("Your command is invalid.");
+				ui.displayErrorMessage();
 			}
 				//ui.displayMessage(feedback);
 		//	storage.updateOutputFile();

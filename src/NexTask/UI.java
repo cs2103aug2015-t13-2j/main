@@ -1,5 +1,12 @@
 package NexTask;
 
+/**
+ * UI class will display the appropriate print messages required when called upon by other classes.
+ * 
+ * @author Javan
+ *
+ */
+
 public class UI {
 	/*
 	 * Print Messages
@@ -9,7 +16,7 @@ public class UI {
 	private static final String WELCOME_HELP_MSG = "If you need any help, please type \"help\" to retrieve the help guide!";
 	private static final String COMMAND_ADDED = "Task has been added to %1$s!";
 	private static final String COMMAND_DONE = "Task has been marked as completed!";
-	private static final String COMMAND_DELETED = "Task has been deleted from %1$s!";
+	private static final String COMMAND_DELETED = "Task has been deleted!";
 	private static final String COMMAND_EDIT = "Task has been editted!";
 	private static final String COMMAND_UNDO = "Previous task has been undone!";
 	private static final String COMMAND_SEARCH = "Search results in %1$s: \n";
@@ -46,55 +53,55 @@ public class UI {
 		System.out.println(COMMAND_PROMPT);
 	}
 	
-	public static void displayHelpMessage() {
+	public void displayHelpMessage() {
 		System.out.println(COMMAND_HELP);
 	}
 	
-	public static String printAddMessage() {
+	public String printAddMessage() {
 		return COMMAND_ADDED;
 	}
 	
-	public static void printDoneMessage() {
+	public void printDoneMessage() {
 		System.out.println(COMMAND_DONE);
 	}
 	
-	public static String printDelMessage() {
-		return COMMAND_DELETED;
+	public void printDelMessage() {
+		System.out.println(COMMAND_DELETED);
 	}
 	
-	public static void printEditMessage() {
+	public void printEditMessage() {
 		System.out.println(COMMAND_EDIT);
 	}
 	
-	public static void printUndoMessage() {
+	public void printUndoMessage() {
 		System.out.println(COMMAND_UNDO);
 	}
 	
-	public static String printSearchMessage() {
+	public String printSearchMessage() {
 		return COMMAND_SEARCH;
 	}
 	
-	public static void printArchiveMessage() {
+	public void printArchiveMessage() {
 		System.out.println(COMMAND_ARCHIVE);
 	}
 	
-	public static String printSaveMessage() {
+	public String printSaveMessage() {
 		return COMMAND_SAVED;
 	}
 	
-	public static void printNoContent() {
+	public void printNoContent() {
 		System.out.println(NO_CONTENT);
 	}
 	
-	public static void displayErrorMessage() {
+	public void displayErrorMessage() {
 		System.out.println(COMMAND_ERROR);
 	}
 	
-	public static String printUnableToDelete() {
+	public String printUnableToDelete() {
 		return UNABLE_TO_DELETE;
 	}
 	
-	public static String printUnableToSearch() {
+	public String printUnableToSearch() {
 		return UNABLE_TO_SEARCH;
 	}
 
