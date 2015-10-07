@@ -49,7 +49,7 @@ public class Logic {
 		}
 	}
 
-<<<<<<< HEAD
+
 	private void deleteCommand(Command cmd, MemoryManager taskList2) {
 		int taskNum = cmd.getTaskNumber();
 		int size = taskList2.getSize();
@@ -60,11 +60,6 @@ public class Logic {
 		} else {
 			throw new Error("The number of task should be a positive integer");
 		}
-		
-=======
-	private void deleteCommand(Command cmd, MemoryManager taskList) {
-	// TODO Auto-generated method stub
->>>>>>> 711335165e63d0deed652c360a5fab9803266d14
 	}
 
 	private void editCommand(Command cmd, MemoryManager taskList2) {
