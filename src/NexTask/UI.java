@@ -1,5 +1,7 @@
 package NexTask;
 
+import java.util.Scanner;
+
 /**
  * UI class will display the appropriate print messages required when called upon by other classes.
  * 
@@ -39,17 +41,77 @@ public class UI {
 	private static final String COMMAND_ERROR = "Unrecognized command type entered! Please input a correct command type!";
 	private static final String UNABLE_TO_DELETE = "Sorry, unable to delete from %1$s!";
 	private static final String UNABLE_TO_SEARCH = "Sorry, unable to find %1$s in %2$s!";
+	private static final int INDEX_OF_CMD_NAME = 0;
+	private static final String INVALID_CMD = "invalid";
+	private static Scanner scanner;
+	private static Logic logic;
+	//private Storage storage;
+	private static CommandParser parser;
+	
+	public static void main(String[] args) {
+		initialize();
+		startProgram();
+	}
+	
+	public static void initialize() {
+		scanner = new Scanner(System.in);
+		logic = new Logic();
+	//	storage = new Storage();
+		parser = new CommandParser();
+	}
+	
+	public static void startProgram() {
+		displayWelcomeMessage();
+		run();
+	}
+	
+	public static void run() {
+		while (true) {
+			printCommandPrompt();
+			Command newCommand = getUserCommand();
+			if(isValid(newCommand)) {
+				logic.executeUserCommand(newCommand);
+			} else {
+				displayErrorMessage();
+			}
+				//ui.displayMessage(feedback);
+		//	storage.updateOutputFile();
+		}
+	}
+	
+	public static boolean isValid(Command command) {
+		if(command.getCommandName() != "invalid") {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public static Command getUserCommand() {
+		String input = getUserInput();
+		return parser.parse(input);
+	}
+	
+	public static String getUserInput() {
+		String userInput = "";
+		if (scanner.hasNextLine()) {
+			userInput = scanner.nextLine();
+		} else {
+			System.exit(0);
+		}
+		return userInput;
+	}
 	
 	public void displayMessage(String feedback) {
 		System.out.println(feedback);
 	}
 	
-	public void displayWelcomeMessage() {
+	public static void displayWelcomeMessage() {
 		System.out.println(WELCOME_MSG);
 		System.out.println(WELCOME_HELP_MSG);
 	}
 	
-	public void printCommandPrompt() {
+	public static void printCommandPrompt() {
 		System.out.println(COMMAND_PROMPT);
 	}
 	
@@ -93,7 +155,7 @@ public class UI {
 		System.out.println(NO_CONTENT);
 	}
 	
-	public void displayErrorMessage() {
+	public static void displayErrorMessage() {
 		System.out.println(COMMAND_ERROR);
 	}
 	
