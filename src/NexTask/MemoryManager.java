@@ -18,7 +18,6 @@ public class MemoryManager {
 		taskArray.remove(num-1);
 	}
 	
-	
 	public void edit(int num, Task task){
 		// Task only has name?
 		taskArray.get(num-1).editName(task.getName());
@@ -28,6 +27,15 @@ public class MemoryManager {
 		return taskArray;
 	}
 	
+	public int getNumberOfTasks() {
+		int numberOfTasks = taskArray.size();
+		return numberOfTasks;
+	}
+	
+	public Task getTask(int index) {
+		Task task = taskArray.get(index-1);
+		return task;
+	}
 	
 	// Do we really need set method?
 	// in case there is a need for us to use this? (Javan)
