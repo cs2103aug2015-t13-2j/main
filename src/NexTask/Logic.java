@@ -9,9 +9,11 @@ package NexTask;
 */
 public class Logic {
 	
+	private static final String[] FIELDS_TODO = {"name"};
+	
 	public MemoryManager taskList = new MemoryManager();
 	public Task task;
-	public UI ui;
+	public UI ui = new UI();
 	
 	public void executeUserCommand(Command cmd) {
 		performCommand(cmd, taskList);
@@ -37,15 +39,18 @@ public class Logic {
 	}
 	
 	private void displayCommand(Command cmd, MemoryManager taskList2) {
-	// TODO Auto-generated method stub	
 	}
+	
 
 	private void deleteCommand(Command cmd, MemoryManager taskList2) {
 	// TODO Auto-generated method stub
 	}
 
-	private void editCommand(Command cmd, MemoryManager taskList2) {
-	// TODO Auto-generated method stub
+	private void editCommand(Command cmd, MemoryManager taskList) {
+		int taskNumber = cmd.getEditSpecification().getTaskNumber();
+		String fieldToEdit = cmd.getEditSpecification().getFieldToEdit();
+		String theEdit = cmd.getEditSpecification().getTheEdit();
+	
 	}
 
 	public void addCommand(Command cmd, MemoryManager taskList) {
