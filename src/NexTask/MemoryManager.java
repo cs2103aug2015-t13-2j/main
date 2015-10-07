@@ -32,9 +32,10 @@ public class MemoryManager {
 		return numberOfTasks;
 	}
 	
-	public Task getTask(int index) {
+	public String getTask(int index) {
 		Task task = taskArray.get(index-1);
-		return task;
+		String taskName = task.getName();
+		return taskName;
 	}
 	
 	public int getSize(){

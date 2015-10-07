@@ -36,10 +36,20 @@ public class Logic {
 		}
 	}
 	
-	private void displayCommand(Command cmd, MemoryManager taskList2) {
-	// TODO Auto-generated method stub	
+	private void displayCommand(Command cmd, MemoryManager taskList) {
+		int numberOfLines = taskList.getNumberOfTasks();
+		if (numberOfLines == 0) {
+			ui.printEmptyList();
+		} else {
+			for (int i=0; i<numberOfLines; i++) {
+				String taskToDisplay = taskList.getTask(i);
+				String lineToDisplay = (i+1) + ". " + taskToDisplay;
+				System.out.println(lineToDisplay);
+			}
+		}
 	}
 
+<<<<<<< HEAD
 	private void deleteCommand(Command cmd, MemoryManager taskList2) {
 		int taskNum = cmd.getTaskNumber();
 		int size = taskList2.getSize();
@@ -51,6 +61,10 @@ public class Logic {
 			throw new Error("The number of task should be a positive integer");
 		}
 		
+=======
+	private void deleteCommand(Command cmd, MemoryManager taskList) {
+	// TODO Auto-generated method stub
+>>>>>>> 711335165e63d0deed652c360a5fab9803266d14
 	}
 
 	private void editCommand(Command cmd, MemoryManager taskList2) {
