@@ -36,11 +36,20 @@ public class Logic {
 		}
 	}
 	
-	private void displayCommand(Command cmd, MemoryManager taskList2) {
-	// TODO Auto-generated method stub	
+	private void displayCommand(Command cmd, MemoryManager taskList) {
+		int numberOfLines = taskList.getNumberOfTasks();
+		if (numberOfLines == 0) {
+			ui.printEmptyList();
+		} else {
+			for (int i=0; i<numberOfLines; i++) {
+				String taskToDisplay = taskList.getTask(i);
+				String lineToDisplay = (i+1) + ". " + taskToDisplay;
+				System.out.println(lineToDisplay);
+			}
+		}
 	}
 
-	private void deleteCommand(Command cmd, MemoryManager taskList2) {
+	private void deleteCommand(Command cmd, MemoryManager taskList) {
 	// TODO Auto-generated method stub
 	}
 

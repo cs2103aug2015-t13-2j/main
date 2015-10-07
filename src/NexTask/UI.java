@@ -38,6 +38,7 @@ public class UI {
 			+ "To display the current list of tasks: display.\n"
 			+ "To save to: save to (filename).\n";
 	private static final String NO_CONTENT = "%1$s is empty. There is no content to delete from!";
+	private static final String NO_CONTENT_TO_DISPLAY = "Task list is empty. There is no content to display!";
 	private static final String COMMAND_ERROR = "Unrecognized command type entered! Please input a correct command type!";
 	private static final String UNABLE_TO_DELETE = "Sorry, unable to delete from %1$s!";
 	private static final String UNABLE_TO_SEARCH = "Sorry, unable to find %1$s in %2$s!";
@@ -153,6 +154,10 @@ public class UI {
 	
 	public void printNoContent() {
 		System.out.println(NO_CONTENT);
+	}
+	
+	public void printEmptyList() {
+		System.out.println(NO_CONTENT_TO_DISPLAY);
 	}
 	
 	public static void displayErrorMessage() {
