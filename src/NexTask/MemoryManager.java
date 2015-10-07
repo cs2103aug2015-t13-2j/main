@@ -33,7 +33,7 @@ public class MemoryManager {
 	}
 	
 	public String getTask(int index) {
-		Task task = taskArray.get(index-1);
+		Task task = taskArray.get(index);
 		String taskName = task.getName();
 		return taskName;
 	}

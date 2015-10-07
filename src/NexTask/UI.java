@@ -46,6 +46,10 @@ public class UI {
 	private static final String WRONG_NUM_FORMAT = "Sorry, the number you put is not in correct format";
 	private static final int INDEX_OF_CMD_NAME = 0;
 	private static final String INVALID_CMD = "invalid";
+	
+	private static final String ERROR_INVALID_NUM_ARGS_FOR_EDIT = "Invalid number of arguments for edit.";
+	private static final String ERROR_INVALID_TASK_NUMBER = "Please enter an integer as the task number.";
+	
 	private static Scanner scanner;
 	private static Logic logic;
 	//private Storage storage;
@@ -180,6 +184,10 @@ public class UI {
 	
 	public String printUnableToSearch() {
 		return UNABLE_TO_SEARCH;
+	}
+	
+	public void printMessage(String message) {
+		System.out.println(message);
 	}
 
 }
