@@ -41,7 +41,16 @@ public class Logic {
 	}
 
 	private void deleteCommand(Command cmd, MemoryManager taskList2) {
-	// TODO Auto-generated method stub
+		int taskNum = cmd.getTaskNumber();
+		int size = taskList2.getSize();
+		if (taskNum > 0 && taskNum <= size){
+			taskList2.delete(taskNum);
+		} else if (taskNum > size){
+			throw new Error("Maximun number of tasks is" + size);
+		} else {
+			throw new Error("The number of task should be a positive integer");
+		}
+		
 	}
 
 	private void editCommand(Command cmd, MemoryManager taskList2) {

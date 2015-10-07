@@ -37,6 +37,10 @@ public class MemoryManager {
 		return task;
 	}
 	
+	public int getSize(){
+		return taskArray.size();
+	}
+	
 	// Do we really need set method?
 	// in case there is a need for us to use this? (Javan)
 	public void setTaskArray(ArrayList<Task> taskArray) {
