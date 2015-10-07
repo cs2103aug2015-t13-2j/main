@@ -56,9 +56,9 @@ public class Logic {
 		if (taskNum > 0 && taskNum <= size){
 			taskList2.delete(taskNum);
 		} else if (taskNum > size){
-			throw new Error("Maximun number of tasks is" + size);
+			ui.printExceedSize();
 		} else {
-			throw new Error("The number of task should be a positive integer");
+			ui.printWrongFormat();
 		}
 	}
 

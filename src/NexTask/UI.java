@@ -42,6 +42,8 @@ public class UI {
 	private static final String COMMAND_ERROR = "Unrecognized command type entered! Please input a correct command type!";
 	private static final String UNABLE_TO_DELETE = "Sorry, unable to delete from %1$s!";
 	private static final String UNABLE_TO_SEARCH = "Sorry, unable to find %1$s in %2$s!";
+	private static final String EXCEED_MAXSIZE_OF_TASK = "Sorry, the number you put exceeds the maximum number of tasks!";
+	private static final String WRONG_NUM_FORMAT = "Sorry, the number you put is not in correct format";
 	private static final int INDEX_OF_CMD_NAME = 0;
 	private static final String INVALID_CMD = "invalid";
 	private static Scanner scanner;
@@ -154,6 +156,14 @@ public class UI {
 	
 	public void printNoContent() {
 		System.out.println(NO_CONTENT);
+	}
+	
+	public void printExceedSize(){
+		System.out.println(EXCEED_MAXSIZE_OF_TASK);
+	}
+	
+	public void printWrongFormat(){
+		System.out.println(WRONG_NUM_FORMAT);
 	}
 	
 	public void printEmptyList() {
