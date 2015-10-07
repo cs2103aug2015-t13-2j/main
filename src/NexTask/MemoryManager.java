@@ -20,7 +20,7 @@ public class MemoryManager {
 	
 	public void edit(int num, Task task){
 		// Task only has name?
-		taskArray.get(num-1).editName(task.getName());
+		taskArray.set(num,task);
 	}
 
 	public ArrayList<Task> getTaskArray() {

@@ -9,7 +9,7 @@ package NexTask;
 */
 public class Logic {
 	
-	private static final String[] FIELDS_TODO = {"name"};
+	private static final String TODO_FIELD_NAME = "name";
 	
 	public MemoryManager taskList = new MemoryManager();
 	public Task task;
@@ -39,18 +39,44 @@ public class Logic {
 	}
 	
 	private void displayCommand(Command cmd, MemoryManager taskList2) {
+		for(int i = 0; i < taskList.getNumberOfTasks(); i++) {
+			System.out.println(taskList.taskArray.get(i).getName());
+		}
 	}
 	
-
+	private boolean isValidTaskNumber(int taskNumber) {
+		if(taskNumber - 1 < 0) {
+			return false;
+		} else if(taskNumber > taskList.getNumberOfTasks()) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
 	private void deleteCommand(Command cmd, MemoryManager taskList2) {
 	// TODO Auto-generated method stub
 	}
 
 	private void editCommand(Command cmd, MemoryManager taskList) {
-		int taskNumber = cmd.getEditSpecification().getTaskNumber();
+		int taskNumber = cmd.getEditSpecification().getTaskNumber() - 1;
 		String fieldToEdit = cmd.getEditSpecification().getFieldToEdit();
 		String theEdit = cmd.getEditSpecification().getTheEdit();
-	
+		
+		if(isValidTaskNumber(taskNumber)) {
+			if(taskList.getTaskArray().get(taskNumber) instanceof Floating) {
+				Floating newTask = (Floating)taskList.getTaskArray().get(taskNumber);
+				switch(fieldToEdit) {
+					case TODO_FIELD_NAME :
+						newTask.editName(theEdit);
+						taskList.edit(taskNumber, newTask);
+						break;
+					default : 
+						System.out.println("Invalid field to edit.");
+				}
+			}	
+		}
+		
 	}
 
 	public void addCommand(Command cmd, MemoryManager taskList) {
