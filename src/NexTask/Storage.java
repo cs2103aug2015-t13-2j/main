@@ -27,6 +27,7 @@ public class Storage {
     
     public Storage() {
         savePath = System.getProperty("user.dir");
+        // This is to get the current directory of the program.
         createSaveDirectory(savePath);
     }
 
@@ -38,7 +39,7 @@ public class Storage {
         }
     }
 
-    public void addCollatedFile(String fileName) {
+    public void storeToFile() {
         createSaveDirectory(savePath);
         try (PrintWriter writer = new PrintWriter(savePath)) {
             for (Task line : tasks) {
@@ -49,7 +50,7 @@ public class Storage {
           }
       }
     
-    public String retrive(String fileName){   // Probably don't need this method 		
+    public String retrive(String fileName){   // Use this later. 		
     		return fileName;
     }
   }

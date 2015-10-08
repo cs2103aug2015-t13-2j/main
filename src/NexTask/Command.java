@@ -13,6 +13,7 @@ package NexTask;
  */
 public class Command {
 	private String commandName;
+	private String directory;
 	private int taskNumber;
 	private Task task;
 	private EditSpecification editSpecification;
@@ -20,11 +21,21 @@ public class Command {
 
 	public Command() {
 		commandName = "";
+		directory = "";
 		taskNumber = -3;
 		task = null;
 		editSpecification = null;
 		searchSpecification = null;
 	}
+	
+	public void setDirectory(String directory){
+		this.directory = directory;
+	}
+	
+	public String getDirectory(){
+		return directory;
+	}
+	
 	public String getCommandName() {
 		return commandName;
 	}
@@ -86,6 +97,8 @@ public class Command {
 			case "display":
 				isArgEqual = isCmdNameEqual;
 				break;
+			case "store":
+				isArgEqual = isCmdNameEqual;
 			}
 		} else {
 			return false;
