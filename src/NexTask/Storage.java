@@ -13,8 +13,9 @@ import java.util.ArrayList;
  */
 public class Storage {
     
-	
+    
     private static final String FILE_NAME = "NexTask.txt";
+    private static final String USER_FILE_NAME = "\\NexTask.txt";
     private static String userPath = "";
     private static int taskNum = 1;
     private ArrayList<Task> tasks;
@@ -26,26 +27,21 @@ public class Storage {
     }
     
     public String getPath(){
-    		String dir = "";
-    		if (userPath.equals("")){
-    			dir = FILE_NAME;
-    		} else{
-    			String[] folders = userPath.split("\\");
-    			for(String temp : folders){
-    				dir = dir + temp + "\\";
-    			}
-    		}
-    		
-    		return dir;
+            String dir = "";
+            if (userPath.equals("")){
+                dir = FILE_NAME;
+            } else{
+                dir = userPath + USER_FILE_NAME;
+            }        
+            return dir;
     }
     
 
     public void storeToFile() {
-    	System.out.println(userPath);
-    		String savePath = getPath();
+        String savePath = getPath();
         try (PrintWriter writer = new PrintWriter(savePath)) {
             for (Task line : tasks) {
-            		
+                    
                 writer.println(taskNum + ". " + line.getName());
                 taskNum ++;
             }
@@ -54,7 +50,7 @@ public class Storage {
           }
       }
     
-    public String retrive(String fileName){   // Use this later. 		
-    		return fileName;
+    public String retrive(String fileName){   // Use this later.        
+            return fileName;
     }
   }
