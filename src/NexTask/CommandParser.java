@@ -89,7 +89,7 @@ public class CommandParser {
 			command = initEditCommand(arguments);
 			break;
 		case USER_COMMAND_STORE:
-			command = initStoreCommand();
+			command = initStoreCommand(arguments);
 			break;	
 		case USER_COMMAND_EXIT:
 			command = initExitCommand();
@@ -131,11 +131,13 @@ public class CommandParser {
 		return new ArrayList<String>(parameters.subList(POSITION_OF_FIRST_ARGUMENT, parameters.size()));
 	}
 	
-	private Command initStoreCommand() {
+	private Command initStoreCommand(ArrayList<String> parameters) {
 		Command c = new Command();
 		//String directory = arguments.get(0);
 		c.setCommandName(USER_COMMAND_STORE);
-		//c.setDirectory(directory);
+		if(parameters.size() != 0){
+			c.setDirectory(parameters.get(0));
+		} 
 		return c;
 	}
 
