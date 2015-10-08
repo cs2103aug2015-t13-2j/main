@@ -14,6 +14,7 @@ public class Logic {
 	private static final String CMD_ADD = "add";
 	private static final String CMD_DISPLAY = "display";
 	private static final String CMD_DELETE = "delete";
+	private static final String CMD_STORE = "store";
 	private static final String CMD_EXIT = "exit";
 	
 	private static final String ERROR_INVALID_NUM_ARGS_FOR_EDIT = "Invalid number of arguments for edit.";
@@ -43,6 +44,17 @@ public class Logic {
 		else if (commandName == CMD_DISPLAY) {
 			displayCommand(cmd, taskList);
 		}
+		else if (commandName == CMD_STORE) {
+			storeCommand(cmd, taskList);
+		}
+		else if (commandName == CMD_EXIT) {
+			System.exit(0);
+		}
+	}
+	
+	private void storeCommand(Command cmd, MemoryManager taskList){
+		Storage storage = new Storage(cmd.getDirectory(), taskList.getTaskArray());
+		storage.storeToFile();
 	}
 	
 	private void displayCommand(Command cmd, MemoryManager taskList) {

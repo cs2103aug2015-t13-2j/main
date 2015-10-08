@@ -54,7 +54,7 @@ public class CommandParser {
 	private static final String USER_COMMAND_EXIT = "exit";
 	private static final String USER_COMMAND_INVALID = "invalid";
 	// private static final String USER_COMMAND_SEARCH = "search";
-	// private static final String USER_COMMAND_SAVE = "save";
+	private static final String USER_COMMAND_STORE = "store";
 	// private static final String USER_COMMAND_COMPLETE = "complete";
 	// private static final String USER_COMMAND_ARCHIVE = "archive";
 	
@@ -87,6 +87,9 @@ public class CommandParser {
 		case USER_COMMAND_EDIT:
 			command = initEditCommand(arguments);
 			break;
+		case USER_COMMAND_STORE:
+			command = initStoreCommand(arguments);
+			break;	
 		case USER_COMMAND_EXIT:
 			command = initExitCommand();
 			break;
@@ -148,7 +151,14 @@ public class CommandParser {
 		c.setCommandName(USER_COMMAND_DISPLAY);
 		return c;
 	}
-
+	
+	private Command initStoreCommand(ArrayList<String> arguments) {
+		Command c = new Command();
+		String directory = arguments.get(0);
+		c.setCommandName(USER_COMMAND_STORE);
+		c.setDirectory(directory);
+		return c;
+	}
 	/**
 	 * Initializes an exit command.
 	 * 
@@ -233,11 +243,7 @@ public class CommandParser {
 	}
 
 	/**
-	 * Initialize an edit command. If correct number of arguments provided and task
-	 * number can be parsed, the command will be created with edit specification
-	 * initialized appropriately. If task number cannot be parsed, the edit
-	 * specifications task number will be set to -1. If an incorrect number of
-	 * arguments provided, edit specification will be null.
+	 * Initialize an edit command.
 	 * 
 	 * @param arguments
 	 * @return Command object with "editSpecification" initialized accordingly.
@@ -318,7 +324,7 @@ public class CommandParser {
 
 	/**
 	 * Helper method to concatenate the Strings of an ArrayList together.
-	 * Initially each parts of a name are different elemets of an ArrayList
+	 * Initially each parts of a name are different elements of an ArrayList
 	 * because of splitString. This method concatenates them to a single string.
 	 * @param nameParts An ArrayList<String> where each element is a word in
 	 * 	the name.
