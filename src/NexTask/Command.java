@@ -21,6 +21,7 @@ public class Command {
 
 	public Command() {
 		commandName = "";
+		directory = "";
 		taskNumber = -3;
 		directory = "";
 		task = null;
@@ -97,6 +98,8 @@ public class Command {
 			case "display":
 				isArgEqual = isCmdNameEqual;
 				break;
+			case "store":
+				isArgEqual = isCmdNameEqual;
 			}
 		} else {
 			return false;

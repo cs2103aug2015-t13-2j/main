@@ -52,9 +52,10 @@ public class CommandParser {
 	private static final String USER_COMMAND_DISPLAY = "display";
 	private static final String USER_COMMAND_EDIT = "edit";
 	private static final String USER_COMMAND_EXIT = "exit";
+	private static final String USER_COMMAND_STORE = "store";
+	
 	private static final String USER_COMMAND_INVALID = "invalid";
 	// private static final String USER_COMMAND_SEARCH = "search";
-	private static final String USER_COMMAND_STORE = "store";
 	// private static final String USER_COMMAND_COMPLETE = "complete";
 	// private static final String USER_COMMAND_ARCHIVE = "archive";
 	
@@ -88,7 +89,7 @@ public class CommandParser {
 			command = initEditCommand(arguments);
 			break;
 		case USER_COMMAND_STORE:
-			command = initStoreCommand(arguments);
+			command = initStoreCommand();
 			break;	
 		case USER_COMMAND_EXIT:
 			command = initExitCommand();
@@ -129,6 +130,14 @@ public class CommandParser {
 	private ArrayList<String> getUserArguments(ArrayList<String> parameters) {
 		return new ArrayList<String>(parameters.subList(POSITION_OF_FIRST_ARGUMENT, parameters.size()));
 	}
+	
+	private Command initStoreCommand() {
+		Command c = new Command();
+		//String directory = arguments.get(0);
+		c.setCommandName(USER_COMMAND_STORE);
+		//c.setDirectory(directory);
+		return c;
+	}
 
 	/**
 	 * Initializes an invalid command.
@@ -152,13 +161,6 @@ public class CommandParser {
 		return c;
 	}
 	
-	private Command initStoreCommand(ArrayList<String> arguments) {
-		Command c = new Command();
-		String directory = arguments.get(0);
-		c.setCommandName(USER_COMMAND_STORE);
-		c.setDirectory(directory);
-		return c;
-	}
 	/**
 	 * Initializes an exit command.
 	 * 

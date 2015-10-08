@@ -16,7 +16,7 @@ public class UI {
 	private static final String COMMAND_PROMPT = "Command: ";
 	private static final String WELCOME_MSG = "Greetings! NexTask is ready for use.";
 	private static final String WELCOME_HELP_MSG = "If you need any help, please type \"help\" to retrieve the help guide!";
-	private static final String COMMAND_ADDED = "Task has been added to %1$s!";
+	private static final String COMMAND_ADDED = "Task has been added!";
 	private static final String COMMAND_DONE = "Task has been marked as completed!";
 	private static final String COMMAND_DELETED = "Task has been deleted!";
 	private static final String COMMAND_EDIT = "Task has been editted!";
