@@ -24,10 +24,28 @@ public class Logic {
 	public MemoryManager taskList = new MemoryManager();
 	public Task task;
 	public UI ui = new UI();
+	public CommandParser parser = new CommandParser();
 	
 	
-	public void executeUserCommand(Command cmd) {
-		performCommand(cmd, taskList);
+	public void executeUserCommand(String userInput) {
+		Command cmd = getUserCommand(userInput);
+		if(isValid(cmd)) {
+			performCommand(cmd, taskList);
+		} else {
+			UI.displayErrorMessage();
+		}	
+	}
+	
+	public boolean isValid(Command command) {
+		if(command.getCommandName() != "invalid") {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public Command getUserCommand(String userInput) {
+		return parser.parse(userInput);
 	}
 
 	private void performCommand(Command cmd, MemoryManager taskList) {

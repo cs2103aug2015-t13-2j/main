@@ -52,8 +52,6 @@ public class UI {
 	
 	private static Scanner scanner;
 	private static Logic logic;
-	//private Storage storage;
-	private static CommandParser parser;
 	
 	public static void main(String[] args) {
 		initialize();
@@ -63,8 +61,6 @@ public class UI {
 	public static void initialize() {
 		scanner = new Scanner(System.in);
 		logic = new Logic();
-	//	storage = new Storage();
-		parser = new CommandParser();
 	}
 	
 	public static void startProgram() {
@@ -75,29 +71,10 @@ public class UI {
 	public static void run() {
 		while (true) {
 			printCommandPrompt();
-			Command newCommand = getUserCommand();
-			if(isValid(newCommand)) {
-				logic.executeUserCommand(newCommand);
-			} else {
-				displayErrorMessage();
-			}
-				//ui.displayMessage(feedback);
-		//	storage.updateOutputFile();
+			logic.executeUserCommand(getUserInput());
 		}
 	}
 	
-	public static boolean isValid(Command command) {
-		if(command.getCommandName() != "invalid") {
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
-	public static Command getUserCommand() {
-		String input = getUserInput();
-		return parser.parse(input);
-	}
 	
 	public static String getUserInput() {
 		String userInput = "";
