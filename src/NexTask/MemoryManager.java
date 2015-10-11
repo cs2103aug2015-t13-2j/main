@@ -4,10 +4,22 @@ import java.util.ArrayList;
 
 public class MemoryManager {
 	public ArrayList<Task> taskArray;
+	public ArrayList<Task> previousTasks;
 	
 	public MemoryManager(){
 		taskArray = new ArrayList<Task>();
 		
+	}
+	
+	public void updatePreviousTask(){
+		this.previousTasks = (ArrayList<Task>) taskArray.subList(0, taskArray.size()-2);
+		
+		System.out.println("number of previousTasks" + previousTasks.get(previousTasks.size()));
+		
+	}
+	
+	public void undoTaskArray(){
+		this.taskArray = previousTasks;
 	}
 	
 	public void add(Task task){

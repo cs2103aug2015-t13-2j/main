@@ -15,6 +15,7 @@ public class Command {
 	private String commandName;
 	private String directory;
 	private int taskNumber;
+	private int numUndo;
 	private Task task;
 	private EditSpecification editSpecification;
 	private SearchSpecification searchSpecification;
@@ -33,6 +34,7 @@ public class Command {
 		this.directory = directory;
 	}
 	
+	
 	public String getDirectory(){
 		return directory;
 	}
@@ -48,6 +50,7 @@ public class Command {
 	public int getTaskNumber() {
 		return taskNumber;
 	}
+	
 
 	public void setTaskNumber(int taskNumber) {
 		this.taskNumber = taskNumber;

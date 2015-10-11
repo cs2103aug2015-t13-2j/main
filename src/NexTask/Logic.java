@@ -16,7 +16,9 @@ public class Logic {
 	private static final String CMD_DELETE = "delete";
 	private static final String CMD_STORE = "store";
 	private static final String CMD_EXIT = "exit";
+	private static final String CMD_UNDO = "undo";
 	
+	private static final String ERROR_NOTHING_TO_UNDO = "There is nothing to undo";
 	private static final String ERROR_INVALID_NUM_ARGS_FOR_EDIT = "Invalid number of arguments for edit.";
 	private static final String ERROR_INVALID_TASK_NUMBER = "Please enter a valid task number.";
 	private static final String ERROR_PLS_ENTER_INT = "Please enter an integer as the task number.";
@@ -67,6 +69,20 @@ public class Logic {
 		}
 		else if (commandName == CMD_EXIT) {
 			System.exit(0);
+		}
+		else if (commandName == CMD_UNDO) {
+			undoCommand(cmd, taskList);
+		}
+	}
+	
+	
+	private void undoCommand(Command cmd, MemoryManager taskList){
+		if (taskList.getNumberOfTasks() == 0){
+			ui.printMessage(ERROR_NOTHING_TO_UNDO);
+		} else{
+			taskList.updatePreviousTask();
+			taskList.undoTaskArray();
+			taskList.updatePreviousTask();
 		}
 	}
 	

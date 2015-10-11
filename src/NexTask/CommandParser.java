@@ -53,6 +53,7 @@ public class CommandParser {
 	private static final String USER_COMMAND_EDIT = "edit";
 	private static final String USER_COMMAND_EXIT = "exit";
 	private static final String USER_COMMAND_STORE = "store";
+	private static final String USER_COMMAND_UNDO = "undo";
 	
 	private static final String USER_COMMAND_INVALID = "invalid";
 	// private static final String USER_COMMAND_SEARCH = "search";
@@ -89,11 +90,13 @@ public class CommandParser {
 			command = initEditCommand(arguments);
 			break;
 		case USER_COMMAND_STORE:
-			command = initStoreCommand();
+			command = initStoreCommand(arguments);
 			break;	
 		case USER_COMMAND_EXIT:
 			command = initExitCommand();
 			break;
+		case USER_COMMAND_UNDO:
+			command = initUndoCommand();
 		default:
 			command = initInvalidCommand();
 		}
@@ -131,11 +134,18 @@ public class CommandParser {
 		return new ArrayList<String>(parameters.subList(POSITION_OF_FIRST_ARGUMENT, parameters.size()));
 	}
 	
-	private Command initStoreCommand() {
+	
+	private Command initStoreCommand(ArrayList<String> arguments) {
 		Command c = new Command();
-		//String directory = arguments.get(0);
+		String directory;
+		if (arguments.size()>0){
+			directory = arguments.get(0); 
+		} else{
+			directory = "";
+		}
+		
 		c.setCommandName(USER_COMMAND_STORE);
-		//c.setDirectory(directory);
+		c.setDirectory(directory);
 		return c;
 	}
 
@@ -147,6 +157,12 @@ public class CommandParser {
 	private Command initInvalidCommand() {
 		Command c = new Command();
 		c.setCommandName(USER_COMMAND_INVALID);
+		return c;
+	}
+	
+	private Command initUndoCommand() {
+		Command c = new Command();
+		c.setCommandName(USER_COMMAND_UNDO);
 		return c;
 	}
 
