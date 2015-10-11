@@ -8,18 +8,22 @@ public class MemoryManager {
 	
 	public MemoryManager(){
 		taskArray = new ArrayList<Task>();
-		
+		previousTasks = new ArrayList<Task>();
 	}
 	
 	public void updatePreviousTask(){
-		this.previousTasks = (ArrayList<Task>) taskArray.subList(0, taskArray.size()-2);
-		
-		System.out.println("number of previousTasks" + previousTasks.get(previousTasks.size()));
-		
+		if (taskArray.size() == 0){
+			return;
+		} else if (taskArray.size() >= previousTasks.size()){
+			previousTasks.add(taskArray.get(taskArray.size()-1));
+		} else if (taskArray.size() < previousTasks.size()){
+			previousTasks.remove(previousTasks.size()-1);
+		} 
 	}
 	
+	
 	public void undoTaskArray(){
-		this.taskArray = previousTasks;
+		taskArray = previousTasks;
 	}
 	
 	public void add(Task task){
@@ -37,6 +41,10 @@ public class MemoryManager {
 
 	public ArrayList<Task> getTaskArray() {
 		return taskArray;
+	}
+	
+	public int getPreviousTasksSize(){
+		return previousTasks.size();
 	}
 	
 	public int getNumberOfTasks() {

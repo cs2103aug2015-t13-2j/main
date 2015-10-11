@@ -75,14 +75,14 @@ public class Logic {
 		}
 	}
 	
-	
+	// No undo store for now.
 	private void undoCommand(Command cmd, MemoryManager taskList){
-		if (taskList.getNumberOfTasks() == 0){
+		if (taskList.getPreviousTasksSize() == 0){
 			ui.printMessage(ERROR_NOTHING_TO_UNDO);
 		} else{
-			taskList.updatePreviousTask();
+			// This is for testing
+			System.out.println(taskList.getPreviousTasksSize());
 			taskList.undoTaskArray();
-			taskList.updatePreviousTask();
 		}
 	}
 	
@@ -109,6 +109,7 @@ public class Logic {
 		int taskNum = cmd.getTaskNumber();
 		int size = taskList2.getSize();
 		if (taskNum > 0 && taskNum <= size){
+			taskList.updatePreviousTask();
 			taskList2.delete(taskNum);
 			ui.printDelMessage();
 		} else if (taskNum > size){
@@ -164,6 +165,7 @@ public class Logic {
 	}
 	
 	public void addCommand(Command cmd, MemoryManager taskList) {
+		taskList.updatePreviousTask();
 		task = cmd.getTask();
 		taskList.add(task);
 		ui.printAddMessage();

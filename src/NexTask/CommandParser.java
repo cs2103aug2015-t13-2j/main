@@ -97,6 +97,7 @@ public class CommandParser {
 			break;
 		case USER_COMMAND_UNDO:
 			command = initUndoCommand();
+			break;
 		default:
 			command = initInvalidCommand();
 		}

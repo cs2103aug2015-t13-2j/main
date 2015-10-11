@@ -15,7 +15,6 @@ public class Command {
 	private String commandName;
 	private String directory;
 	private int taskNumber;
-	private int numUndo;
 	private Task task;
 	private EditSpecification editSpecification;
 	private SearchSpecification searchSpecification;
@@ -102,6 +101,8 @@ public class Command {
 				isArgEqual = isCmdNameEqual;
 				break;
 			case "store":
+				isArgEqual = isCmdNameEqual;
+			case "undo":
 				isArgEqual = isCmdNameEqual;
 			}
 		} else {
