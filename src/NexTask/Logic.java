@@ -85,6 +85,8 @@ public class Logic {
 			// This is for testing
 			System.out.println(taskList.getPreviousTasksSize());
 			taskList.undoTaskArray();
+			taskList.undoPrevCommand();
+			taskList.undoPrevTask();
 		}
 	}
 	
@@ -111,8 +113,11 @@ public class Logic {
 		int taskNum = cmd.getTaskNumber();
 		int size = taskList2.getSize();
 		if (taskNum > 0 && taskNum <= size){
-			taskList.updatePreviousTask();
+			
+			taskList2.updatePreviousTask();
 			taskList2.delete(taskNum);
+			taskList2.addCommand(cmd);
+			
 			ui.printDelMessage();
 		} else if (taskNum > size){
 			ui.printExceedSize();
@@ -121,6 +126,15 @@ public class Logic {
 		}
 	}
 
+	public void addCommand(Command cmd, Storage taskList) {
+		
+		taskList.updatePreviousTask();
+		task = cmd.getTask();
+		taskList.add(task);
+		ui.printAddMessage();
+		taskList.addCommand(cmd);
+	}
+	
 	private void editCommand(Command cmd, Storage taskList) {
 		EditSpecification edit = cmd.getEditSpecification();
 		
@@ -134,8 +148,15 @@ public class Logic {
 					Floating newTask = (Floating)taskList.getTaskArray().get(taskNumber);
 					switch(fieldToEdit) {
 						case TODO_FIELD_NAME :
+							// Store task and task number in command for storage
+							cmd.setTask(taskList.getTaskObject(taskNumber));
+							cmd.setTaskNumber(taskNumber);
+							
+							taskList.updatePreviousTask();
 							newTask.editName(theEdit);
 							taskList.edit(taskNumber, newTask);
+							
+							taskList.addCommand(cmd);
 							ui.printEditMessage();
 							break;
 						default : 
@@ -166,12 +187,6 @@ public class Logic {
 		}
 	}
 	
-	public void addCommand(Command cmd, Storage taskList) {
-		taskList.updatePreviousTask();
-		task = cmd.getTask();
-		taskList.add(task);
-		ui.printAddMessage();
-	}
 	
 
 	
