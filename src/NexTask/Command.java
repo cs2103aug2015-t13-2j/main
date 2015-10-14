@@ -35,6 +35,7 @@ public class Command {
 		this.directory = directory;
 	}
 	
+	
 	public String getDirectory(){
 		return directory;
 	}
@@ -50,6 +51,7 @@ public class Command {
 	public int getTaskNumber() {
 		return taskNumber;
 	}
+	
 
 	public void setTaskNumber(int taskNumber) {
 		this.taskNumber = taskNumber;
@@ -109,6 +111,8 @@ public class Command {
 				isArgEqual = isCmdNameEqual;
 				break;
 			case "store":
+				isArgEqual = isCmdNameEqual;
+			case "undo":
 				isArgEqual = isCmdNameEqual;
 			}
 		} else {

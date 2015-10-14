@@ -1,5 +1,7 @@
 package NexTask;
 
+import java.util.ArrayList;
+
 /**
 * Logic is the class where the user commands, once parsed by CommandParser, will be passed to this component
 * where Logic will streamline what the user plans to do through his inputs.
@@ -16,12 +18,14 @@ public class Logic {
 	private static final String CMD_DELETE = "delete";
 	private static final String CMD_STORE = "store";
 	private static final String CMD_EXIT = "exit";
+	private static final String CMD_UNDO = "undo";
 	
+	private static final String ERROR_NOTHING_TO_UNDO = "There is nothing to undo";
 	private static final String ERROR_INVALID_NUM_ARGS_FOR_EDIT = "Invalid number of arguments for edit.";
 	private static final String ERROR_INVALID_TASK_NUMBER = "Please enter a valid task number.";
 	private static final String ERROR_PLS_ENTER_INT = "Please enter an integer as the task number.";
 	
-	public MemoryManager taskList = new MemoryManager();
+	public Storage taskList = new Storage("", new ArrayList<Task>());
 	public Task task;
 	public UI ui = new UI();
 	public CommandParser parser = new CommandParser();
@@ -48,7 +52,7 @@ public class Logic {
 		return parser.parse(userInput);
 	}
 
-	private void performCommand(Command cmd, MemoryManager taskList) {
+	private void performCommand(Command cmd, Storage taskList) {
 		String commandName = cmd.getCommandName();
 		if (commandName == CMD_ADD) {
 			addCommand(cmd, taskList);
@@ -68,14 +72,28 @@ public class Logic {
 		else if (commandName == CMD_EXIT) {
 			System.exit(0);
 		}
+		else if (commandName == CMD_UNDO) {
+			undoCommand(cmd, taskList);
+		}
 	}
 	
-	private void storeCommand(Command cmd, MemoryManager taskList){
+	// No undo store for now.
+	private void undoCommand(Command cmd, Storage taskList){
+		if (taskList.getPreviousTasksSize() == 0){
+			ui.printMessage(ERROR_NOTHING_TO_UNDO);
+		} else{
+			// This is for testing
+			System.out.println(taskList.getPreviousTasksSize());
+			taskList.undoTaskArray();
+		}
+	}
+	
+	private void storeCommand(Command cmd, Storage taskList){
 		Storage storage = new Storage(cmd.getDirectory(), taskList.getTaskArray());
 		storage.storeToFile();
 	}
 	
-	private void displayCommand(Command cmd, MemoryManager taskList) {
+	private void displayCommand(Command cmd, Storage taskList) {
 		int numberOfLines = taskList.getNumberOfTasks();
 		if (numberOfLines == 0) {
 			ui.printEmptyList();
@@ -89,10 +107,11 @@ public class Logic {
 	} 
 
 
-	private void deleteCommand(Command cmd, MemoryManager taskList2) {
+	private void deleteCommand(Command cmd, Storage taskList2) {
 		int taskNum = cmd.getTaskNumber();
 		int size = taskList2.getSize();
 		if (taskNum > 0 && taskNum <= size){
+			taskList.updatePreviousTask();
 			taskList2.delete(taskNum);
 			ui.printDelMessage();
 		} else if (taskNum > size){
@@ -102,7 +121,7 @@ public class Logic {
 		}
 	}
 
-	private void editCommand(Command cmd, MemoryManager taskList) {
+	private void editCommand(Command cmd, Storage taskList) {
 		EditSpecification edit = cmd.getEditSpecification();
 		
 		if(isEditSpecHasNoErrors(edit)) {
@@ -147,7 +166,8 @@ public class Logic {
 		}
 	}
 	
-	public void addCommand(Command cmd, MemoryManager taskList) {
+	public void addCommand(Command cmd, Storage taskList) {
+		taskList.updatePreviousTask();
 		task = cmd.getTask();
 		taskList.add(task);
 		ui.printAddMessage();
