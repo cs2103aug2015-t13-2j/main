@@ -33,6 +33,7 @@ public class Logic {
 	
 	public void executeUserCommand(String userInput) {
 		Command cmd = getUserCommand(userInput);
+		assert(cmd != null);
 		if(isValid(cmd)) {
 			performCommand(cmd, taskList);
 		} else {

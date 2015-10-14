@@ -74,7 +74,7 @@ public class CommandParser {
 		ArrayList<String> parameters = splitString(userInput);
 		String userCommand = getCommand(parameters);
 		ArrayList<String> arguments = getCommandDetails(parameters);
-		Command command;
+		Command command = null;
 		switch (userCommand.toLowerCase()) {
 		case USER_COMMAND_ADD:
 			command = initAddCommand(arguments);
@@ -164,6 +164,7 @@ public class CommandParser {
 			} else if (e.getName().equals(INVALID_DATE_FORMAT)) {
 				cmd = initInvalidCommand(INVALID_DATE_FORMAT);
 			} else {
+				assert(e != null);
 				cmd.setCommandName(USER_COMMAND_ADD);
 				cmd.setTask(e);
 			}
@@ -182,6 +183,7 @@ public class CommandParser {
 	 *         event will be created.
 	 */
 	private Event parseEvent(ArrayList<String> eventDetails) {
+		assert(eventDetails.size() > 0);
 		if (eventDetails.contains(EVENT_KEYWORD_START) && eventDetails.contains(EVENT_KEYWORD_END)) {
 			// Get start date from input
 			int indexOfStart = eventDetails.indexOf(EVENT_KEYWORD_START);
@@ -245,10 +247,11 @@ public class CommandParser {
 	 * 
 	 * @param deadlineDetails
 	 * @return An deadline object with fields initialized according. If the user
-	 *         does not enter in deadline detalis in the correct format, an
+	 *         does not enter in deadline details in the correct format, an
 	 *         invalid deadline will be created.
 	 */
 	private Deadline parseDeadline(ArrayList<String> deadlineDetails) {
+		assert(deadlineDetails.size() > 0);
 		ArrayList<String> dateParts = new ArrayList<String>(
 				deadlineDetails.subList(POSITION_OF_DEADLINE_START, POSITION_OF_DEADLINE_END));
 		String date = concatenate(dateParts);
