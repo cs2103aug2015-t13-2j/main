@@ -17,16 +17,18 @@ public class Command {
 	private int taskNumber;
 	private Task task;
 	private EditSpecification editSpecification;
-	private SearchSpecification searchSpecification;
+	private String searchSpecification;
+	private String errorMessage;
 
 	public Command() {
 		commandName = "";
 		directory = "";
-		taskNumber = -3;
+		taskNumber = -1;
 		directory = "";
 		task = null;
 		editSpecification = null;
-		searchSpecification = null;
+		searchSpecification = "";
+		errorMessage = "";
 	}
 	
 	public void setDirectory(String directory){
@@ -68,12 +70,20 @@ public class Command {
 	public void setEditSpecification(EditSpecification editSpecification) {
 		this.editSpecification = editSpecification;
 	}
+	
+	public String getErrorMessage() {
+		return errorMessage;
+	}
 
-	public SearchSpecification getSearchSpecification() {
+	public void setErrorMessage(String errorMessage) {
+		this.errorMessage = errorMessage;
+	}
+
+	public String getSearchSpecification() {
 		return searchSpecification;
 	}
 
-	public void setSearchSpecification(SearchSpecification searchSpecification) {
+	public void setSearchSpecification(String searchSpecification) {
 		this.searchSpecification = searchSpecification;
 	}
 
@@ -107,4 +117,5 @@ public class Command {
 		return isArgEqual;
 	}
 
+	
 }

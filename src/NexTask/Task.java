@@ -4,6 +4,9 @@ package NexTask;
 abstract class Task {
 	private String name;
 	
+	public Task() {
+		this.name = "";
+	}
 	public Task(String name){
 		this.name = name;
 	}

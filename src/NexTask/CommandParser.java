@@ -1,34 +1,20 @@
 package NexTask;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 
 /**
  * Command Parser parses user input and create commands with appropriate fields
  * initialized.
  * 
- * Things to note:
- * 
- * For "add" command: If the user does not provide the sufficient number of
- * arguments, a command will be returned with its task's "name" field set to
- * "Invalid Task."
- * 
- * For "edit" command": If the user does not provide a number for taskNumber
- * field, ie edit one name Call Manager instead of edit 1 name Call Manager the
- * taskNumber field of the command's edit specification will be set to -1.
- * 
- * If the user does not provide a sufficient number of arguments, the taskNumber
- * field of the command's edit specification will be set to -2
- * 
- * For "delete" command: If the user does not provide a number for taskNumber
- * field, the command's task number field will be set to -1.
- * 
  * @author Jenny
- *
  */
 public class CommandParser {
 	private static final String REGEX_WHITESPACES = "[\\s,]+";
-	
+
 	private static final int POSITION_OF_COMMAND = 0;
 	private static final int POSITION_OF_FIRST_ARGUMENT = 1;
 	private static final int POSITION_OF_TASK_TYPE = 0;
@@ -36,16 +22,24 @@ public class CommandParser {
 	private static final int POSITION_OF_TASK_NUMBER = 0;
 	private static final int POSITION_OF_FIELD_TO_EDIT = 1;
 	private static final int POSITION_OF_EDIT = 2;
-
-	private static final int INVALID_TASK_NUMBER = -1;
-	private static final int INVALID_NUM_ARGS = -2;
-	private static final String INVALID_TASK = "Invalid Task.";
+	private static final int POSITION_OF_DEADLINE_START = 0;
+	private static final int POSITION_OF_DEADLINE_END = 3;
+	private static final int POSITION_OF_EVENT_NAME = 8;
 
 	private static final int NUM_EDIT_ARGS = 3;
 	private static final int NUM_TODO_ARGS = 1;
 	private static final int NUM_DELETE_ARGS = 1;
-	// private static final int NUM_EVENT_ARGS = 3;
-	// private static final int NUM_DEADLINE_ARGS = 2;
+	private static final int NUM_COMPLETE_ARGS = 1;
+	private static final int NUM_EVENT_ARGS = 9;
+	private static final int NUM_DEADLINE_ARGS = 4;
+
+	private static final int INVALID_TASK_NUMBER = -1;
+	private static final String INVALID_EVENT_FORMAT = "Please input event according to format. Type help to view manual.";
+	private static final String INVALID_DATE_FORMAT = "Error parsing date.";
+	private static final String INVALID_NUM_ARGUMENTS = "Not enough arguments. Type help to refer to manual.";
+	private static final String INVALID_COMMAND = "Invalid Command";
+	private static final String INVALID_TASK_TYPE = "Invalid task type";
+	private static final String INVALID_TASK_NUM = "Please provide a valid task number.";
 
 	private static final String USER_COMMAND_ADD = "add";
 	private static final String USER_COMMAND_DELETE = "delete";
@@ -53,28 +47,34 @@ public class CommandParser {
 	private static final String USER_COMMAND_EDIT = "edit";
 	private static final String USER_COMMAND_EXIT = "exit";
 	private static final String USER_COMMAND_STORE = "store";
-	
 	private static final String USER_COMMAND_INVALID = "invalid";
-	// private static final String USER_COMMAND_SEARCH = "search";
-	// private static final String USER_COMMAND_COMPLETE = "complete";
-	// private static final String USER_COMMAND_ARCHIVE = "archive";
-	
+	private static final String USER_COMMAND_SEARCH = "search";
+	private static final String USER_COMMAND_COMPLETE = "complete";
+	private static final String USER_COMMAND_HELP = "help";
+	private static final String USER_COMMAND_UNDO = "undo";
+	private static final String USER_COMMAND_ARCHIVE = "archive";
+
 	private static final String TASK_TYPE_EVENT = "event";
 	private static final String TASK_TYPE_DEADLINE = "deadline";
 	private static final String TASK_TYPE_TODO = "todo";
 
+	private static final String EVENT_KEYWORD_START = "start";
+	private static final String EVENT_KEYWORD_END = "end";
+
+	private static final SimpleDateFormat DATE_TIME_FORMAT = new SimpleDateFormat("dd/MM/yy h:mm a");
+
 	/**
-	 * Parses user input and return command object with appropriate fields 
+	 * Parses user input and returns a command object with appropriate fields
 	 * initialized.
+	 * 
 	 * @param userInput
-	 * @return instance of Command with appropriate fields intiailized.
+	 * @return instance of Command with appropriate fields initialized.
 	 */
 	public Command parse(String userInput) {
-		Command command = new Command();
 		ArrayList<String> parameters = splitString(userInput);
-		String userCommand = getUserCommand(parameters);
-		ArrayList<String> arguments = getUserArguments(parameters);
-
+		String userCommand = getCommand(parameters);
+		ArrayList<String> arguments = getCommandDetails(parameters);
+		Command command;
 		switch (userCommand.toLowerCase()) {
 		case USER_COMMAND_ADD:
 			command = initAddCommand(arguments);
@@ -90,64 +90,242 @@ public class CommandParser {
 			break;
 		case USER_COMMAND_STORE:
 			command = initStoreCommand();
+			break;
+		case USER_COMMAND_SEARCH:
+			command = initSearchCommand(arguments);
+			break;
+		case USER_COMMAND_UNDO:
+			command = initUndoCommand();
+			break;
+		case USER_COMMAND_HELP:
+			command = initHelpCommand();
 			break;	
+		case USER_COMMAND_COMPLETE:
+			command = initCompleteCommand(arguments);
+			break;
+		case USER_COMMAND_ARCHIVE:
+			command = initArchiveCommand();
+			break;
 		case USER_COMMAND_EXIT:
 			command = initExitCommand();
 			break;
 		default:
-			command = initInvalidCommand();
+			command = initInvalidCommand(INVALID_COMMAND);
 		}
 		return command;
 	}
 
 	/**
-	 * Splits user input string by white spaces.
+	 * Initializes an add command.
+	 * 
+	 * @param commandDetails
+	 *            The details for the add command.
+	 * @return Command object with "task" initialized accordingly. if the user
+	 *         does not provide an appropriate command type, an invalid command
+	 *         will be initialized.
+	 */
+	private Command initAddCommand(ArrayList<String> commandDetails) {
+		Command addCommand;
+		String taskType = commandDetails.get(POSITION_OF_TASK_TYPE);
+		ArrayList<String> taskDetails = new ArrayList<String>(
+				commandDetails.subList(POSITION_OF_FIRST_TASK_FIELD, commandDetails.size()));
+		switch (taskType.toLowerCase()) {
+		case TASK_TYPE_EVENT:
+			addCommand = initAddEventCommand(taskDetails);
+			break;
+		case TASK_TYPE_DEADLINE:
+			addCommand = initAddDeadlineCommand(taskDetails);
+			break;
+		case TASK_TYPE_TODO:
+			addCommand = initAddTodoCommand(taskDetails);
+			break;
+		default:
+			addCommand = initInvalidCommand(INVALID_TASK_TYPE);
+			break;
+		}
+		return addCommand;
+	}
+
+	/**
+	 * Initializes an add command for events.
+	 * 
+	 * @param eventDetails
+	 *            The details regarding the event.
+	 * @return Command object with "task" initialized as a new event. If the
+	 *         user does not enter event details in the appropriate format, an
+	 *         invalid command will be initialized.
+	 */
+	private Command initAddEventCommand(ArrayList<String> eventDetails) {
+		Command cmd = new Command();
+		if (isCorrectNumArguments(TASK_TYPE_EVENT, eventDetails)) {
+			Event e = parseEvent(eventDetails);
+			if (e.getName().equals(INVALID_EVENT_FORMAT)) {
+				cmd = initInvalidCommand(INVALID_EVENT_FORMAT);
+			} else if (e.getName().equals(INVALID_DATE_FORMAT)) {
+				cmd = initInvalidCommand(INVALID_DATE_FORMAT);
+			} else {
+				cmd.setCommandName(USER_COMMAND_ADD);
+				cmd.setTask(e);
+			}
+		} else {
+			cmd = initInvalidCommand(INVALID_NUM_ARGUMENTS);
+		}
+		return cmd;
+	}
+
+	/**
+	 * Parses event details and creates an Event object.
+	 * 
+	 * @param eventDetails
+	 * @return An event object with fields initialized according. If the user
+	 *         does not enter in event details in the correct format, an invalid
+	 *         event will be created.
+	 */
+	private Event parseEvent(ArrayList<String> eventDetails) {
+		if (eventDetails.contains(EVENT_KEYWORD_START) && eventDetails.contains(EVENT_KEYWORD_END)) {
+			// Get start date from input
+			int indexOfStart = eventDetails.indexOf(EVENT_KEYWORD_START);
+			ArrayList<String> startDateParts = new ArrayList<String>(
+					eventDetails.subList(indexOfStart + 1, indexOfStart + 4));
+			String startDateString = concatenate(startDateParts);
+			// Get end date from input
+			int indexOfEnd = eventDetails.indexOf(EVENT_KEYWORD_END);
+			ArrayList<String> endDateParts = new ArrayList<String>(
+					eventDetails.subList(indexOfEnd + 1, indexOfEnd + 4));
+			String endDateString = concatenate(endDateParts);
+			// Get name from input
+			ArrayList<String> nameParts = new ArrayList<String>(
+					eventDetails.subList(POSITION_OF_EVENT_NAME, eventDetails.size()));
+			String name = concatenate(nameParts);
+
+			Date startDate = new Date();
+			Date endDate = new Date();
+
+			try {
+				startDate = DATE_TIME_FORMAT.parse(startDateString);
+				endDate = DATE_TIME_FORMAT.parse(endDateString);
+			} catch (ParseException e) {
+				System.out.println(INVALID_DATE_FORMAT);
+				return new Event(INVALID_DATE_FORMAT);
+			}
+
+			return new Event(startDate, endDate, name);
+		} else {
+			return new Event(INVALID_EVENT_FORMAT);
+		}
+	}
+
+	/**
+	 * Initializes an add command for deadlines.
+	 * 
+	 * @param deadlineDetails
+	 *            The details regarding the deadline.
+	 * @return Command object with "task" initialized as a new deadline. If the
+	 *         user does not enter deadline details in the appropriate format,
+	 *         an invalid command will be initialized.
+	 */
+	private Command initAddDeadlineCommand(ArrayList<String> deadlineDetails) {
+		Command cmd = new Command();
+		if (isCorrectNumArguments(TASK_TYPE_DEADLINE, deadlineDetails)) {
+			Deadline d = parseDeadline(deadlineDetails);
+			if (d.getName().equals(INVALID_DATE_FORMAT)) {
+				cmd = initInvalidCommand(INVALID_DATE_FORMAT);
+			} else {
+				cmd.setCommandName(USER_COMMAND_ADD);
+				cmd.setTask(d);
+			}
+		} else {
+			cmd = initInvalidCommand(INVALID_NUM_ARGUMENTS);
+		}
+		return cmd;
+	}
+
+	/**
+	 * Parses deadline details and creates an Deadline object.
+	 * 
+	 * @param deadlineDetails
+	 * @return An deadline object with fields initialized according. If the user
+	 *         does not enter in deadline detalis in the correct format, an
+	 *         invalid deadline will be created.
+	 */
+	private Deadline parseDeadline(ArrayList<String> deadlineDetails) {
+		ArrayList<String> dateParts = new ArrayList<String>(
+				deadlineDetails.subList(POSITION_OF_DEADLINE_START, POSITION_OF_DEADLINE_END));
+		String date = concatenate(dateParts);
+
+		ArrayList<String> nameParts = new ArrayList<String>(
+				deadlineDetails.subList(POSITION_OF_DEADLINE_END, deadlineDetails.size()));
+		String name = concatenate(nameParts);
+
+		Date dueBy = new Date();
+		try {
+			dueBy = DATE_TIME_FORMAT.parse(date);
+		} catch (ParseException e) {
+			return new Deadline(INVALID_DATE_FORMAT);
+		}
+		return new Deadline(name, dueBy);
+	}
+
+	/**
+	 * Initializes an add command for todo tasks.
+	 * 
+	 * @param todoDetails
+	 *            The details for the Todo task.
+	 * @return Command object with "task" initialized as a Floating task. If the
+	 *         user does not enter a name for todo task, an invalid command will
+	 *         be initialized.
+	 */
+	private Command initAddTodoCommand(ArrayList<String> todoDetails) {
+		Command cmd = new Command();
+		if (isCorrectNumArguments(TASK_TYPE_TODO, todoDetails)) {
+			cmd.setCommandName(USER_COMMAND_ADD);
+			cmd.setTask(parseTodo(todoDetails));
+		} else {
+			cmd = initInvalidCommand(INVALID_NUM_ARGUMENTS);
+		}
+		return cmd;
+	}
+
+	/**
+	 * Create new todo task.
+	 * 
+	 * @param todoDetails
+	 *            The details for the Todo task.
+	 * @return Task object with name initialized according to input.
+	 */
+	private Floating parseTodo(ArrayList<String> todoDetails) {
+		return new Floating(concatenate(todoDetails));
+	}
+
+	/**
+	 * Initialize an edit command.
 	 * 
 	 * @param arguments
-	 * @return
-	 */
-	private ArrayList<String> splitString(String arguments) {
-		String[] strArray = arguments.trim().split(REGEX_WHITESPACES);
-		return new ArrayList<String>(Arrays.asList(strArray));
-	}
-
-	/**
-	 * Retrieve the command of user input.
+	 * @return Command object with "editSpecification" initialized accordingly.
+	 *         If user does not input command details in the correct format, an
+	 *         invalid command will be initialzed.
 	 * 
-	 * @param parameters
-	 * @return
 	 */
-	private String getUserCommand(ArrayList<String> parameters) {
-		return parameters.get(POSITION_OF_COMMAND);
-	}
+	private Command initEditCommand(ArrayList<String> arguments) {
+		Command cmd = new Command();
+		EditSpecification edit = new EditSpecification();
+		if (isCorrectNumArguments(USER_COMMAND_EDIT, arguments)) {
+			int taskNumber = retrieveTaskNumber(arguments);
+			if (taskNumber == INVALID_TASK_NUMBER) {
+				cmd = initInvalidCommand(INVALID_TASK_NUM);
+			} else {
+				edit.setTaskNumber(taskNumber);
+				edit.setFieldToEdit(retrieveFieldToEdit(arguments));
+				edit.setTheEdit(retrieveTheEdit(arguments));
 
-	/**
-	 * Retrieve the arguments of the user input.
-	 * 
-	 * @param parameters
-	 * @return
-	 */
-	private ArrayList<String> getUserArguments(ArrayList<String> parameters) {
-		return new ArrayList<String>(parameters.subList(POSITION_OF_FIRST_ARGUMENT, parameters.size()));
-	}
-	
-	private Command initStoreCommand() {
-		Command c = new Command();
-		//String directory = arguments.get(0);
-		c.setCommandName(USER_COMMAND_STORE);
-		//c.setDirectory(directory);
-		return c;
-	}
+				cmd.setCommandName(USER_COMMAND_EDIT);
+				cmd.setEditSpecification(edit);
+			}
+		} else {
+			cmd = initInvalidCommand(INVALID_NUM_ARGUMENTS);
+		}
 
-	/**
-	 * Initializes an invalid command.
-	 * 
-	 * @return Command object with commandName set to "invalid"
-	 */
-	private Command initInvalidCommand() {
-		Command c = new Command();
-		c.setCommandName(USER_COMMAND_INVALID);
-		return c;
+		return cmd;
 	}
 
 	/**
@@ -160,7 +338,136 @@ public class CommandParser {
 		c.setCommandName(USER_COMMAND_DISPLAY);
 		return c;
 	}
+
+	/**
+	 * Initializes an archive command.
+	 * 
+	 * @return Command object with commandName set to "archive"
+	 */
+	private Command initArchiveCommand() {
+		Command c = new Command();
+		c.setCommandName(USER_COMMAND_ARCHIVE);
+		return c;
+	}
 	
+	/**
+	 * Initializes an undo command.
+	 * 
+	 * @return Command object with commandName set to "archive"
+	 */
+	private Command initUndoCommand() {
+		Command c = new Command();
+		c.setCommandName(USER_COMMAND_UNDO);
+		return c;
+	}
+
+	/**
+	 * Initializes a delete command.
+	 * 
+	 * @param arguments
+	 *            The details for the delete command.
+	 * @return Command object with taskNumber initialized accordingly. If the
+	 *         user does not enter a valid task number, or if the user does not
+	 *         provide a task number, an invalid command will be initialized.
+	 */
+	private Command initDeleteCommand(ArrayList<String> arguments) {
+		Command cmd = new Command();
+		int itemToDelete;
+		if (isCorrectNumArguments(USER_COMMAND_DELETE, arguments)) {
+			itemToDelete = retrieveTaskNumber(arguments);
+			if (itemToDelete == INVALID_TASK_NUMBER) {
+				cmd = initInvalidCommand(INVALID_TASK_NUM);
+			} else {
+				cmd.setCommandName(USER_COMMAND_DELETE);
+				cmd.setTaskNumber(itemToDelete);
+			}
+		} else {
+			cmd = initInvalidCommand(INVALID_NUM_ARGUMENTS);
+		}
+		return cmd;
+	}
+
+	/**
+	 * Initializes a complete command.
+	 * 
+	 * @param arguments
+	 *            The details for the complete command.
+	 * @return Command object with taskNumber initialized accordingly. If the
+	 *         user does not enter a valid task number, or if the user does not
+	 *         provide a task number, an invalid command will be initialized.
+	 */
+	private Command initCompleteCommand(ArrayList<String> arguments) {
+		Command cmd = new Command();
+		int itemCompleted;
+		if (isCorrectNumArguments(USER_COMMAND_COMPLETE, arguments)) {
+			itemCompleted = retrieveTaskNumber(arguments);
+			if (itemCompleted == INVALID_TASK_NUMBER) {
+				cmd = initInvalidCommand(INVALID_TASK_NUM);
+			} else {
+				cmd.setCommandName(USER_COMMAND_COMPLETE);
+				cmd.setTaskNumber(itemCompleted);
+			}
+		} else {
+			cmd = initInvalidCommand(INVALID_NUM_ARGUMENTS);
+		}
+		return cmd;
+	}
+
+	/**
+	 * Initializes a search command.
+	 * 
+	 * @param arguments
+	 *            The details for the search command.
+	 * @return Command object with searchSpecification initialized accordingly.
+	 *         If user does not enter a term to search for, an invalid argument
+	 *         will be initialized.
+	 * 
+	 */
+	private Command initSearchCommand(ArrayList<String> arguments) {
+		Command cmd = new Command();
+		if (isCorrectNumArguments(USER_COMMAND_SEARCH, arguments)) {
+			cmd.setSearchSpecification(concatenate(arguments));
+		} else {
+			cmd = initInvalidCommand(INVALID_NUM_ARGUMENTS);
+		}
+		return cmd;
+	}
+
+	/**
+	 * Initialize a store command.
+	 * 
+	 * @return Command object with commandName set to "store"
+	 */
+	private Command initStoreCommand() {
+		Command c = new Command();
+		c.setCommandName(USER_COMMAND_STORE);
+		return c;
+	}
+
+	/**
+	 * Initialize a help command.
+	 * 
+	 * @return Command object with commandName set to "help"
+	 */
+	private Command initHelpCommand() {
+		Command c = new Command();
+		c.setCommandName(USER_COMMAND_HELP);
+		return c;
+	}
+
+	/**
+	 * Initializes an invalid command.
+	 * 
+	 * @return Command object with commandName set to "invalid" and error
+	 *         message initialized accordingly.
+	 */
+	private Command initInvalidCommand(String errorMessage) {
+		Command c = new Command();
+		c.setCommandName(USER_COMMAND_INVALID);
+		c.setErrorMessage(errorMessage);
+		return c;
+	}
+
 	/**
 	 * Initializes an exit command.
 	 * 
@@ -172,124 +479,12 @@ public class CommandParser {
 		return c;
 	}
 
+	// ------------------ HELPER METHODS -------------------//
 	/**
-	 * Initializes a delete command. 
-	 * 
-	 * @param arguments The details for the delete command.
-	 * @return Command object with taskNumber initialized accordingly
-	 * 	if user inputs a valid number, taskNumber will be set to that num
-	 * 	if user does not provide valid num (input cannout be parser),
-	 * 		taskNumber will be set to -1.
-	 * 	if user does not provide any arguments, taskNumber will be set to -2.
-	 */
-	private Command initDeleteCommand(ArrayList<String> arguments) {
-		Command c = new Command();
-		int itemToDelete;
-		if(isCorrectNumArguments(USER_COMMAND_DELETE, arguments)) {
-			itemToDelete = retrieveTaskNumber(arguments);
-		} else {
-			itemToDelete = INVALID_NUM_ARGS;
-		}
-		c.setCommandName(USER_COMMAND_DELETE);
-		c.setTaskNumber(itemToDelete);
-		return c;
-	}
-
-	/**
-	 * Initializes an add command.
-	 * 
-	 * @param arguments The details for the add command.
-	 * @return Command object with "task" initialized accordingly.
-	 * 	if the user does not provide an appropriate command type,
-	 * 	an invalid command will be initialized.
-	 */
-	private Command initAddCommand(ArrayList<String> arguments) {
-		Command addCommand = new Command();
-		String taskType = arguments.get(POSITION_OF_TASK_TYPE);
-		switch (taskType.toLowerCase()) {
-		case TASK_TYPE_EVENT:
-			break;
-		case TASK_TYPE_DEADLINE:
-			break;
-		case TASK_TYPE_TODO:
-			addCommand = initAddTodoCommand(
-					new ArrayList<String>(arguments.subList(POSITION_OF_FIRST_TASK_FIELD, arguments.size())));
-			break;
-		default:
-			addCommand = initInvalidCommand();
-			break;
-		}
-		return addCommand;
-	}
-
-	/**
-	 * Initialize a Todo command. 
-	 * 
-	 * @param arguments The details for the Floating task.
-	 * @return Command object with "task" initialized as a Floating task.
-	 * 	if no argument provided, 
-	 * 	the task's "name" will be set to "Invalid task."
-	 * 	otherwise, "name" will be set according to user input.
-	 */
-	private Command initAddTodoCommand(ArrayList<String> arguments) {
-		Command c = new Command();
-		Task newTask;
-		if (isCorrectNumArguments(TASK_TYPE_TODO, arguments)) {
-			newTask = createNewTodo(arguments);
-		} else {
-			newTask = new Floating(INVALID_TASK);
-		}
-		c.setCommandName(USER_COMMAND_ADD);
-		c.setTask(newTask);
-		return c;
-	}
-
-	/**
-	 * Initialize an edit command.
+	 * Helper method to retrieve the task number from arguments. 
 	 * 
 	 * @param arguments
-	 * @return Command object with "editSpecification" initialized accordingly.
-	 * 	if correct number of arguments provided and task number can be parsed, 
-	 * 		editSpecification will be initialized according to user input.
-	 * 	if taskNumber cannot be parsed, editSpecification's taskNumber 
-	 * 		will be set to -1. Everything else will be default.
-	 * 	if an insufficient arguments provided, editSpecification's taskNumber
-	 * 		will be set to -2. Everything else will be default.
-	 */
-	private Command initEditCommand(ArrayList<String> arguments) {
-		Command c = new Command();
-		EditSpecification edit = new EditSpecification();
-		if (isCorrectNumArguments(USER_COMMAND_EDIT, arguments)) {
-			int taskNumber = retrieveTaskNumber(arguments);
-			if (taskNumber == INVALID_TASK_NUMBER) {
-				edit.setTaskNumber(INVALID_TASK_NUMBER);
-			} else {
-				edit.setTaskNumber(taskNumber);
-				edit.setFieldToEdit(retrieveFieldToEdit(arguments));
-				edit.setTheEdit(retrieveTheEdit(arguments));
-			}
-		} else {
-			edit.setTaskNumber(INVALID_NUM_ARGS);
-		}
-		c.setCommandName(USER_COMMAND_EDIT);
-		c.setEditSpecification(edit);
-		return c;
-	}
-
-	/**
-	 * Create new todo task.
-	 * 
-	 * @param argument The details for the Floating task.
-	 * @return Task object with name initialized according to input.
-	 */
-	private Task createNewTodo(ArrayList<String> argument) {
-		return new Floating(concatenateName(argument));
-	}
-
-	/**
-	 * Helper method to retrieve the task number.
-	 * 
-	 * @param arguments The details for the user command.
+	 *            The details for the user command.
 	 * @return The appropriate task number if parse is successful, -1 otherwise.
 	 */
 	private int retrieveTaskNumber(ArrayList<String> arguments) {
@@ -303,9 +498,11 @@ public class CommandParser {
 	}
 
 	/**
-	 * Retrieve the field the user would like to edit. 
-	 * e.g. edit 2 name Call home. This method will retrieve "name"
-	 * @param arguments The details for the edit command.
+	 * Retrieve the field the user would like to edit. e.g. edit 2 name Call
+	 * home. This method will retrieve "name"
+	 * 
+	 * @param arguments
+	 *            The details for the edit command.
 	 * @return The field specified by user.
 	 */
 	private String retrieveFieldToEdit(ArrayList<String> arguments) {
@@ -313,26 +510,27 @@ public class CommandParser {
 	}
 
 	/**
-	 * Retrieve the last argument of edit command. 
-	 * e.g. edit 2 name Call home.
+	 * Retrieve the last argument of edit command. e.g. edit 2 name Call home.
 	 * This method will retrieve "Call home."
 	 * 
-	 * @param arguments The details for the edit command.
+	 * @param arguments
+	 *            The details for the edit command.
 	 * @return The edit specified by user.
 	 */
 	private String retrieveTheEdit(ArrayList<String> arguments) {
-		return concatenateName(new ArrayList<String>(arguments.subList(POSITION_OF_EDIT, arguments.size())));
+		return concatenate(new ArrayList<String>(arguments.subList(POSITION_OF_EDIT, arguments.size())));
 	}
 
 	/**
 	 * Helper method to concatenate the Strings of an ArrayList together.
 	 * Initially each parts of a name are different elements of an ArrayList
 	 * because of splitString. This method concatenates them to a single string.
-	 * @param nameParts An ArrayList<String> where each element is a word in
-	 * 	the name.
+	 * 
+	 * @param nameParts
+	 *            An ArrayList<String> where each element is a word in the name.
 	 * @return The result string after concatenation.
 	 */
-	private String concatenateName(ArrayList<String> nameParts) {
+	private String concatenate(ArrayList<String> nameParts) {
 		StringBuilder name = new StringBuilder();
 		for (int i = 0; i < nameParts.size(); i++) {
 			name.append(" " + nameParts.get(i));
@@ -341,10 +539,41 @@ public class CommandParser {
 	}
 
 	/**
+	 * Helper method for parse that splits user input string by white spaces.
+	 * 
+	 * @param arguments
+	 * @return
+	 */
+	private ArrayList<String> splitString(String arguments) {
+		String[] strArray = arguments.trim().split(REGEX_WHITESPACES);
+		return new ArrayList<String>(Arrays.asList(strArray));
+	}
+
+	/**
+	 * Helper method to retrieve the command of user input.
+	 * 
+	 * @param parameters
+	 * @return
+	 */
+	private String getCommand(ArrayList<String> parameters) {
+		return parameters.get(POSITION_OF_COMMAND);
+	}
+
+	/**
+	 * Helper method to retrieve the commandDetails entered with command.
+	 * 
+	 * @param commandDetails
+	 * @return
+	 */
+	private ArrayList<String> getCommandDetails(ArrayList<String> commandDetails) {
+		return new ArrayList<String>(commandDetails.subList(POSITION_OF_FIRST_ARGUMENT, commandDetails.size()));
+	}
+
+	/**
 	 * Helper method that checks if the correct number of arguments are entered.
 	 * 
-	 * @return If at least minimum number of arguments provided return true, 
-	 * otherwise return false.
+	 * @return If at least minimum number of arguments provided return true,
+	 *         otherwise return false.
 	 */
 	private boolean isCorrectNumArguments(String command, ArrayList<String> arguments) {
 		boolean isCorrectNumArgs = false;
@@ -354,20 +583,22 @@ public class CommandParser {
 			break;
 		case USER_COMMAND_DELETE:
 			isCorrectNumArgs = arguments.size() >= NUM_DELETE_ARGS;
-			break;	
+			break;
+		case USER_COMMAND_COMPLETE:
+			isCorrectNumArgs = arguments.size() >= NUM_COMPLETE_ARGS;
+			break;
 		case TASK_TYPE_TODO:
 			isCorrectNumArgs = arguments.size() >= NUM_TODO_ARGS;
 			break;
+		case TASK_TYPE_DEADLINE:
+			isCorrectNumArgs = arguments.size() >= NUM_DEADLINE_ARGS;
+			break;
+		case TASK_TYPE_EVENT:
+			isCorrectNumArgs = arguments.size() >= NUM_EVENT_ARGS;
+			break;
 		default:
-			System.out.println("What are you checking?");
+			break;
 		}
 		return isCorrectNumArgs;
 	}
-	/*
-	 * private Task createNewEvent(ArrayList<String> argument) { return new
-	 * Floating("STUB"); }
-	 * 
-	 * private Task createNewDeadline(ArrayList<String> argument) { return new
-	 * Floating("STUB"); }
-	 */
 }
