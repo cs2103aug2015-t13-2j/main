@@ -28,7 +28,8 @@ public class DisplayManager {
 			+ "To undo a certain task: undo"
 			+ "To search: search (field you want to search) (description of search term).\n"
 			+ "To retrieve an archive of completed tasks: archive.\n"
-			+ "To display the current list of tasks: display.\n" + "To save to: save to (filename).\n";
+			+ "To display the current list of tasks: display.\n" 
+			+ "To save to: save to (filename).";
 	private static final String NO_CONTENT_TO_DELETE = "%1$s is empty. There is no content to delete from!";
 	private static final String NO_CONTENT_TO_DISPLAY = "Task list is empty. There is no content to display!";
 	private static final String NO_ARCHIVE = "There are no completed tasks in archive!";
@@ -67,8 +68,10 @@ public class DisplayManager {
 				break;
 			}
 		case 2: // help message
-			System.out.println(COMMAND_HELP);
-			break;
+			if (conditionOfExecution == 1) {
+				System.out.println(COMMAND_HELP);
+				break;
+			}
 		case 3: // add message
 			if (conditionOfExecution == 1) {
 				// successful add

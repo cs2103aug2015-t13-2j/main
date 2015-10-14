@@ -20,6 +20,7 @@ public class Logic {
 	private static final String CMD_STORE = "store";
 	private static final String CMD_EXIT = "exit";
 	private static final String CMD_UNDO = "undo";
+	private static final String CMD_HELP = "help";
 
 	private static final String ERROR_NOTHING_TO_UNDO = "There is nothing to undo";
 	private static final String ERROR_INVALID_NUM_ARGS_FOR_EDIT = "Invalid number of arguments for edit.";
@@ -30,6 +31,7 @@ public class Logic {
 	private static final int EXEC_UNSUCCESSFUL = 2;
 	private static final int EXEC_UNSUCCESSFUL2 = 3;
 
+	private static final int EXEC_HELP = 2;
 	private static final int EXEC_ADD = 3;
 	private static final int EXEC_DELETE = 4;
 	private static final int EXEC_EDIT = 5;
@@ -84,6 +86,8 @@ public class Logic {
 			System.exit(0);
 		} else if (commandName == CMD_UNDO) {
 			undoCommand(cmd, taskList);
+		} else if (commandName == CMD_HELP) {
+			display.printer(EXEC_HELP, EXEC_SUCCESSFUL);
 		}
 	}
 
@@ -193,7 +197,7 @@ public class Logic {
 		if (editSpec.getTaskNumber() == -1) {
 			System.out.println(ERROR_PLS_ENTER_INT);
 		} else if (editSpec.getTaskNumber() == -2) {
-			 System.out.println(ERROR_INVALID_NUM_ARGS_FOR_EDIT);
+			System.out.println(ERROR_INVALID_NUM_ARGS_FOR_EDIT);
 		}
 	}
 
