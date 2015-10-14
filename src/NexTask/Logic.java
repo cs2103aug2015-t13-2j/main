@@ -92,16 +92,18 @@ public class Logic {
 	}
 
 	// No undo store for now.
-	private void undoCommand(Command cmd, Storage taskList) {
-		if (taskList.getPreviousTasksSize() == 0) {
-			display.printer(EXEC_UNDO, EXEC_UNSUCCESSFUL);
-		} else {
-			// This is for testing
-			System.out.println(taskList.getPreviousTasksSize());
-			taskList.undoTaskArray();
-			taskList.undoPrevCommand();
-			taskList.undoPrevTask();
-		}
+	private void undoCommand(Command cmd, Storage taskList){
+		if (taskList.getPreviousTasksSize() == 0 && taskList.getSize() == 1){
+			taskList.undoPrevCommand();	
+			taskList.delete(1);	
+		} else if (taskList.getPreviousTasksSize() == 0 && taskList.getSize() != 1){	
+			System.out.println(ERROR_NOTHING_TO_UNDO);	
+		}	
+		else{	
+			taskList.undoTaskArray();	
+			taskList.undoPrevCommand();	
+			taskList.undoPrevTask();	
+		}	
 	}
 
 	private void storeCommand(Command cmd, Storage taskList) {
