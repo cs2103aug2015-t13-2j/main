@@ -17,16 +17,21 @@ public class Storage {
     
     private static final String FILE_NAME = "NexTask.txt";
     private static final String USER_FILE_NAME = "\\NexTask.txt";
+    private static final String PREV_ADD = "add";
+    private static final String PREV_DELETE = "delete";
+    private static final String PREV_EDIT = "edit";
     private static String userPath = "";
     private static int taskNum = 1;
     public ArrayList<Task> taskArray;
 	public ArrayList<Task> previousTasks;
+	public ArrayList<Command> prevCommands;
     
     
     public Storage(String directory, ArrayList<Task> taskArray) {
         this.userPath = directory;
         this.taskArray = taskArray;
         this.previousTasks = new ArrayList<Task>();
+        this.prevCommands = new ArrayList<Command>();
     }
     
     public String getPath(){
@@ -60,21 +65,67 @@ public class Storage {
     /* Memory Manager */
     
     public void updatePreviousTask(){
-		if (taskArray.size() == 0){
-			return;
-		} else if (taskArray.size() >= previousTasks.size()){
+    	if (taskArray.size() == 0){
+    		return;
+    	}
+    	else if (getPrevCommand().getCommandName().equals(PREV_ADD)){
+    		//System.out.println(getPrevCommand().getCommandName());
 			previousTasks.add(taskArray.get(taskArray.size()-1));
-		} else if (taskArray.size() < previousTasks.size()){
-			previousTasks.remove(previousTasks.size()-1);
 		} 
+    	else if (getPrevCommand().getCommandName().equals(PREV_DELETE)){
+			previousTasks.remove(getPrevCommand().getTaskNumber());
+		} 
+    	else if (getPrevCommand().getCommandName().equals(PREV_EDIT)){
+			previousTasks.set(getPrevCommand().getTaskNumber(), getPrevCommand().getTask());
+		}
 	}
     
+    public void addCommand(Command cmd){
+    	prevCommands.add(cmd);
+    }
+    
+    public Command getLastCommand(){
+    	return prevCommands.get(prevCommands.size()-1);
+    }
+    
+    public int getCommandSize(){
+    	return prevCommands.size();
+    }
+    
+    public Command getPrevCommand(){
+    	return prevCommands.get(prevCommands.size()-1);
+    }
+    
+    public void undoPrevCommand(){
+    	prevCommands.remove(prevCommands.size()-1);
+    }
+    
+    public void undoPrevTask(){ // This is not the way to do undoPrevTask...
+    	Command c = prevCommands.get(prevCommands.size()-1);
+    	if (c.getCommandName().equals(PREV_ADD) ){
+    		previousTasks.remove(previousTasks.size()-1);
+    	} else if (c.getCommandName().equals(PREV_DELETE)){
+    		previousTasks.add(c.getTaskNumber(), c.getTask());
+    	} else{
+    		previousTasks.set(c.getTaskNumber(), c.getTask());
+    	}
+    	
+    	
+    }
+    
 	public void undoTaskArray(){
-		taskArray = previousTasks;
+		taskArray = new ArrayList<Task>();
+		for (Task task: previousTasks){
+			taskArray.add(task);
+		}
 	}
 	
 	public void add(Task task){
 		taskArray.add(task);
+	}
+	
+	public Task getTaskObject(int num){
+		return taskArray.get(num);
 	}
 	
 	public void delete(int num){
