@@ -1,9 +1,10 @@
 package NexTask;
 
-public class Floating extends Task {
+public class Floating extends Task implements Cloneable {
 	public Floating(String name) {
 		super(name);
 	}
+	
 
 	@Override
 	public boolean equals(Task other) {

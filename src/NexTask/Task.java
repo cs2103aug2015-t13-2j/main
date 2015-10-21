@@ -1,14 +1,19 @@
 package NexTask;
 
 
-abstract class Task {
+abstract class Task implements Cloneable{
 	private String name;
 	
+
 	public Task() {
 		this.name = "";
 	}
 	public Task(String name){
 		this.name = name;
+	}
+	
+	public Object clone()throws CloneNotSupportedException{  
+		return super.clone();  
 	}
 	
 	public String getName() {
