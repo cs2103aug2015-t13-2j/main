@@ -112,13 +112,24 @@ public class Command {
 			case "complete":
 				isArgEqual = this.getTaskNumber() == other.getTaskNumber();
 				break;
+			case "search":
+				isArgEqual = this.getSearchSpecification().equals(other.getSearchSpecification());
+				break;	
+			case "sort":
+				isArgEqual = this.getSortField().equals(other.getSortField());
+				break;	
+			case "invalid":
+				isArgEqual = isCmdNameEqual;
+				break;
 			case "display":
 				isArgEqual = isCmdNameEqual;
 				break;
 			case "store":
 				isArgEqual = isCmdNameEqual;
+				break;
 			case "undo":
 				isArgEqual = isCmdNameEqual;
+				break;
 			}
 		} else {
 			return false;

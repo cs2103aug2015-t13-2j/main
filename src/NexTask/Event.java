@@ -14,10 +14,16 @@ public class Event extends Task {
 		super(name);
 	}
 	
-	public Event(Date start,  Date end, String name) {
+	public Event(String name, Date start,  Date end) {
 		super(name);
 		this.startDateAndTime = start;
 		this.endDateAndTime = end;
+	}
+	
+	public Event(String name, String start,  String end) throws ParseException {
+		super(name);
+		this.setStartDateAndTime(start);
+		this.setEndDateAndTime(end);
 	}
 	
 	public boolean equals(Task other) {
@@ -42,12 +48,10 @@ public class Event extends Task {
 		this.startDateAndTime = startDateAndTime;
 	}
 	
-	public void setStartDateAndTime(String startDateAndTime) {
-		try {
+	public void setStartDateAndTime(String startDateAndTime) throws ParseException {
+
 			this.startDateAndTime = DATE_TIME_FORMAT.parse(startDateAndTime);
-		} catch (ParseException e) {
-			System.out.println("error parsing start date");
-		}
+	
 	}
 
 	public Date getEndDateAndTime() {
@@ -58,17 +62,15 @@ public class Event extends Task {
 		this.endDateAndTime = endDateAndTime;
 	}
 	
-	public void setEndDateAndTime(String endDateAndTime) {
-		try {
+	public void setEndDateAndTime(String endDateAndTime) throws ParseException {
+
 			this.endDateAndTime = DATE_TIME_FORMAT.parse(endDateAndTime);
-		} catch (ParseException e) {
-			System.out.println("error parsing end date");
-		}
+		
 	}
 	
 	public String toString() {
 		SimpleDateFormat df1 = new SimpleDateFormat("dd/MM/yy h:mm a");
-		return "EVENT: " + this.getName() + " start: " + df1.format(this.getStartDateAndTime()) 
+		return this.getName() + " start: " + df1.format(this.getStartDateAndTime()) 
 		+ " end: " + df1.format(this.getEndDateAndTime());
 	}
 	

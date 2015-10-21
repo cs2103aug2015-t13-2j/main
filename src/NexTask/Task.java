@@ -25,5 +25,4 @@ abstract class Task implements Cloneable{
 	}
 	
 	abstract boolean equals(Task other);
-	
 }

@@ -1,5 +1,6 @@
 package NexTask;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -20,19 +21,17 @@ public class Logic {
 	private static final String CMD_STORE = "store";
 	private static final String CMD_EXIT = "exit";
 	private static final String CMD_UNDO = "undo";
-	private static final String CMD_COMPLETE= "complete";
+	private static final String CMD_COMPLETE = "complete";
 	private static final String CMD_HELP = "help";
 	private static final String CMD_SORT = "sort";
 	private static final String CMD_ARCHIVE = "archive";
 
-	
 	private static final String FIELD_START = "start";
 	private static final String FIELD_END = "end";
 	private static final String FIELD_NAME = "name";
 	private static final String FIELD_DUE = "due";
 	private static final String FIELD_DATE = "date";
 
-	
 	private static final String ERROR_NOTHING_TO_UNDO = "There is nothing to undo";
 	private static final String ERROR_INVALID_NUM_ARGS_FOR_EDIT = "Invalid number of arguments for edit.";
 	private static final String ERROR_INVALID_TASK_NUMBER = "Please enter a valid task number.";
@@ -55,14 +54,21 @@ public class Logic {
 	private static final int EXEC_ARCHIVE = 12;
 	private static final int EXEC_SORT = 13;
 
+	private Storage taskList = new Storage("", new ArrayList<Task>());
+	private Task task;
+	private UI ui = new UI();
+	private CommandParser parser = new CommandParser();
+	private DisplayManager display = new DisplayManager();
+	private String printMsg = "";
 
-	public Storage taskList = new Storage("", new ArrayList<Task>());
-	public Task task;
-	public UI ui = new UI();
-	public CommandParser parser = new CommandParser();
-	public DisplayManager display = new DisplayManager();
-	public String printMsg = "";
-
+	/**
+	 * Takes user input and determines if valid. If it is valid, will perform,
+	 * otherwise return error message.
+	 * 
+	 * @param userInput
+	 * @return either a message specifying the result of executing command or an
+	 *         error message.
+	 */
 	public String executeUserCommand(String userInput) {
 		Command cmd = getUserCommand(userInput);
 		if (isValid(cmd)) {
@@ -103,51 +109,50 @@ public class Logic {
 		} else if (commandName == CMD_UNDO) {
 			messageToPrint = undoCommand(cmd, taskList);
 		} else if (commandName == CMD_COMPLETE) {
-			messageToPrint= completeCommand(cmd, taskList);	
+			messageToPrint = completeCommand(cmd, taskList);
 		} else if (commandName == CMD_HELP) {
 			messageToPrint = display.messageSelector(EXEC_HELP, EXEC_SUCCESSFUL);
 		} else if (commandName == CMD_SORT) {
 			messageToPrint = sortCommand(cmd, taskList);
-		} else if (commandName == CMD_ARCHIVE){
+		} else if (commandName == CMD_ARCHIVE) {
 			messageToPrint = archiveCommand(cmd, taskList);
 		}
 		return messageToPrint;
 	}
 
-	private String completeCommand(Command cmd, Storage taskList){
-		cmd.setTask(taskList.getTaskObject(cmd.getTaskNumber()-1));
-		taskList.markComplete(cmd.getTaskNumber() -1);
+	private String completeCommand(Command cmd, Storage taskList) {
+		cmd.setTask(taskList.getTaskObject(cmd.getTaskNumber() - 1));
+		taskList.markComplete(cmd.getTaskNumber() - 1);
 		return display.messageSelector(EXEC_COMPLETED, EXEC_SUCCESSFUL);
 	}
-	
 
 	// No undo store for now.
-	private String undoCommand(Command cmd, Storage taskList){
+	private String undoCommand(Command cmd, Storage taskList) {
 		String undoMsg = "";
-		if (taskList.getCommandSize() == 0){	
+		if (taskList.getCommandSize() == 0) {
 			undoMsg = display.messageSelector(EXEC_UNDO, EXEC_UNSUCCESSFUL);
-		} else if (taskList.getLastCommand().getCommandName().equals("edit")){		
+		} else if (taskList.getLastCommand().getCommandName().equals("edit")) {
 			taskList.undoEdit();
-		} else if (taskList.getLastCommand().getCommandName().equals("delete")){	
+		} else if (taskList.getLastCommand().getCommandName().equals("delete")) {
 			taskList.undoDelete();
 		} else {
-			taskList.undoAdd(); 
+			taskList.undoAdd();
 		}
 		undoMsg = display.messageSelector(EXEC_UNDO, EXEC_SUCCESSFUL);
 		return undoMsg;
 	}
-	
+
 	private String deleteCommand(Command cmd, Storage taskList2) {
 		String delMsg = "";
 		int taskNum = cmd.getTaskNumber();
 		int size = taskList2.getSize();
-		
+
 		if (taskNum > 0 && taskNum <= size) {
 			// Store the deleted task in delete command
-			cmd.setTask(taskList2.getTaskObject(taskNum-1));
+			cmd.setTask(taskList2.getTaskObject(taskNum - 1));
 			taskList2.delete(taskNum);
 			taskList2.addCommand(cmd);
-			delMsg =  display.messageSelector(EXEC_DELETE, EXEC_SUCCESSFUL);
+			delMsg = display.messageSelector(EXEC_DELETE, EXEC_SUCCESSFUL);
 		} else if (taskNum > size) {
 			delMsg = display.messageSelector(EXEC_DELETE, EXEC_UNSUCCESSFUL);
 		} else {
@@ -165,53 +170,63 @@ public class Logic {
 	}
 
 	private String editCommand(Command cmd, Storage taskList) {
-		
+
 		String editMsg = "";
-		EditSpecification edit = cmd.getEditSpecification(); 
+		EditSpecification edit = cmd.getEditSpecification();
 		int taskNumber = edit.getTaskNumber() - 1;
-		
+
 		if (isValidTaskNumber(taskNumber)) {
 			Task t = taskList.getTaskObject(edit.getTaskNumber() - 1);
 			Task temp;
 			try {
 				temp = (Task) t.clone();
 				cmd.setTaskNumber(taskNumber);
-				taskList.addCommand(cmd); 
-				cmd.setTask(temp);	
+				taskList.addCommand(cmd);
+				cmd.setTask(temp);
 			} catch (CloneNotSupportedException e) {
 				e.printStackTrace();
 			}
 			if (t instanceof Floating) {
 				editMsg = editTodo(edit, taskList);
-			} else if(t instanceof Deadline) {
-				editMsg = editDeadline(edit, taskList);
-			} else if(t instanceof Event) {
-				editMsg = editEvent(edit, taskList);
-			}	
-		}
-		return editMsg;
-	}
-	
-	private String editTodo(EditSpecification edit, Storage taskLists) {
-		String editMsg = "";
-		String fieldToEdit = edit.getFieldToEdit();
-		String theEdit = edit.getTheEdit();		
-		Floating f = (Floating)taskList.getTaskObject(edit.getTaskNumber() - 1);
-		if(fieldToEdit.equals(FIELD_NAME)) {
-			f.editName(theEdit);
-			editMsg = display.messageSelector(EXEC_EDIT, EXEC_SUCCESSFUL);
+			} else if (t instanceof Deadline) {
+				try {
+					editMsg = editDeadline(edit, taskList);
+				} catch (ParseException e) {
+					editMsg = "Invalid date format.";
+				}
+			} else if (t instanceof Event) {
+				try {
+					editMsg = editEvent(edit, taskList);
+				} catch (ParseException e) {
+					editMsg = "Invalid date format.";
+				}
+			}
 		} else {
-			System.out.println("invalid todo field");
 			editMsg = display.messageSelector(EXEC_EDIT, EXEC_UNSUCCESSFUL2);
 		}
 		return editMsg;
 	}
-	
-	private String editDeadline(EditSpecification edit, Storage taskLists) {
+
+	private String editTodo(EditSpecification edit, Storage taskLists) {
 		String editMsg = "";
 		String fieldToEdit = edit.getFieldToEdit();
 		String theEdit = edit.getTheEdit();
-		Deadline d = (Deadline)taskList.getTaskObject(edit.getTaskNumber() - 1);
+		Floating f = (Floating) taskList.getTaskObject(edit.getTaskNumber() - 1);
+		if (fieldToEdit.equals(FIELD_NAME)) {
+			f.editName(theEdit);
+			editMsg = display.messageSelector(EXEC_EDIT, EXEC_SUCCESSFUL);
+		} else {
+			//System.out.println("invalid todo field");
+			editMsg = display.messageSelector(EXEC_EDIT, 4);
+		}
+		return editMsg;
+	}
+
+	private String editDeadline(EditSpecification edit, Storage taskLists) throws ParseException {
+		String editMsg = "";
+		String fieldToEdit = edit.getFieldToEdit();
+		String theEdit = edit.getTheEdit();
+		Deadline d = (Deadline) taskList.getTaskObject(edit.getTaskNumber() - 1);
 		switch (fieldToEdit) {
 		case FIELD_DUE:
 			d.setDueBy(theEdit);
@@ -222,17 +237,16 @@ public class Logic {
 			editMsg = display.messageSelector(EXEC_EDIT, EXEC_SUCCESSFUL);
 			break;
 		default:
-			editMsg = display.messageSelector(EXEC_EDIT, EXEC_UNSUCCESSFUL2);	
-			System.out.println("invalid deadline field");
+			editMsg = display.messageSelector(EXEC_EDIT, 4);
 		}
 		return editMsg;
 	}
-	
-	private String editEvent(EditSpecification edit, Storage taskLists) {
+
+	private String editEvent(EditSpecification edit, Storage taskLists) throws ParseException {
 		String editMsg = "";
 		String fieldToEdit = edit.getFieldToEdit();
 		String theEdit = edit.getTheEdit();
-		Event e = (Event)taskList.getTaskObject(edit.getTaskNumber() - 1);
+		Event e = (Event) taskList.getTaskObject(edit.getTaskNumber() - 1);
 		switch (fieldToEdit.trim()) {
 		case FIELD_START:
 			editMsg = display.messageSelector(EXEC_EDIT, EXEC_SUCCESSFUL);
@@ -247,11 +261,11 @@ public class Logic {
 			e.editName(theEdit);
 			break;
 		default:
-			editMsg = display.messageSelector(EXEC_EDIT, EXEC_UNSUCCESSFUL2);	
-			System.out.println("invalid event field");
+			editMsg = display.messageSelector(EXEC_EDIT, 4);
 		}
 		return editMsg;
 	}
+
 	private String storeCommand(Command cmd, Storage taskList) {
 		Storage storage = new Storage(cmd.getDirectory(), taskList.getTaskArray());
 		storage.storeToFile();
@@ -265,18 +279,17 @@ public class Logic {
 			dispMsg = display.messageSelector(EXEC_DISPLAY, EXEC_UNSUCCESSFUL);
 		} else {
 			for (int i = 0; i < numberOfLines; i++) {
-				String taskToDisplay = taskList.getTask(i);
-				String lineToDisplay = (i + 1) + ". " + taskToDisplay;
+				String lineToDisplay = (i + 1) + ". " + taskList.getTaskObject(i).toString();
 				System.out.println(lineToDisplay);
 			}
 		}
 		return dispMsg;
 	}
-	
+
 	private String archiveCommand(Command cmd, Storage taskList) {
 		String dispMsg = "";
 		int numberOfCompleted = taskList.getCompletedSize();
-		if (numberOfCompleted == 0){
+		if (numberOfCompleted == 0) {
 			dispMsg = display.messageSelector(EXEC_ARCHIVE, EXEC_UNSUCCESSFUL);
 		} else {
 			for (int i = 0; i < numberOfCompleted; i++) {
@@ -285,13 +298,12 @@ public class Logic {
 				System.out.println(lineToDisplay);
 			}
 		}
-		
 		return dispMsg;
 	}
-	
+
 	private String sortCommand(Command cmd, Storage taskList) {
 		String sortMsg = "";
-		switch(cmd.getSortField()) {
+		switch (cmd.getSortField()) {
 		case FIELD_NAME:
 			sortByName(taskList);
 			sortMsg = display.messageSelector(EXEC_SORT, EXEC_SUCCESSFUL);
@@ -302,22 +314,19 @@ public class Logic {
 			break;
 		default:
 			sortMsg = display.messageSelector(EXEC_SORT, EXEC_UNSUCCESSFUL);
-			System.out.println("invalid sort field");
-		} 
+		}
 		return sortMsg;
-		
+
 	}
-	
-	private void sortByName(Storage taskList){
+
+	private void sortByName(Storage taskList) {
 		Collections.sort(taskList.getTaskArray(), new NameSorter());
 	}
-	
-	private void sortByDate(Storage taskList){
+
+	private void sortByDate(Storage taskList) {
 		Collections.sort(taskList.getTaskArray(), new DateSorter());
 	}
-	
-	
-	
+
 	private boolean isValidTaskNumber(int taskNumber) {
 		if (taskNumber < 0) {
 			return false;
@@ -326,6 +335,10 @@ public class Logic {
 		} else {
 			return true;
 		}
+	}
+
+	public Storage getTaskList() {
+		return taskList;
 	}
 
 }

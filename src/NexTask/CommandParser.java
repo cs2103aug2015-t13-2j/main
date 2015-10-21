@@ -36,6 +36,8 @@ public class CommandParser {
 	private static final int NUM_EVENT_ARGS = 9;
 	private static final int NUM_DEADLINE_ARGS = 4;
 	private static final int NUM_SORT_ARGS = 1;
+	private static final int NUM_SEARCH_ARGS = 1;
+
 
 
 	private static final int INVALID_TASK_NUMBER = -1;
@@ -73,18 +75,18 @@ public class CommandParser {
 
 	/**
 	 * Parses user input and returns a command object with appropriate fields
-	 * initialized.
+	 * initialized. If user input is of incorrect format, an invalid will be 
+	 * initialized. 
 	 * 
 	 * @param userInput
 	 * @return instance of Command with appropriate fields initialized.
 	 */
 	public Command parse(String userInput) {
-		// logger.log(Level.INFO, "going to start parsing");
 		ArrayList<String> parameters = splitString(userInput);
 		String userCommand = getCommand(parameters);
 		ArrayList<String> arguments = getCommandDetails(parameters);
 		Command command = null;
-		switch (userCommand.toLowerCase()) {
+		switch (userCommand.toLowerCase().trim()) {
 		case USER_COMMAND_ADD:
 			command = initAddCommand(arguments);
 			break;
@@ -143,7 +145,7 @@ public class CommandParser {
 		String taskType = commandDetails.get(POSITION_OF_TASK_TYPE);
 		ArrayList<String> taskDetails = new ArrayList<String>(
 				commandDetails.subList(POSITION_OF_FIRST_TASK_FIELD, commandDetails.size()));
-		switch (taskType.toLowerCase()) {
+		switch (taskType.toLowerCase().trim()) {
 		case TASK_TYPE_EVENT:
 			addCommand = initAddEventCommand(taskDetails);
 			break;
@@ -157,7 +159,6 @@ public class CommandParser {
 			addCommand = initInvalidCommand(INVALID_TASK_TYPE);
 			break;
 		}
-		// logger.log(Level.INFO, "end of parsing add command");
 		return addCommand;
 	}
 
@@ -183,7 +184,6 @@ public class CommandParser {
 				// invalid command");
 				cmd = initInvalidCommand(INVALID_DATE_FORMAT);
 			} else {
-				assert(e != null);
 				cmd.setCommandName(USER_COMMAND_ADD);
 				cmd.setTask(e);
 			}
@@ -204,7 +204,6 @@ public class CommandParser {
 	 *         event will be created.
 	 */
 	private Event parseEvent(ArrayList<String> eventDetails) {
-		assert(eventDetails.size() > 0);
 		// logger.log(Level.INFO, "going to start parse event");
 
 		if (eventDetails.contains(EVENT_KEYWORD_START) && eventDetails.contains(EVENT_KEYWORD_END)) {
@@ -230,11 +229,10 @@ public class CommandParser {
 				startDate = DATE_TIME_FORMAT.parse(startDateString);
 				endDate = DATE_TIME_FORMAT.parse(endDateString);
 			} catch (ParseException e) {
-				logger.log(Level.WARNING, "error parsing event date");
+				//logger.log(Level.WARNING, "error parsing event date");
 				return new Event(INVALID_DATE_FORMAT);
 			}
-			// logger.log(Level.INFO, "done parsing event");
-			return new Event(startDate, endDate, name);
+			return new Event(name, startDate, endDate);
 		} else {
 			return new Event(INVALID_EVENT_FORMAT);
 		}
@@ -260,6 +258,7 @@ public class CommandParser {
 				cmd.setTask(d);
 			}
 		} else {
+			//logger.log(Level.WARNING, "invalid number of arguments");
 			cmd = initInvalidCommand(INVALID_NUM_ARGUMENTS);
 		}
 		return cmd;
@@ -274,7 +273,6 @@ public class CommandParser {
 	 *         invalid deadline will be created.
 	 */
 	private Deadline parseDeadline(ArrayList<String> deadlineDetails) {
-		assert(deadlineDetails.size() > 0);
 		ArrayList<String> dateParts = new ArrayList<String>(
 				deadlineDetails.subList(POSITION_OF_DEADLINE_START, POSITION_OF_DEADLINE_END));
 		String date = concatenate(dateParts);
@@ -287,6 +285,7 @@ public class CommandParser {
 		try {
 			dueBy = DATE_TIME_FORMAT.parse(date);
 		} catch (ParseException e) {
+			//logger.log(Level.WARNING, "invalid date format");
 			return new Deadline(INVALID_DATE_FORMAT);
 		}
 		return new Deadline(name, dueBy);
@@ -472,6 +471,7 @@ public class CommandParser {
 	private Command initSearchCommand(ArrayList<String> arguments) {
 		Command cmd = new Command();
 		if (isCorrectNumArguments(USER_COMMAND_SEARCH, arguments)) {
+			cmd.setCommandName(USER_COMMAND_SEARCH);
 			cmd.setSearchSpecification(concatenate(arguments));
 		} else {
 			cmd = initInvalidCommand(INVALID_NUM_ARGUMENTS);
@@ -635,6 +635,9 @@ public class CommandParser {
 			break;
 		case USER_COMMAND_SORT:
 			isCorrectNumArgs = arguments.size() >= NUM_SORT_ARGS;
+			break;	
+		case USER_COMMAND_SEARCH:
+			isCorrectNumArgs = arguments.size() >= NUM_SEARCH_ARGS;
 			break;	
 		case TASK_TYPE_TODO:
 			isCorrectNumArgs = arguments.size() >= NUM_TODO_ARGS;

@@ -20,7 +20,7 @@ public class Floating extends Task implements Cloneable {
 	}
 	
 	public String toString() {
-		return "TODO: " + this.getName();
+		return this.getName();
 
 	}
 
