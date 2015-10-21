@@ -49,14 +49,16 @@ public class Logic {
 	public UI ui = new UI();
 	public CommandParser parser = new CommandParser();
 	public DisplayManager display = new DisplayManager();
+	public String printMsg = "";
 
-	public void executeUserCommand(String userInput) {
+	public String executeUserCommand(String userInput) {
 		Command cmd = getUserCommand(userInput);
 		if (isValid(cmd)) {
-			performCommand(cmd, taskList);
+			printMsg = performCommand(cmd, taskList);
 		} else {
-			display.printer(EXEC_ERROR, EXEC_SUCCESSFUL);
+			printMsg = display.messageSelector(EXEC_ERROR, EXEC_SUCCESSFUL);
 		}
+		return printMsg;
 	}
 
 	public boolean isValid(Command command) {
@@ -71,85 +73,85 @@ public class Logic {
 		return parser.parse(userInput);
 	}
 
-	private void performCommand(Command cmd, Storage taskList) {
+	private String performCommand(Command cmd, Storage taskList) {
+		String messageToPrint = "";
 		String commandName = cmd.getCommandName();
 		if (commandName == CMD_ADD) {
-			addCommand(cmd, taskList);
+			messageToPrint = addCommand(cmd, taskList);
 		} else if (commandName == CMD_EDIT) {
-			editCommand(cmd, taskList);
+			messageToPrint = editCommand(cmd, taskList);
 		} else if (commandName == CMD_DELETE) {
-			deleteCommand(cmd, taskList);
+			messageToPrint = deleteCommand(cmd, taskList);
 		} else if (commandName == CMD_DISPLAY) {
-			displayCommand(cmd, taskList);
+			messageToPrint = displayCommand(cmd, taskList);
 		} else if (commandName == CMD_STORE) {
-			storeCommand(cmd, taskList);
+			messageToPrint = storeCommand(cmd, taskList);
 		} else if (commandName == CMD_EXIT) {
 			System.exit(0);
 		} else if (commandName == CMD_UNDO) {
-			undoCommand(cmd, taskList);
-			
-		} else if (commandName == CMD_COMPLETE){
-			completeCommand(cmd, taskList);
-			
-			
+			messageToPrint = undoCommand(cmd, taskList);
+		} else if (commandName == CMD_COMPLETE) {
+			messageToPrint= completeCommand(cmd, taskList);	
 		} else if (commandName == CMD_HELP) {
-			display.printer(EXEC_HELP, EXEC_SUCCESSFUL);
+			messageToPrint = display.messageSelector(EXEC_HELP, EXEC_SUCCESSFUL);
 		}
+		return messageToPrint;
 	}
 
 	
-	private void completeCommand(Command cmd, Storage taskList){
+	private String completeCommand(Command cmd, Storage taskList){
 		cmd.setTask(taskList.getTaskObject(cmd.getTaskNumber()-1));
-		taskList.markComplete(cmd.getTaskNumber() -1);		
+		taskList.markComplete(cmd.getTaskNumber() -1);
+		return display.messageSelector(EXEC_COMPLETED, EXEC_SUCCESSFUL);
 	}
 	
-	
-	
+
 	// No undo store for now.
-	private void undoCommand(Command cmd, Storage taskList){
+	private String undoCommand(Command cmd, Storage taskList){
+		String undoMsg = "";
 		if (taskList.getCommandSize() == 0){	
-			System.out.println(ERROR_NOTHING_TO_UNDO);	
+			undoMsg = display.messageSelector(EXEC_UNDO, EXEC_UNSUCCESSFUL);
 		} else if (taskList.getLastCommand().getCommandName().equals("edit")){		
 			taskList.undoEdit();
 		} else if (taskList.getLastCommand().getCommandName().equals("delete")){	
 			taskList.undoDelete();
 		} else {
-			taskList.undoAdd();
+			taskList.undoAdd(); 
 		}
+		undoMsg = display.messageSelector(EXEC_UNDO, EXEC_SUCCESSFUL);
+		return undoMsg;
 	}
 	
-	private void deleteCommand(Command cmd, Storage taskList2) {
+	private String deleteCommand(Command cmd, Storage taskList2) {
+		String delMsg = "";
 		int taskNum = cmd.getTaskNumber();
 		int size = taskList2.getSize();
 		
-		
-
 		if (taskNum > 0 && taskNum <= size) {
 			// Store the deleted task in delete command
 			cmd.setTask(taskList2.getTaskObject(taskNum-1));
 			taskList2.delete(taskNum);
 			taskList2.addCommand(cmd);
-			
-			display.printer(EXEC_DELETE, EXEC_SUCCESSFUL);
+			delMsg =  display.messageSelector(EXEC_DELETE, EXEC_SUCCESSFUL);
 		} else if (taskNum > size) {
-			display.printer(EXEC_DELETE, EXEC_UNSUCCESSFUL);
+			delMsg = display.messageSelector(EXEC_DELETE, EXEC_UNSUCCESSFUL);
 		} else {
-			display.printer(EXEC_DELETE, EXEC_UNSUCCESSFUL2);
+			delMsg = display.messageSelector(EXEC_DELETE, EXEC_UNSUCCESSFUL2);
 		}
+		return delMsg;
 	}
 
-	public void addCommand(Command cmd, Storage taskList) {
-		
-		
+	public String addCommand(Command cmd, Storage taskList) {
 		// cmd had task alr in add
 		task = cmd.getTask();
 		taskList.add(task);
-		display.printer(EXEC_ADD, EXEC_SUCCESSFUL);
 		taskList.addCommand(cmd);
+		return display.messageSelector(EXEC_ADD, EXEC_SUCCESSFUL);
 	}
 
-	private void editCommand(Command cmd, Storage taskList) {
+	private String editCommand(Command cmd, Storage taskList) {
 		
+		String editMsg = "";
 		EditSpecification edit = cmd.getEditSpecification(); 
 
 		if (isEditSpecHasNoErrors(edit)) {
@@ -173,30 +175,32 @@ public class Logic {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-						display.printer(EXEC_EDIT, EXEC_SUCCESSFUL);
+						editMsg = display.messageSelector(EXEC_EDIT, EXEC_SUCCESSFUL);
 						break;
 					default:
-						display.printer(EXEC_EDIT, EXEC_UNSUCCESSFUL);
+						editMsg = display.messageSelector(EXEC_EDIT, EXEC_UNSUCCESSFUL);
 					}
 				}
 			} else {
-				display.printer(EXEC_EDIT, EXEC_UNSUCCESSFUL2);
+				editMsg = display.messageSelector(EXEC_EDIT, EXEC_UNSUCCESSFUL2);
 			}
 		} else {
-			determineEditError(edit);
+			editMsg = determineEditError(edit);
 		}
+		return editMsg;
 	}
 	
-	private void storeCommand(Command cmd, Storage taskList) {
+	private String storeCommand(Command cmd, Storage taskList) {
 		Storage storage = new Storage(cmd.getDirectory(), taskList.getTaskArray());
 		storage.storeToFile();
-		display.printer(EXEC_STORE, EXEC_SUCCESSFUL);
+		return display.messageSelector(EXEC_STORE, EXEC_SUCCESSFUL);
 	}
 
-	private void displayCommand(Command cmd, Storage taskList) {
+	private String displayCommand(Command cmd, Storage taskList) {
+		String dispMsg = "";
 		int numberOfLines = taskList.getNumberOfTasks();
 		if (numberOfLines == 0) {
-			display.printer(EXEC_DISPLAY, EXEC_UNSUCCESSFUL);
+			dispMsg = display.messageSelector(EXEC_DISPLAY, EXEC_UNSUCCESSFUL);
 		} else {
 			for (int i = 0; i < numberOfLines; i++) {
 				String taskToDisplay = taskList.getTask(i);
@@ -204,6 +208,7 @@ public class Logic {
 				System.out.println(lineToDisplay);
 			}
 		}
+		return dispMsg;
 	}
 
 	public boolean isEditSpecHasNoErrors(EditSpecification editSpec) {
@@ -214,12 +219,14 @@ public class Logic {
 		}
 	}
 
-	private void determineEditError(EditSpecification editSpec) {
+	private String determineEditError(EditSpecification editSpec) {
+		String editErrorMsg = "";
 		if (editSpec.getTaskNumber() == -1) {
-			System.out.println(ERROR_PLS_ENTER_INT);
+			editErrorMsg = ERROR_PLS_ENTER_INT;
 		} else if (editSpec.getTaskNumber() == -2) {
-			System.out.println(ERROR_INVALID_NUM_ARGS_FOR_EDIT);
+			editErrorMsg = ERROR_INVALID_NUM_ARGS_FOR_EDIT;
 		}
+		return editErrorMsg;
 	}
 
 	private boolean isValidTaskNumber(int taskNumber) {
