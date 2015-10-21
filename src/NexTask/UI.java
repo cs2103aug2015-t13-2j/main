@@ -31,14 +31,14 @@ public class UI {
 	}
 
 	public static void startProgram() {
-		display.printer(WELCOME_COMMAND, WELCOME_CONDITION);
+		System.out.println(display.messageSelector(WELCOME_COMMAND, WELCOME_CONDITION));
 		run();
 	}
 
 	public static void run() {
 		while (true) {
-			display.printer(WELCOME_COMMAND, PROMPT_CONDITION);
-			logic.executeUserCommand(getUserInput());
+			System.out.println(display.messageSelector(WELCOME_COMMAND, PROMPT_CONDITION));
+			System.out.println(logic.executeUserCommand(getUserInput()));
 		}
 	}
 

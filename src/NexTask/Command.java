@@ -76,9 +76,11 @@ public class Command {
 		this.editSpecification = editSpecification;
 	}
 	
+	
 	public String getErrorMessage() {
 		return errorMessage;
 	}
+	
 
 	public void setErrorMessage(String errorMessage) {
 		this.errorMessage = errorMessage;
