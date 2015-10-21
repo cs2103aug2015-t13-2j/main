@@ -25,6 +25,7 @@ public class Logic {
 	private static final String CMD_HELP = "help";
 	private static final String CMD_SORT = "sort";
 	private static final String CMD_ARCHIVE = "archive";
+	private static final String CMD_SEARCH = "search";
 
 	private static final String FIELD_START = "start";
 	private static final String FIELD_END = "end";
@@ -116,9 +117,13 @@ public class Logic {
 			messageToPrint = sortCommand(cmd, taskList);
 		} else if (commandName == CMD_ARCHIVE) {
 			messageToPrint = archiveCommand(cmd, taskList);
+		} else if (commandName == CMD_SEARCH){
+			messageToPrint = searchCommand(cmd, taskList);
 		}
 		return messageToPrint;
 	}
+	
+	
 
 	private String completeCommand(Command cmd, Storage taskList) {
 		cmd.setTask(taskList.getTaskObject(cmd.getTaskNumber() - 1));
@@ -167,6 +172,41 @@ public class Logic {
 		taskList.add(task);
 		taskList.addCommand(cmd);
 		return display.messageSelector(EXEC_ADD, EXEC_SUCCESSFUL);
+	}
+	
+	private String searchCommand(Command cmd, Storage taskList){
+		String searchMsg = "";
+		String searchSpecification = cmd.getSearchSpecification();
+		
+		int numOfIncomplete = taskList.getSize();
+		int numOfCompleted  = taskList.getCompletedSize();
+		int numOfResult = 0;
+		
+		if (numOfIncomplete > 0){
+			for (int i = 0; i < numOfIncomplete; i++){
+				Task task = taskList.getTaskArray().get(i);
+				if (task.getSearchField().contains(searchSpecification)){
+					System.out.println(task.getName());
+					numOfResult ++;
+				}
+			}
+		}
+		
+		if (numOfCompleted > 0){
+			for (int i = 0; i < numOfCompleted; i++){
+				Task task = taskList.getCompletedTasks().get(i);
+				if (task.getSearchField().contains(searchSpecification)){
+					System.out.println(task.getName());
+					numOfResult ++;
+				}
+			}
+		}
+		
+		if (numOfResult == 0){
+			searchMsg = display.messageSelector(EXEC_SEARCH, EXEC_UNSUCCESSFUL);
+		} 
+		
+		return searchMsg;
 	}
 
 	private String editCommand(Command cmd, Storage taskList) {
@@ -286,11 +326,12 @@ public class Logic {
 		return dispMsg;
 	}
 
+	
 	private String archiveCommand(Command cmd, Storage taskList) {
-		String dispMsg = "";
+		String archMsg = "";
 		int numberOfCompleted = taskList.getCompletedSize();
 		if (numberOfCompleted == 0) {
-			dispMsg = display.messageSelector(EXEC_ARCHIVE, EXEC_UNSUCCESSFUL);
+			archMsg = display.messageSelector(EXEC_ARCHIVE, EXEC_UNSUCCESSFUL);
 		} else {
 			for (int i = 0; i < numberOfCompleted; i++) {
 				String taskToDisplay = taskList.getCompletedName(i);
@@ -298,7 +339,7 @@ public class Logic {
 				System.out.println(lineToDisplay);
 			}
 		}
-		return dispMsg;
+		return archMsg;
 	}
 
 	private String sortCommand(Command cmd, Storage taskList) {
