@@ -95,13 +95,8 @@ public class Logic {
 	private void undoCommand(Command cmd, Storage taskList){
 		if (taskList.getCommandSize() == 0){	
 			System.out.println(ERROR_NOTHING_TO_UNDO);	
-		} else if (taskList.getLastCommand().getCommandName().equals("edit")){
-			
-			System.out.println(taskList.getLastCommand().getTask().getName());
-			
+		} else if (taskList.getLastCommand().getCommandName().equals("edit")){		
 			taskList.undoEdit();
-			
-			
 		} else if (taskList.getLastCommand().getCommandName().equals("delete")){	
 			taskList.undoDelete();
 		} else {
@@ -109,17 +104,6 @@ public class Logic {
 		}
 	}
 	
-	/*// Make task array equals to previous task array
-				taskList.undoTaskArray();
-				// Delete last command from previous commands
-				taskList.undoPrevCommand();	
-				// Extract information from last command of current command array (the command before previous command)
-				// Make specific task in previous task array to contain information extracted.
-				// Therefore, task stored in command is the task newly made by this command
-				taskList.undoPrevTask();	*/
-
-	
-
 	private void deleteCommand(Command cmd, Storage taskList2) {
 		int taskNum = cmd.getTaskNumber();
 		int size = taskList2.getSize();
@@ -129,12 +113,8 @@ public class Logic {
 		if (taskNum > 0 && taskNum <= size) {
 			// Store the deleted task in delete command
 			cmd.setTask(taskList2.getTaskObject(taskNum-1));
-			
 			taskList2.delete(taskNum);
 			taskList2.addCommand(cmd);
-			
-			/***************************/
-			//System.out.println(taskList.getLastCommand().getCommandName());
 			
 			display.printer(EXEC_DELETE, EXEC_SUCCESSFUL);
 		} else if (taskNum > size) {
@@ -168,31 +148,17 @@ public class Logic {
 					Floating newTask = (Floating) taskList.getTaskArray().get(taskNumber);
 					switch (fieldToEdit) {
 					case TODO_FIELD_NAME:
-						
-						/***********************************/
-						System.out.println(taskNumber);
 						try {
 						Task temp = (Task) newTask.clone();
-						
-						
-						/***************************************/
-						System.out.println(temp.getName());
-						
 						cmd.setTaskNumber(taskNumber);
-						cmd.setTask(temp);
-						
+						cmd.setTask(temp);			
 						newTask.editName(theEdit);
 						taskList.edit(taskNumber, newTask);
-						taskList.addCommand(cmd);
-						
-						/****************************************/
-						System.out.println(temp.getName());
-						
+						taskList.addCommand(cmd);						
 						} catch (CloneNotSupportedException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-						
 						display.printer(EXEC_EDIT, EXEC_SUCCESSFUL);
 						break;
 					default:

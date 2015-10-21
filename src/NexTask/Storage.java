@@ -22,7 +22,6 @@ public class Storage {
     private static final String PREV_EDIT = "edit";
     private static String userPath = "";
     private static int taskNum = 1;
-    public Task original;
     public ArrayList<Task> taskArray;
 	public ArrayList<Command> prevCommands;
     
@@ -65,12 +64,7 @@ public class Storage {
 	
 	public void undoEdit(){
 		Command cmd = getPrevCommand();
-		
-		System.out.println("Task number + " + cmd.getTaskNumber());
-		System.out.println("Task name + " + cmd.getTask().getName());
-		
 		taskArray.set(cmd.getTaskNumber(), cmd.getTask());
-		
 		prevCommands.remove(getCommandSize()-1);
 		
 	}
@@ -101,16 +95,7 @@ public class Storage {
     public Command getPrevCommand(){
     	return prevCommands.get(prevCommands.size()-1);
     }
-    
-	
-    
-    
-    
-    
-    
-    
-    
-    
+
 	public void add(Task task){
 		taskArray.add(task);
 	}
