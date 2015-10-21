@@ -23,6 +23,7 @@ public class Logic {
 	private static final String CMD_COMPLETE= "complete";
 	private static final String CMD_HELP = "help";
 	private static final String CMD_SORT = "sort";
+	private static final String CMD_ARCHIVE = "archive";
 
 	
 	private static final String FIELD_START = "start";
@@ -107,6 +108,8 @@ public class Logic {
 			messageToPrint = display.messageSelector(EXEC_HELP, EXEC_SUCCESSFUL);
 		} else if (commandName == CMD_SORT) {
 			messageToPrint = sortCommand(cmd, taskList);
+		} else if (commandName == CMD_ARCHIVE){
+			messageToPrint = archiveCommand(cmd, taskList);
 		}
 		return messageToPrint;
 	}
@@ -267,6 +270,22 @@ public class Logic {
 				System.out.println(lineToDisplay);
 			}
 		}
+		return dispMsg;
+	}
+	
+	private String archiveCommand(Command cmd, Storage taskList) {
+		String dispMsg = "";
+		int numberOfCompleted = taskList.getCompletedSize();
+		if (numberOfCompleted == 0){
+			dispMsg = display.messageSelector(EXEC_ARCHIVE, EXEC_UNSUCCESSFUL);
+		} else {
+			for (int i = 0; i < numberOfCompleted; i++) {
+				String taskToDisplay = taskList.getCompletedName(i);
+				String lineToDisplay = (i + 1) + ". " + taskToDisplay;
+				System.out.println(lineToDisplay);
+			}
+		}
+		
 		return dispMsg;
 	}
 	

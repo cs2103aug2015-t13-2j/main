@@ -77,6 +77,12 @@ public class Storage {
     	return completedTasks;
     }
     
+    public String getCompletedName(int num){
+    	Task task = completedTasks.get(num);
+		String taskName = task.getName();
+		return taskName;
+    }
+    
 
     
     
