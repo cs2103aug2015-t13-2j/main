@@ -24,12 +24,14 @@ public class Storage {
     private static int taskNum = 1;
     public ArrayList<Task> taskArray;
 	public ArrayList<Command> prevCommands;
+	public ArrayList<Task> completedTasks;
     
     
     public Storage(String directory, ArrayList<Task> taskArray) {
         this.userPath = directory;
         this.taskArray = taskArray;
         this.prevCommands = new ArrayList<Command>();
+        this.completedTasks = new ArrayList<Task>();
     }
     
     public String getPath(){
@@ -61,6 +63,24 @@ public class Storage {
     }
     
     /* Memory Manager */
+    
+    public void markComplete(int taskNum){
+    	completedTasks.add(taskArray.get(taskNum));
+    	taskArray.remove(taskNum);
+    }
+    
+    public int getCompletedSize(){
+    	return completedTasks.size();
+    }
+    
+    public ArrayList<Task> getCompletedTasks(){
+    	return completedTasks;
+    }
+    
+
+    
+    
+    
 	
 	public void undoEdit(){
 		Command cmd = getPrevCommand();

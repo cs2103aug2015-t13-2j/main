@@ -20,6 +20,7 @@ public class Logic {
 	private static final String CMD_STORE = "store";
 	private static final String CMD_EXIT = "exit";
 	private static final String CMD_UNDO = "undo";
+	private static final String CMD_COMPLETE= "complete";
 	private static final String CMD_HELP = "help";
 
 	private static final String ERROR_NOTHING_TO_UNDO = "There is nothing to undo";
@@ -86,11 +87,24 @@ public class Logic {
 			System.exit(0);
 		} else if (commandName == CMD_UNDO) {
 			undoCommand(cmd, taskList);
+			
+		} else if (commandName == CMD_COMPLETE){
+			completeCommand(cmd, taskList);
+			
+			
 		} else if (commandName == CMD_HELP) {
 			display.printer(EXEC_HELP, EXEC_SUCCESSFUL);
 		}
 	}
 
+	
+	private void completeCommand(Command cmd, Storage taskList){
+		cmd.setTask(taskList.getTaskObject(cmd.getTaskNumber()-1));
+		taskList.markComplete(cmd.getTaskNumber() -1);		
+	}
+	
+	
+	
 	// No undo store for now.
 	private void undoCommand(Command cmd, Storage taskList){
 		if (taskList.getCommandSize() == 0){	
