@@ -9,6 +9,7 @@ public class Event extends Task {
 	
 	private Date startDateAndTime;
 	private Date endDateAndTime;
+	private String searchField;
 	
 	public Event(String name) {
 		super(name);
@@ -18,6 +19,7 @@ public class Event extends Task {
 		super(name);
 		this.startDateAndTime = start;
 		this.endDateAndTime = end;
+		this.searchField = name + start.toString() + end.toString();
 	}
 	
 	public boolean equals(Task other) {

@@ -6,6 +6,7 @@ import java.util.Date;
 
 public class Deadline extends Task {
 	private static final SimpleDateFormat DATE_TIME_FORMAT = new SimpleDateFormat("dd/MM/yy h:mm a");
+	private String searchField;
 
 	private Date dueBy;
 	
@@ -21,6 +22,7 @@ public class Deadline extends Task {
 	public Deadline(String name, Date dueBy) {
 		super(name);
 		this.dueBy = dueBy;
+		this.searchField = name + dueBy.toString();
 	}
 	
 	public Date getDueBy() {

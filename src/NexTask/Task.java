@@ -3,6 +3,7 @@ package NexTask;
 
 abstract class Task implements Cloneable{
 	private String name;
+	private String searchField;
 	
 
 	public Task() {
@@ -24,6 +25,11 @@ abstract class Task implements Cloneable{
 		this.name = name;
 	}
 	
+	public String getSearchField(){
+		return searchField;
+	}
+	
 	abstract boolean equals(Task other);
+
 	
 }

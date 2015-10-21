@@ -1,8 +1,11 @@
 package NexTask;
 
 public class Floating extends Task implements Cloneable {
+	private String searchField;
+	
 	public Floating(String name) {
 		super(name);
+		this.searchField = name;
 	}
 	
 
@@ -23,5 +26,6 @@ public class Floating extends Task implements Cloneable {
 		return "TODO: " + this.getName();
 
 	}
+	
 
 }
