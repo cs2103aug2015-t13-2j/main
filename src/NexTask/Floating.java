@@ -17,5 +17,10 @@ public class Floating extends Task {
 			return false;
 		}
 	}
+	
+	public String toString() {
+		return "TODO: " + this.getName();
+
+	}
 
 }

@@ -1,8 +1,12 @@
 package NexTask;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Event extends Task {
+	private static final SimpleDateFormat DATE_TIME_FORMAT = new SimpleDateFormat("dd/MM/yy h:mm a");
+	
 	private Date startDateAndTime;
 	private Date endDateAndTime;
 	
@@ -37,6 +41,14 @@ public class Event extends Task {
 	public void setStartDateAndTime(Date startDateAndTime) {
 		this.startDateAndTime = startDateAndTime;
 	}
+	
+	public void setStartDateAndTime(String startDateAndTime) {
+		try {
+			this.startDateAndTime = DATE_TIME_FORMAT.parse(startDateAndTime);
+		} catch (ParseException e) {
+			System.out.println("error parsing start date");
+		}
+	}
 
 	public Date getEndDateAndTime() {
 		return endDateAndTime;
@@ -45,4 +57,19 @@ public class Event extends Task {
 	public void setEndDateAndTime(Date endDateAndTime) {
 		this.endDateAndTime = endDateAndTime;
 	}
+	
+	public void setEndDateAndTime(String endDateAndTime) {
+		try {
+			this.endDateAndTime = DATE_TIME_FORMAT.parse(endDateAndTime);
+		} catch (ParseException e) {
+			System.out.println("error parsing end date");
+		}
+	}
+	
+	public String toString() {
+		SimpleDateFormat df1 = new SimpleDateFormat("dd/MM/yy h:mm a");
+		return "EVENT: " + this.getName() + " start: " + df1.format(this.getStartDateAndTime()) 
+		+ " end: " + df1.format(this.getEndDateAndTime());
+	}
+	
 }	

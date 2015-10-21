@@ -19,6 +19,8 @@ public class Command {
 	private EditSpecification editSpecification;
 	private String searchSpecification;
 	private String errorMessage;
+	private String sortField;
+	
 
 	public Command() {
 		commandName = "";
@@ -29,6 +31,7 @@ public class Command {
 		editSpecification = null;
 		searchSpecification = "";
 		errorMessage = "";
+		sortField = "";
 	}
 	
 	public void setDirectory(String directory){
@@ -119,6 +122,14 @@ public class Command {
 			return false;
 		}
 		return isArgEqual;
+	}
+
+	public String getSortField() {
+		return sortField;
+	}
+
+	public void setSortField(String sortField) {
+		this.sortField = sortField;
 	}
 
 	

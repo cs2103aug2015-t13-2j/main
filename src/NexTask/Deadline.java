@@ -1,8 +1,12 @@
 package NexTask;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Deadline extends Task {
+	private static final SimpleDateFormat DATE_TIME_FORMAT = new SimpleDateFormat("dd/MM/yy h:mm a");
+
 	private Date dueBy;
 	
 	public Deadline() {
@@ -26,6 +30,14 @@ public class Deadline extends Task {
 		this.dueBy = dueBy;
 	}
 	
+	public void setDueBy(String dueBy) {
+		try {
+			this.dueBy = DATE_TIME_FORMAT.parse(dueBy);
+		} catch (ParseException e) {
+			System.out.println("error parsing start date");
+		}
+	}
+	
 	@Override
 	boolean equals(Task other) {
 		if(other instanceof Deadline) {
@@ -40,7 +52,9 @@ public class Deadline extends Task {
 		}	
 	}
 	
+	
 	public String toString() {
-		return "name: " + this.getName() + " due by: " + this.getDueBy().toString();
+		SimpleDateFormat df1 = new SimpleDateFormat("dd/MM/yy h:mm a");
+		return "DEADLINE: " + this.getName() + " due by: " + df1.format(this.getDueBy());
 	}
 }

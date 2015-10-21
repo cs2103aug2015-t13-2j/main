@@ -1,6 +1,7 @@
 package NexTask;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Logic is the class where the user commands, once parsed by CommandParser,
@@ -12,7 +13,6 @@ import java.util.ArrayList;
  */
 public class Logic {
 
-	private static final String TODO_FIELD_NAME = "name";
 	private static final String CMD_EDIT = "edit";
 	private static final String CMD_ADD = "add";
 	private static final String CMD_DISPLAY = "display";
@@ -21,7 +21,16 @@ public class Logic {
 	private static final String CMD_EXIT = "exit";
 	private static final String CMD_UNDO = "undo";
 	private static final String CMD_HELP = "help";
+	private static final String CMD_SORT = "sort";
 
+	
+	private static final String FIELD_START = "start";
+	private static final String FIELD_END = "end";
+	private static final String FIELD_NAME = "name";
+	private static final String FIELD_DUE = "due";
+	private static final String FIELD_DATE = "date";
+
+	
 	private static final String ERROR_NOTHING_TO_UNDO = "There is nothing to undo";
 	private static final String ERROR_INVALID_NUM_ARGS_FOR_EDIT = "Invalid number of arguments for edit.";
 	private static final String ERROR_INVALID_TASK_NUMBER = "Please enter a valid task number.";
@@ -88,22 +97,24 @@ public class Logic {
 			undoCommand(cmd, taskList);
 		} else if (commandName == CMD_HELP) {
 			display.printer(EXEC_HELP, EXEC_SUCCESSFUL);
+		} else if (commandName == CMD_SORT) {
+			sortCommand(cmd, taskList);
 		}
+
 	}
 
 	// No undo store for now.
-	private void undoCommand(Command cmd, Storage taskList){
-		if (taskList.getPreviousTasksSize() == 0 && taskList.getSize() == 1){
-			taskList.undoPrevCommand();	
-			taskList.delete(1);	
-		} else if (taskList.getPreviousTasksSize() == 0 && taskList.getSize() != 1){	
-			System.out.println(ERROR_NOTHING_TO_UNDO);	
-		}	
-		else{	
-			taskList.undoTaskArray();	
-			taskList.undoPrevCommand();	
-			taskList.undoPrevTask();	
-		}	
+	private void undoCommand(Command cmd, Storage taskList) {
+		if (taskList.getPreviousTasksSize() == 0 && taskList.getSize() == 1) {
+			taskList.undoPrevCommand();
+			taskList.delete(1);
+		} else if (taskList.getPreviousTasksSize() == 0 && taskList.getSize() != 1) {
+			System.out.println(ERROR_NOTHING_TO_UNDO);
+		} else {
+			taskList.undoTaskArray();
+			taskList.undoPrevCommand();
+			taskList.undoPrevTask();
+		}
 	}
 
 	private void storeCommand(Command cmd, Storage taskList) {
@@ -118,21 +129,21 @@ public class Logic {
 			display.printer(EXEC_DISPLAY, EXEC_UNSUCCESSFUL);
 		} else {
 			for (int i = 0; i < numberOfLines; i++) {
-				String taskToDisplay = taskList.getTask(i);
-				String lineToDisplay = (i + 1) + ". " + taskToDisplay;
+				Task taskToDisplay = taskList.getTaskObject(i);
+				String lineToDisplay = (i + 1) + ". " + taskToDisplay.toString();
 				System.out.println(lineToDisplay);
 			}
 		}
 	}
 
-	private void deleteCommand(Command cmd, Storage taskList2) {
+	private void deleteCommand(Command cmd, Storage taskList) {
 		int taskNum = cmd.getTaskNumber();
-		int size = taskList2.getSize();
+		int size = taskList.getSize();
 		if (taskNum > 0 && taskNum <= size) {
 
-			taskList2.updatePreviousTask();
-			taskList2.delete(taskNum);
-			taskList2.addCommand(cmd);
+			taskList.updatePreviousTask();
+			taskList.delete(taskNum);
+			taskList.addCommand(cmd);
 
 			display.printer(EXEC_DELETE, EXEC_SUCCESSFUL);
 		} else if (taskNum > size) {
@@ -143,66 +154,98 @@ public class Logic {
 	}
 
 	public void addCommand(Command cmd, Storage taskList) {
-
 		taskList.updatePreviousTask();
 		task = cmd.getTask();
 		taskList.add(task);
-		 display.printer(EXEC_ADD, EXEC_SUCCESSFUL);
+		display.printer(EXEC_ADD, EXEC_SUCCESSFUL);
 		taskList.addCommand(cmd);
 	}
 
 	private void editCommand(Command cmd, Storage taskList) {
 		EditSpecification edit = cmd.getEditSpecification();
-
-		if (isEditSpecHasNoErrors(edit)) {
-			int taskNumber = edit.getTaskNumber() - 1;
-			String fieldToEdit = edit.getFieldToEdit();
-			String theEdit = edit.getTheEdit();
-
-			if (isValidTaskNumber(taskNumber)) {
-				if (taskList.getTaskArray().get(taskNumber) instanceof Floating) {
-					Floating newTask = (Floating) taskList.getTaskArray().get(taskNumber);
-					switch (fieldToEdit) {
-					case TODO_FIELD_NAME:
-						// Store task and task number in command for storage
-						cmd.setTask(taskList.getTaskObject(taskNumber));
-						cmd.setTaskNumber(taskNumber);
-
-						taskList.updatePreviousTask();
-						newTask.editName(theEdit);
-						taskList.edit(taskNumber, newTask);
-
-						taskList.addCommand(cmd);
-						display.printer(EXEC_EDIT, EXEC_SUCCESSFUL);
-						break;
-					default:
-						display.printer(EXEC_EDIT, EXEC_UNSUCCESSFUL);
-					}
-				}
-			} else {
-				display.printer(EXEC_EDIT, EXEC_UNSUCCESSFUL2);
-			}
+		int taskNumber = edit.getTaskNumber() - 1;
+		if (isValidTaskNumber(taskNumber)) {
+			Task t = taskList.getTaskObject(edit.getTaskNumber() - 1);
+			if (t instanceof Floating) {
+				editTodo(edit, taskList);
+			} else if(t instanceof Deadline) {
+				editDeadline(edit, taskList);
+			} else if(t instanceof Event) {
+				editEvent(edit, taskList);
+			}	
+		}
+	}
+	
+	private void editTodo(EditSpecification edit, Storage taskLists) {
+		String fieldToEdit = edit.getFieldToEdit();
+		String theEdit = edit.getTheEdit();		
+		Floating f = (Floating)taskList.getTaskObject(edit.getTaskNumber() - 1);
+		if(fieldToEdit.equals(FIELD_NAME)) {
+			f.editName(theEdit);
 		} else {
-			determineEditError(edit);
+			System.out.println("Invalid todo field.");
 		}
 	}
-
-	public boolean isEditSpecHasNoErrors(EditSpecification editSpec) {
-		if (editSpec.getTaskNumber() == -1 || editSpec.getTaskNumber() == -2) {
-			return false;
-		} else {
-			return true;
+	
+	private void editDeadline(EditSpecification edit, Storage taskLists) {
+		String fieldToEdit = edit.getFieldToEdit();
+		String theEdit = edit.getTheEdit();
+		Deadline d = (Deadline)taskList.getTaskObject(edit.getTaskNumber() - 1);
+		switch (fieldToEdit) {
+		case FIELD_DUE:
+			d.setDueBy(theEdit);
+			break;
+		case FIELD_NAME:
+			d.editName(theEdit);
+			break;
+		default:
+			System.out.println("invalid deadline field");
 		}
 	}
-
-	private void determineEditError(EditSpecification editSpec) {
-		if (editSpec.getTaskNumber() == -1) {
-			System.out.println(ERROR_PLS_ENTER_INT);
-		} else if (editSpec.getTaskNumber() == -2) {
-			System.out.println(ERROR_INVALID_NUM_ARGS_FOR_EDIT);
+	
+	private void editEvent(EditSpecification edit, Storage taskLists) {
+		String fieldToEdit = edit.getFieldToEdit();
+		String theEdit = edit.getTheEdit();
+		Event e = (Event)taskList.getTaskObject(edit.getTaskNumber() - 1);
+		switch (fieldToEdit.trim()) {
+		case FIELD_START:
+			e.setStartDateAndTime(theEdit);
+			break;
+		case FIELD_END:
+			e.setEndDateAndTime(theEdit);
+			break;
+		case FIELD_NAME:
+			e.editName(theEdit);
+			break;
+		default:
+			System.out.println("invalid event field");
 		}
 	}
-
+	
+	private void sortCommand(Command cmd, Storage taskList) {
+		switch(cmd.getSortField()) {
+		case FIELD_NAME:
+			sortByName(taskList);
+			break;
+		case FIELD_DATE:
+			sortByDate(taskList);
+			break;
+		default:
+			System.out.println("invalid sort field");
+		} 
+	}
+	
+	private void sortByName(Storage taskList){
+		Collections.sort(taskList.getTaskArray(), new NameSorter());
+	}
+	
+	private void sortByDate(Storage taskList){
+		System.out.println("hi");
+		Collections.sort(taskList.getTaskArray(), new DateSorter());
+	}
+	
+	
+	
 	private boolean isValidTaskNumber(int taskNumber) {
 		if (taskNumber < 0) {
 			return false;
