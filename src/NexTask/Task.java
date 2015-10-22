@@ -1,7 +1,7 @@
 package NexTask;
 
 
-abstract class Task implements Cloneable{
+public abstract class Task implements Cloneable{
 	private String name;
 	private String searchField;
 	
