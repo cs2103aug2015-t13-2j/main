@@ -59,6 +59,10 @@ public class Event extends Task {
 	public Date getEndDateAndTime() {
 		return endDateAndTime;
 	}
+	
+	public String getSearchField(){
+		return searchField;
+	}
 
 	public void setEndDateAndTime(Date endDateAndTime) {
 		this.endDateAndTime = endDateAndTime;

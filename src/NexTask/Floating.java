@@ -27,5 +27,8 @@ public class Floating extends Task implements Cloneable {
 
 	}
 	
+	public String getSearchField(){
+		return searchField;
+	}
 
 }

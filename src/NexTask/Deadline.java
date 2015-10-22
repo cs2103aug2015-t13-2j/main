@@ -34,6 +34,9 @@ public class Deadline extends Task {
 		}
 	}
 	
+	public String getSearchField(){
+		return searchField;
+	}
 	
 	public Date getDueBy() {
 		return dueBy;
