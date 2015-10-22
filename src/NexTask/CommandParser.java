@@ -36,6 +36,7 @@ public class CommandParser {
 	private static final int NUM_EVENT_ARGS = 9;
 	private static final int NUM_DEADLINE_ARGS = 4;
 	private static final int NUM_SORT_ARGS = 1;
+	private static final int NUM_SEARCH_ARGS = 1;
 
 
 	private static final int INVALID_TASK_NUMBER = -1;
@@ -473,6 +474,8 @@ public class CommandParser {
 		Command cmd = new Command();
 		if (isCorrectNumArguments(USER_COMMAND_SEARCH, arguments)) {
 			cmd.setSearchSpecification(concatenate(arguments));
+			cmd.setCommandName(USER_COMMAND_SEARCH);
+			
 		} else {
 			cmd = initInvalidCommand(INVALID_NUM_ARGUMENTS);
 		}
@@ -645,6 +648,8 @@ public class CommandParser {
 		case TASK_TYPE_EVENT:
 			isCorrectNumArgs = arguments.size() >= NUM_EVENT_ARGS;
 			break;
+		case USER_COMMAND_SEARCH:
+			isCorrectNumArgs = arguments.size() >= NUM_SEARCH_ARGS;
 		default:
 			break;
 		}

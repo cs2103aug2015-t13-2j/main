@@ -178,20 +178,24 @@ public class Logic {
 		int numOfResult = 0;
 		
 		if (numOfIncomplete > 0){
+			System.out.println("Incomplete:");
 			for (int i = 0; i < numOfIncomplete; i++){
 				Task task = taskList.getTaskArray().get(i);
+				
 				if (task.getSearchField().contains(searchSpecification)){
-					System.out.println(task.getName());
+					System.out.println(i + 1 + ". " + task.getName());
 					numOfResult ++;
 				}
 			}
 		}
 		
 		if (numOfCompleted > 0){
+			System.out.println("Completed:");
+			
 			for (int i = 0; i < numOfCompleted; i++){
 				Task task = taskList.getCompletedTasks().get(i);
 				if (task.getSearchField().contains(searchSpecification)){
-					System.out.println(task.getName());
+					System.out.println(i + 1 + ". " + task.getName());
 					numOfResult ++;
 				}
 			}

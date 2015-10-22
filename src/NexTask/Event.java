@@ -51,6 +51,10 @@ public class Event extends Task {
 			System.out.println("error parsing start date");
 		}
 	}
+	
+	public String getSearchField(){
+		return searchField;
+	}
 
 	public Date getEndDateAndTime() {
 		return endDateAndTime;

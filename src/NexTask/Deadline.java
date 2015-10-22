@@ -40,6 +40,10 @@ public class Deadline extends Task {
 		}
 	}
 	
+	public String getSearchField(){
+		return searchField;
+	}
+	
 	@Override
 	boolean equals(Task other) {
 		if(other instanceof Deadline) {
