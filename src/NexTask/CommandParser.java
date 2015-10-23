@@ -100,7 +100,7 @@ public class CommandParser {
 			command = initEditCommand(arguments);
 			break;
 		case USER_COMMAND_STORE:
-			command = initStoreCommand();
+			command = initStoreCommand(arguments);
 			break;
 		case USER_COMMAND_SEARCH:
 			command = initSearchCommand(arguments);
@@ -484,9 +484,13 @@ public class CommandParser {
 	 * 
 	 * @return Command object with commandName set to "store"
 	 */
-	private Command initStoreCommand() {
+	private Command initStoreCommand(ArrayList<String> arguments) {
 		Command c = new Command();
 		c.setCommandName(USER_COMMAND_STORE);
+		if (arguments.size()>0){
+			c.setDirectory(arguments.get(0));
+		}
+		
 		return c;
 	}
 
