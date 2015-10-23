@@ -192,6 +192,7 @@ public class Logic {
 					for (String specification: searchSpecification){
 						if (search.equals(specification)){
 							match = true;
+							numOfResult ++;
 						}
 					}
 				}
@@ -199,7 +200,7 @@ public class Logic {
 				if (match){
 					System.out.println(i + 1 + ". " + task.getName());
 				}
-				numOfResult ++;
+				
 			}
 		}
 		
@@ -213,6 +214,7 @@ public class Logic {
 					for (String specification: searchSpecification){
 						if (search.equals(specification)){
 							match = true;
+							numOfResult ++;
 						}
 					}
 				}
@@ -220,7 +222,6 @@ public class Logic {
 				if (match){
 					System.out.println(i + 1 + ". " + task.getName());
 				}
-				numOfResult ++;
 			}
 		}
 		
