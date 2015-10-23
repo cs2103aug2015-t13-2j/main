@@ -1,9 +1,9 @@
 package NexTask;
 
+import java.util.ArrayList;
 
 public abstract class Task implements Cloneable{
 	private String name;
-	private String searchField;
 	
 
 	public Task() {
@@ -12,6 +12,7 @@ public abstract class Task implements Cloneable{
 	public Task(String name){
 		this.name = name;
 	}
+	
 	
 	public Object clone()throws CloneNotSupportedException{  
 		return super.clone();  
@@ -24,11 +25,9 @@ public abstract class Task implements Cloneable{
 	public void editName(String name){
 		this.name = name;
 	}
-	
-	public String getSearchField(){
-		return searchField;
-	}
-	
 	abstract boolean equals(Task other);
+	public String getSearchField() {
+		return null;
+	}
 
 }

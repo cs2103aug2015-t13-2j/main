@@ -176,7 +176,7 @@ public class Logic {
 	
 	private String searchCommand(Command cmd, Storage taskList){
 		String searchMsg = "";
-		String searchSpecification = cmd.getSearchSpecification();
+		String[] searchSpecification = cmd.getSearchSpecification().split(" ");
 		
 		int numOfIncomplete = taskList.getSize();
 		int numOfCompleted  = taskList.getCompletedSize();
@@ -186,10 +186,20 @@ public class Logic {
 			System.out.println("Incomplete:");
 			for (int i = 0; i < numOfIncomplete; i++){
 				Task task = taskList.getTaskArray().get(i);
-				if (task.getSearchField().contains(searchSpecification)){
-					System.out.println(i + 1 + ". " + task.getName());
-					numOfResult ++;
+				boolean match = false;
+				String [] searchField = task.getSearchField().split(" ");
+				for (String search: searchField){
+					for (String specification: searchSpecification){
+						if (search.equals(specification)){
+							match = true;
+						}
+					}
 				}
+				
+				if (match){
+					System.out.println(i + 1 + ". " + task.getName());
+				}
+				numOfResult ++;
 			}
 		}
 		
@@ -197,10 +207,20 @@ public class Logic {
 			System.out.println("Completed:");
 			for (int i = 0; i < numOfCompleted; i++){
 				Task task = taskList.getCompletedTasks().get(i);
-				if (task.getSearchField().contains(searchSpecification)){
-					System.out.println(i + 1 + ". " + task.getName());
-					numOfResult ++;
+				boolean match = false;
+				String [] searchField = task.getSearchField().split(" ");
+				for (String search: searchField){
+					for (String specification: searchSpecification){
+						if (search.equals(specification)){
+							match = true;
+						}
+					}
 				}
+				
+				if (match){
+					System.out.println(i + 1 + ". " + task.getName());
+				}
+				numOfResult ++;
 			}
 		}
 		

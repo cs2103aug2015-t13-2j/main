@@ -19,7 +19,7 @@ public class Event extends Task {
 		super(name);
 		this.startDateAndTime = start;
 		this.endDateAndTime = end;
-		this.searchField = name + start.toString() + end.toString();
+		this.searchField = name + " " + start.toString() + " " + end.toString();
 	}
 	
 	public Event(String name, String start,  String end) throws ParseException {

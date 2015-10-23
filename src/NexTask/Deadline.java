@@ -22,7 +22,7 @@ public class Deadline extends Task {
 	public Deadline(String name, Date dueBy) {
 		super(name);
 		this.dueBy = dueBy;
-		this.searchField = name + dueBy.toString();
+		this.searchField = name + " " +  dueBy.toString();
 	}
 	
 	public Deadline(String name, String dueBy) {
