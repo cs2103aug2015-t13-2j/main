@@ -10,7 +10,7 @@ import NexTask.*;
 
 public class StorageTest {
 	private String userPath = "Desktop";
-	private Task todo = new Floating("a");
+	private Task todo = new Task("a");
 	private ArrayList<Task> testArray = new ArrayList<Task>();
 	private ArrayList<Task> testComplete;
 	private ArrayList<String> prevCommand;
@@ -28,7 +28,7 @@ public class StorageTest {
 	public void testGetCompletedSize() {
 		ArrayList<Task> testArray = new ArrayList<Task>();
 		Storage storage = new Storage(userPath, testArray);
-		Task todo = new Floating("a");
+		Task todo = new Task("a");
 		testArray.add(todo);
 		storage.markComplete(0);
 		assertEquals(storage.getCommandSize(), 0);
@@ -37,7 +37,7 @@ public class StorageTest {
 	@Test
 	public void testGetCompletedTasks() {
 		Storage storage = new Storage(userPath, testArray);
-		Task todo = new Floating("a");
+		Task todo = new Task("a");
 		testArray.add(todo);
 		storage.markComplete(0);
 		assertEquals(storage.getCommandSize(), 0);
@@ -47,7 +47,7 @@ public class StorageTest {
 	@Test
 	public void testDelete() {
 		Storage storage = new Storage(userPath, testArray);
-		Task todo = new Floating("a");
+		Task todo = new Task("a");
 		testArray.add(todo);
 		assertEquals(0, 0);
 	}

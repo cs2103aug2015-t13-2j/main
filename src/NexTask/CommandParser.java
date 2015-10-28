@@ -366,7 +366,12 @@ public class CommandParser {
 	}
 
 	private boolean isEvent(String args) {
-		if (args.contains(KW_START) || args.contains(KW_END)) {
+		String start = " " + KW_START + " ";
+		String end = " " + KW_END + " ";
+		//System.out.println(start);
+		//sSystem.out.println(end);
+		
+		if (args.contains(start) || args.contains(end)) {
 			return true;
 		} else {
 			return false;

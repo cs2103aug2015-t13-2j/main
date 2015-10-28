@@ -74,6 +74,7 @@ public class Logic {
 		if (isValid(cmd)) {
 			printMsg = performCommand(cmd, taskList);
 		} else {
+			System.out.println(cmd.getErrorMessage());
 			printMsg = display.messageSelector(EXEC_ERROR, EXEC_SUCCESSFUL);
 		}
 		return printMsg;
@@ -186,7 +187,7 @@ public class Logic {
 			for (int i = 0; i < numOfIncomplete; i++){
 				Task task = taskList.getTaskArray().get(i);
 				boolean match = false;
-				String [] searchField = task.getSearchField().split(" ");
+				String [] searchField = task.toString().split("[ :]+");
 				for (String search: searchField){
 					for (String specification: searchSpecification){
 						if (search.equals(specification)){
@@ -196,7 +197,7 @@ public class Logic {
 					}
 				}
 				if (match){
-					System.out.println(i + 1 + ". " + task.getName());
+					System.out.println(i + 1 + ". " + task.toString());
 				}	
 			}
 		}
@@ -205,7 +206,7 @@ public class Logic {
 			for (int i = 0; i < numOfCompleted; i++){
 				Task task = taskList.getCompletedTasks().get(i);
 				boolean match = false;
-				String [] searchField = task.getSearchField().split(" ");
+				String [] searchField = task.toString().split(" :");
 				for (String search: searchField){
 					for (String specification: searchSpecification){
 						if (search.equals(specification)){
@@ -215,7 +216,7 @@ public class Logic {
 					}
 				}	
 				if (match){
-					System.out.println(i + 1 + ". " + task.getName());
+					System.out.println(i + 1 + ". " + task.toString());
 				}
 			}
 		}
@@ -256,8 +257,8 @@ public class Logic {
 
 	private String editAppropriateField(EditSpecification edit, Storage taskLists ) {
 		String editMsg = "";
-		String fieldToEdit = edit.getFieldToEdit();
-		String theEdit = edit.getTheEdit();
+		String fieldToEdit = edit.getFieldToEdit().trim().toLowerCase();
+		String theEdit = edit.getTheEdit().trim().toLowerCase();
 		Task t = taskList.getTaskObject(edit.getTaskNumber() - 1);
 		if(fieldToEdit.equals(FIELD_START)) {
 			try{ 
@@ -325,21 +326,21 @@ public class Logic {
 
 	private String clearField(EditSpecification edit, Storage taskList) {
 		String editMsg = "";
-		String fieldToClear = edit.getFieldToClear();
+		String fieldToClear = edit.getFieldToClear().trim().toLowerCase();
 		Task t = taskList.getTaskObject(edit.getTaskNumber() - 1);
 		if(fieldToClear.equals(FIELD_START)) {
 			if(t.getTaskType().equals("event")) {
-				DateTime temp1 = t.getStart();
+				t.setCompleteBy(t.getEnd());
 				t.setStart(null);
-				t.setCompleteBy(temp1);
+				t.setEnd(null);
 				t.setTaskType("deadline");
 				editMsg = display.messageSelector(EXEC_EDIT, EXEC_SUCCESSFUL);
 			}
 		} else if (fieldToClear.equals(FIELD_END)) {
 			if(t.getTaskType().equals("event")) {
-				DateTime temp2 = t.getEnd();
+				t.setCompleteBy(t.getStart());
+				t.setStart(null);
 				t.setEnd(null);
-				t.setCompleteBy(temp2);
 				t.setTaskType("deadline");
 				editMsg = display.messageSelector(EXEC_EDIT, EXEC_SUCCESSFUL);
 			}

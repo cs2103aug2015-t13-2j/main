@@ -13,7 +13,7 @@ public class DisplayManager {
 	private static final String COMMAND_ADDED = "Task has been added!";
 	private static final String COMMAND_DONE = "Task has been marked as completed!";
 	private static final String COMMAND_DELETED = "Task has been deleted!";
-	private static final String COMMAND_EDIT = "Task has been editted!";
+	private static final String COMMAND_EDIT = "Task has been edited!";
 	private static final String COMMAND_UNDO = "Previous task has been undone!";
 	private static final String COMMAND_SEARCH = "Search results in %1$s: \n";
 	private static final String COMMAND_ARCHIVE = "Archive has been retrieved. Here is the list of completed tasks!";
@@ -53,6 +53,7 @@ public class DisplayManager {
 	private static final String ERROR_INVALID_FIELD_FOR_EDIT = "Invalid field to edit.";
 	private static final String ERROR_INVALID_NUM_ARGS_FOR_EDIT = "Invalid number of arguments for edit.";
 	private static final String ERROR_INVALID_TASK_NUMBER = "Please enter an integer as the task number.";
+	private static final String ERROR_INVALID_DATE_FORMAT = "Invalid date format.";
 	private static final String INVALID_COMMAND = "There is no such command available for usage.";
 
 	// commandAssigned = specified numbering of commands
@@ -101,13 +102,16 @@ public class DisplayManager {
 				returnMessage = COMMAND_EDIT;
 				break;
 			} else if (conditionOfExecution == 2) {
-				returnMessage = (String.format(NO_CONTENT, "edit")) + "\n" + ERROR_INVALID_NUM_ARGS_FOR_EDIT;
+				returnMessage = ERROR_INVALID_NUM_ARGS_FOR_EDIT;
 				break;
 			} else if (conditionOfExecution == 3) {
-				returnMessage = (String.format(NO_CONTENT, "edit")) + "\n" + ERROR_INVALID_TASK_NUMBER;
+				returnMessage = ERROR_INVALID_TASK_NUMBER;
+				break;
+			}else if (conditionOfExecution == 4) {
+				returnMessage = ERROR_INVALID_DATE_FORMAT;
 				break;
 			} else {
-				returnMessage = (String.format(NO_CONTENT, "edit")) + "\n" + ERROR_INVALID_FIELD_FOR_EDIT;
+				returnMessage = ERROR_INVALID_FIELD_FOR_EDIT;
 				break;
 			}
 		case 6: // completed message

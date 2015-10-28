@@ -1,0 +1,152 @@
+Greetings! NexTask is ready for use.
+If you need any help, please type "help" to retrieve the help guide!
+Command: 
+Task has been added!
+Command: 
+Task has been added!
+Command: 
+Task has been added!
+Command: 
+1. meeting1: start 29 Oct 2015 02:00 PM end 29 Oct 2015 06:00 PM
+2. meeting2: start 11 Nov 2015 12:00 PM end 11 Nov 2015 01:00 PM
+3. meeting3: start 11 Dec 2015 12:00 AM end 11 Dec 2015 01:00 AM
+
+Command: 
+Task has been added!
+Command: 
+Task has been added!
+Command: 
+Task has been added!
+Command: 
+1. meeting1: start 29 Oct 2015 02:00 PM end 29 Oct 2015 06:00 PM
+2. meeting2: start 11 Nov 2015 12:00 PM end 11 Nov 2015 01:00 PM
+3. meeting3: start 11 Dec 2015 12:00 AM end 11 Dec 2015 01:00 AM
+4. assn1 due: 30 Oct 2015 08:00 PM
+5. assn2 due: 31 Oct 2015 12:00 AM
+6. visit nancy: 11 Nov 2015 04:00 PM
+
+Command: 
+Task has been added!
+Command: 
+Task has been added!
+Command: 
+1. meeting1: start 29 Oct 2015 02:00 PM end 29 Oct 2015 06:00 PM
+2. meeting2: start 11 Nov 2015 12:00 PM end 11 Nov 2015 01:00 PM
+3. meeting3: start 11 Dec 2015 12:00 AM end 11 Dec 2015 01:00 AM
+4. assn1 due: 30 Oct 2015 08:00 PM
+5. assn2 due: 31 Oct 2015 12:00 AM
+6. visit nancy: 11 Nov 2015 04:00 PM
+7. do laundry
+8. yoga with my dog
+
+Command: 
+Task has been deleted!
+Command: 
+Task has been deleted!
+Command: 
+Task has been deleted!
+Command: 
+Task has been deleted!
+Command: 
+1. meeting1: start 29 Oct 2015 02:00 PM end 29 Oct 2015 06:00 PM
+2. assn1 due: 30 Oct 2015 08:00 PM
+3. visit nancy: 11 Nov 2015 04:00 PM
+4. yoga with my dog
+
+Command: 
+Task has been edited!
+Command: 
+Task has been edited!
+Command: 
+1. meeting with ham: 29 Oct 2015 02:00 PM
+2. assn1 due: 30 Oct 2015 08:00 PM
+3. visit nancy: 11 Nov 2015 04:00 PM
+4. yoga with my dog
+
+Command: 
+Task has been edited!
+Command: 
+1. meeting with ham
+2. assn1 due: 30 Oct 2015 08:00 PM
+3. visit nancy: 11 Nov 2015 04:00 PM
+4. yoga with my dog
+
+Command: 
+Task has been edited!
+Command: 
+1. meeting with ham: start 31 Oct 2015 09:00 PM end 31 Oct 2015 10:00 PM
+2. assn1 due: 30 Oct 2015 08:00 PM
+3. visit nancy: 11 Nov 2015 04:00 PM
+4. yoga with my dog
+
+Command: 
+Task has been edited!
+Command: 
+Task has been edited!
+Command: 
+Task has been edited!
+Command: 
+Task has been edited!
+Command: 
+1. meeting with ham: 31 Oct 2015 10:00 PM
+2. assn1 due
+3. visit nancy: start 11 Nov 2015 04:00 PM end 11 Nov 2015 05:00 PM
+4. yoga with my dog: start 01 Nov 2015 08:00 AM end 01 Nov 2015 09:00 AM
+
+Command: 
+Task has been added!
+Command: 
+Previous task has been undone!
+Command: 
+1. meeting with ham: 31 Oct 2015 10:00 PM
+2. assn1 due
+3. visit nancy: start 11 Nov 2015 04:00 PM end 11 Nov 2015 05:00 PM
+4. yoga with my dog: start 01 Nov 2015 08:00 AM end 01 Nov 2015 09:00 AM
+
+Command: 
+Task has been edited!
+Command: 
+Previous task has been undone!
+Command: 
+1. meeting with ham: 31 Oct 2015 10:00 PM
+2. assn1 due
+3. visit nancy: start 11 Nov 2015 04:00 PM end 11 Nov 2015 05:00 PM
+4. yoga with my dog: start 01 Nov 2015 08:00 AM end 01 Nov 2015 09:00 AM
+
+Command: 
+Previous task has been undone!
+Command: 
+1. meeting with ham: 31 Oct 2015 10:00 PM
+2. assn1 due: 30 Oct 2015 08:00 PM
+3. visit nancy: start 11 Nov 2015 04:00 PM end 11 Nov 2015 05:00 PM
+4. yoga with my dog: start 01 Nov 2015 08:00 AM end 01 Nov 2015 09:00 AM
+
+Command: 
+Previous task has been undone!
+Command: 
+1. meeting with ham: 31 Oct 2015 10:00 PM
+2. assn1 due: 30 Oct 2015 08:00 PM
+3. visit nancy: start 11 Nov 2015 04:00 PM end 11 Nov 2015 05:00 PM
+4. yoga with my dog
+
+Command: 
+Incomplete:
+1. meeting with ham: 31 Oct 2015 10:00 PM
+
+Command: 
+Incomplete:
+3. visit nancy: start 11 Nov 2015 04:00 PM end 11 Nov 2015 05:00 PM
+
+Command: 
+Incomplete:
+1. meeting with ham: 31 Oct 2015 10:00 PM
+4. yoga with my dog
+
+Command: 
+Task has been marked as completed!
+Command: 
+1. assn1 due
+
+Command: 
+File has been saved!
+Command: 

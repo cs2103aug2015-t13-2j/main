@@ -77,15 +77,6 @@ public class LogicTest {
 		for (String s : executionResult) {
 			assertEquals(true, s.equals(expected));
 		}
-
-		Floating f = (Floating) logic.getTaskList().getTaskObject(0);
-		Event e = (Event) logic.getTaskList().getTaskObject(1);
-		Deadline d = (Deadline) logic.getTaskList().getTaskObject(2);
-
-		assertEquals(true, f.toString().equals("exercise"));
-		assertEquals(true, e.toString().equals("lecture start: 11/11/11 3:00 PM end: 11/11/11 4:00 PM"));
-		assertEquals(true, d.toString().equals("hw due by: 11/11/11 5:00 PM"));
-
 	}
 
 	// Test executing edit command
