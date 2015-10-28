@@ -37,8 +37,8 @@ public class DisplayManager {
 	private static final String NO_ARCHIVE = "There are no completed tasks in archive!";
 	private static final String NO_CONTENT = "There is no task available to %1$s.";
 	private static final String COMMAND_ERROR = "Unrecognized command type entered! Please input a correct command type!";
-	private static final String UNABLE_TO_DELETE = "Sorry, unable to delete from %1$s!";
-	private static final String UNABLE_TO_SEARCH = "Sorry, unable to find %1$s in %2$s!";
+	private static final String UNABLE_TO_DELETE = "Sorry, unable to delete from task list!";
+	private static final String UNABLE_TO_SEARCH = "Sorry, unable to find any results for the search term!";
 	private static final String EXCEED_MAXSIZE_OF_TASK = "Sorry, the number you have entered exceeds the maximum number of tasks!";
 	//private static final String WRONG_NUM_FORMAT = "Sorry, the number you put is not in correct format";
 	private static final String UNABLE_TO_STORE = "Unable to store in the specified directory, please specify another valid directory!";
@@ -49,7 +49,6 @@ public class DisplayManager {
 			+ "To add a task with deadline: add deadline due by (date & time) (description of task).\n"
 			+ "To add a task with no deadline: add to-do (description of task).\n"
 			+ "To add a recurring task: add repeat (description of task).\n";
-	private static final String UNABLE_TO_COMPLETE = "There is no avaliable task to be marked as completed";
 	private static final String UNABLE_TO_SORT = "Unable to sort.";
 	private static final String ERROR_INVALID_FIELD_FOR_EDIT = "Invalid field to edit.";
 	private static final String ERROR_INVALID_NUM_ARGS_FOR_EDIT = "Invalid number of arguments for edit.";
@@ -58,7 +57,7 @@ public class DisplayManager {
 
 	// commandAssigned = specified numbering of commands
 	// 1. welcome message, 2. help, 3. add, 4. delete, 5. edit, 6. completed, 7.
-	// undo. 8. search, 9. error, 10. display, 11. store, 12. archive 13. done
+	// undo. 8. search, 9. error, 10. display, 11. store, 12. archive 13. sort
 
 	public String messageSelector(int commandAssigned, int conditionOfExecution) {
 		String returnMessage = "";
@@ -102,13 +101,13 @@ public class DisplayManager {
 				returnMessage = COMMAND_EDIT;
 				break;
 			} else if (conditionOfExecution == 2) {
-				returnMessage = (String.format(NO_CONTENT, "edit.")) + "\n" + ERROR_INVALID_NUM_ARGS_FOR_EDIT;
+				returnMessage = (String.format(NO_CONTENT, "edit")) + "\n" + ERROR_INVALID_NUM_ARGS_FOR_EDIT;
 				break;
 			} else if (conditionOfExecution == 3) {
-				returnMessage = (String.format(NO_CONTENT, "edit.")) + "\n" + ERROR_INVALID_TASK_NUMBER;
+				returnMessage = (String.format(NO_CONTENT, "edit")) + "\n" + ERROR_INVALID_TASK_NUMBER;
 				break;
 			} else {
-				returnMessage = (String.format(NO_CONTENT, "edit.")) + "\n" + ERROR_INVALID_FIELD_FOR_EDIT;
+				returnMessage = (String.format(NO_CONTENT, "edit")) + "\n" + ERROR_INVALID_FIELD_FOR_EDIT;
 				break;
 			}
 		case 6: // completed message
@@ -175,7 +174,8 @@ public class DisplayManager {
 		return returnMessage;
 	}
 	
-	public ArrayList<String> displayList(ArrayList<String> listOfTasks) {
+	/*public ArrayList<String> displayList(ArrayList<String> listOfTasks) {
 		return null;
 	}
+	*/
 }

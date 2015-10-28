@@ -9,7 +9,7 @@ import NexTask.*;
 public class DisplayManagerTest {
 
 	@Test
-	// 1st test for welcome messages
+	// 1st test for welcome messages [boundary case for [1-13] partition, [>2] partition]
 	public void DisplayManagerTest1() {
 		DisplayManager dispM = new DisplayManager();
 		String output = dispM.messageSelector(1, 500);
@@ -25,11 +25,19 @@ public class DisplayManagerTest {
 	}
 	
 	@Test
-	// 2nd test for welcome messages
+	// 3rd test for welcome messages
 	public void DisplayManagerTest3() {
 		DisplayManager dispM = new DisplayManager();
 		String output = dispM.messageSelector(1, 0);
 		assertEquals("Command: ", output);
+	}
+	
+	@Test
+	// 1st test for invalid command
+	public void DisplayManagerTest4() {
+		DisplayManager dispM = new DisplayManager();
+		String output = dispM.messageSelector(14, 0);
+		assertEquals("There is no such command available for usage.", output);
 	}
 	
 }

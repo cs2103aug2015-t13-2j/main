@@ -57,7 +57,7 @@ public class Logic {
 
 	private Storage taskList = new Storage("", new ArrayList<Task>());
 	private Task task;
-	private UI ui = new UI();
+	private GUI ui = new GUI();
 	private CommandParser parser = new CommandParser();
 	private DisplayManager display = new DisplayManager();
 	private String printMsg = "";
