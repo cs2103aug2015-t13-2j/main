@@ -1,8 +1,9 @@
 package NexTask;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
+
+import org.joda.time.DateTime;
 
 /**
  * Logic is the class where the user commands, once parsed by CommandParser,
@@ -13,7 +14,6 @@ import java.util.Collections;
  *
  */
 public class Logic {
-
 	private static final String CMD_EDIT = "edit";
 	private static final String CMD_ADD = "add";
 	private static final String CMD_DISPLAY = "display";
@@ -30,7 +30,6 @@ public class Logic {
 	private static final String FIELD_START = "start";
 	private static final String FIELD_END = "end";
 	private static final String FIELD_NAME = "name";
-	private static final String FIELD_DUE = "due";
 	private static final String FIELD_DATE = "date";
 
 	private static final String ERROR_NOTHING_TO_UNDO = "There is nothing to undo";
@@ -196,14 +195,11 @@ public class Logic {
 						}
 					}
 				}
-				
 				if (match){
 					System.out.println(i + 1 + ". " + task.getName());
-				}
-				
+				}	
 			}
 		}
-		
 		if (numOfCompleted > 0){
 			System.out.println("Completed:");
 			for (int i = 0; i < numOfCompleted; i++){
@@ -217,26 +213,23 @@ public class Logic {
 							numOfResult ++;
 						}
 					}
-				}
-				
+				}	
 				if (match){
 					System.out.println(i + 1 + ". " + task.getName());
 				}
 			}
 		}
-		
 		if (numOfResult == 0){
 			searchMsg = display.messageSelector(EXEC_SEARCH, EXEC_UNSUCCESSFUL);
 		} 
-		
 		return searchMsg;
 	}
 
 	private String editCommand(Command cmd, Storage taskList) {
-
 		String editMsg = "";
 		EditSpecification edit = cmd.getEditSpecification();
 		int taskNumber = edit.getTaskNumber() - 1;
+		String fieldToClear = edit.getFieldToClear();
 
 		if (isValidTaskNumber(taskNumber)) {
 			Task t = taskList.getTaskObject(edit.getTaskNumber() - 1);
@@ -249,20 +242,11 @@ public class Logic {
 			} catch (CloneNotSupportedException e) {
 				e.printStackTrace();
 			}
-			if (t instanceof Floating) {
-				editMsg = editTodo(edit, taskList);
-			} else if (t instanceof Deadline) {
-				try {
-					editMsg = editDeadline(edit, taskList);
-				} catch (ParseException e) {
-					editMsg = "Invalid date format.";
-				}
-			} else if (t instanceof Event) {
-				try {
-					editMsg = editEvent(edit, taskList);
-				} catch (ParseException e) {
-					editMsg = "Invalid date format.";
-				}
+			
+			if(!fieldToClear.equals("")) {
+				editMsg = clearField(edit, taskList);
+			} else {
+				editMsg = editAppropriateField(edit, taskList);
 			}
 		} else {
 			editMsg = display.messageSelector(EXEC_EDIT, EXEC_UNSUCCESSFUL2);
@@ -270,60 +254,118 @@ public class Logic {
 		return editMsg;
 	}
 
-	private String editTodo(EditSpecification edit, Storage taskLists) {
+	private String editAppropriateField(EditSpecification edit, Storage taskLists ) {
 		String editMsg = "";
 		String fieldToEdit = edit.getFieldToEdit();
 		String theEdit = edit.getTheEdit();
-		Floating f = (Floating) taskList.getTaskObject(edit.getTaskNumber() - 1);
-		if (fieldToEdit.equals(FIELD_NAME)) {
-			f.editName(theEdit);
+		Task t = taskList.getTaskObject(edit.getTaskNumber() - 1);
+		if(fieldToEdit.equals(FIELD_START)) {
+			try{ 
+				t.setStart(parser.parseDateTime(parser.getDateTime(theEdit)));
+			} catch(IllegalArgumentException e) {
+				return display.messageSelector(EXEC_EDIT, 4);
+			}
+			if(t.getTaskType().equals("deadline")) {
+				t.setEnd(t.getCompleteBy());
+				t.setCompleteBy(null);
+				t.setTaskType("event");
+			} else if(t.getTaskType().equals("todo")) {
+				t.setEnd(t.getStart().plusHours(1));
+				t.setTaskType("event");
+			}
+			editMsg = display.messageSelector(EXEC_EDIT, EXEC_SUCCESSFUL);
+		} else if(fieldToEdit.equals(FIELD_END)) {
+			try{ 
+				t.setEnd(parser.parseDateTime(parser.getDateTime(theEdit)));
+			} catch(IllegalArgumentException e) {
+				return display.messageSelector(EXEC_EDIT, 4);
+			}
+			if(t.getTaskType().equals("deadline")) {
+				t.setStart(t.getCompleteBy());
+				t.setCompleteBy(null);
+				t.setTaskType("event");
+			} else if(t.getTaskType().equals("todo")) {
+				t.setStart(t.getEnd().minusHours(1));
+				t.setTaskType("event");
+			}
+			editMsg = display.messageSelector(EXEC_EDIT, EXEC_SUCCESSFUL);
+		} else if(fieldToEdit.equals("by")) {
+			try{ 
+				t.setCompleteBy(parser.parseDateTime(parser.getDateTime(theEdit)));
+			} catch(IllegalArgumentException e) {
+				return display.messageSelector(EXEC_EDIT, 4);
+			}
+			if(t.getTaskType().equals("event")) {
+				t.setStart(null);
+				t.setEnd(null);
+			}
+			t.setTaskType("deadline");
+			editMsg = display.messageSelector(EXEC_EDIT, EXEC_SUCCESSFUL);
+		} else if(fieldToEdit.equals("on")) {
+			try{ 
+				t.setCompleteBy(parser.parseDateTime(parser.getDateTime(theEdit)));
+			} catch(IllegalArgumentException e) {
+				return display.messageSelector(EXEC_EDIT, 4);
+			}
+			if(t.getTaskType().equals("event")) {
+				t.setStart(null);
+				t.setEnd(null);
+			}
+			t.setTaskType("deadline");
+			editMsg = display.messageSelector(EXEC_EDIT, EXEC_SUCCESSFUL);
+		} else if(fieldToEdit.equals("name")) {
+			editMsg = display.messageSelector(EXEC_EDIT, EXEC_SUCCESSFUL);
+			t.setName(theEdit);
 			editMsg = display.messageSelector(EXEC_EDIT, EXEC_SUCCESSFUL);
 		} else {
-			//System.out.println("invalid todo field");
 			editMsg = display.messageSelector(EXEC_EDIT, 4);
 		}
 		return editMsg;
 	}
 
-	private String editDeadline(EditSpecification edit, Storage taskLists) throws ParseException {
+	private String clearField(EditSpecification edit, Storage taskList) {
 		String editMsg = "";
-		String fieldToEdit = edit.getFieldToEdit();
-		String theEdit = edit.getTheEdit();
-		Deadline d = (Deadline) taskList.getTaskObject(edit.getTaskNumber() - 1);
-		switch (fieldToEdit) {
-		case FIELD_DUE:
-			d.setDueBy(theEdit);
-			editMsg = display.messageSelector(EXEC_EDIT, EXEC_SUCCESSFUL);
-			break;
-		case FIELD_NAME:
-			d.editName(theEdit);
-			editMsg = display.messageSelector(EXEC_EDIT, EXEC_SUCCESSFUL);
-			break;
-		default:
-			editMsg = display.messageSelector(EXEC_EDIT, 4);
-		}
-		return editMsg;
-	}
-
-	private String editEvent(EditSpecification edit, Storage taskLists) throws ParseException {
-		String editMsg = "";
-		String fieldToEdit = edit.getFieldToEdit();
-		String theEdit = edit.getTheEdit();
-		Event e = (Event) taskList.getTaskObject(edit.getTaskNumber() - 1);
-		switch (fieldToEdit.trim()) {
-		case FIELD_START:
-			editMsg = display.messageSelector(EXEC_EDIT, EXEC_SUCCESSFUL);
-			e.setStartDateAndTime(theEdit);
-			break;
-		case FIELD_END:
-			editMsg = display.messageSelector(EXEC_EDIT, EXEC_SUCCESSFUL);
-			e.setEndDateAndTime(theEdit);
-			break;
-		case FIELD_NAME:
-			editMsg = display.messageSelector(EXEC_EDIT, EXEC_SUCCESSFUL);
-			e.editName(theEdit);
-			break;
-		default:
+		String fieldToClear = edit.getFieldToClear();
+		Task t = taskList.getTaskObject(edit.getTaskNumber() - 1);
+		if(fieldToClear.equals(FIELD_START)) {
+			if(t.getTaskType().equals("event")) {
+				DateTime temp1 = t.getStart();
+				t.setStart(null);
+				t.setCompleteBy(temp1);
+				t.setTaskType("deadline");
+				editMsg = display.messageSelector(EXEC_EDIT, EXEC_SUCCESSFUL);
+			}
+		} else if (fieldToClear.equals(FIELD_END)) {
+			if(t.getTaskType().equals("event")) {
+				DateTime temp2 = t.getEnd();
+				t.setEnd(null);
+				t.setCompleteBy(temp2);
+				t.setTaskType("deadline");
+				editMsg = display.messageSelector(EXEC_EDIT, EXEC_SUCCESSFUL);
+			}
+		} else if (fieldToClear.equals("times")) {
+			if(t.getTaskType().equals("event")) {
+				t.setStart(null);
+				t.setEnd(null);	
+				editMsg = display.messageSelector(EXEC_EDIT, EXEC_SUCCESSFUL);
+			} else if(t.getTaskType().equals("deadline")) {
+				t.setCompleteBy(null);
+				editMsg = display.messageSelector(EXEC_EDIT, EXEC_SUCCESSFUL);
+			}
+			t.setTaskType("todo");
+		} else if (fieldToClear.equals("by")) {
+			if(t.getTaskType().equals("deadline")) {
+				t.setCompleteBy(null);
+				t.setTaskType("todo");
+				editMsg = display.messageSelector(EXEC_EDIT, EXEC_SUCCESSFUL);
+			}
+		} else if (fieldToClear.equals("on")) {
+			if(t.getTaskType().equals("deadline")) {
+				t.setCompleteBy(null);
+				t.setTaskType("todo");
+				editMsg = display.messageSelector(EXEC_EDIT, EXEC_SUCCESSFUL);
+			}
+		} else {
 			editMsg = display.messageSelector(EXEC_EDIT, 4);
 		}
 		return editMsg;

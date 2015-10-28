@@ -1,32 +1,31 @@
 package NexTask;
 
 import java.util.Comparator;
-import java.util.Date;
+
+import org.joda.time.DateTime;
 
 public class DateSorter implements Comparator<Task>{
 	
 	public int compare(Task t1, Task t2) {
-		if ((t1 instanceof Floating) && (t2 instanceof Floating)){
+		if ((t1.getTaskType().equals("todo")) && (t2.getTaskType().equals("todo"))){
 			return 0;
-		} else if(t1 instanceof Floating) {
+		} else if(t1.getTaskType().equals("todo")) {
 			return 1;
-		} else if(t2 instanceof Floating) {
+		} else if(t2.getTaskType().equals("todo")) {
 			return -1;
 		} else {
-			Date d1 = getTaskDate(t1);
-			Date d2 = getTaskDate(t2);
+			DateTime d1 = getTaskDate(t1);
+			DateTime d2 = getTaskDate(t2);
 			return d1.compareTo(d2);
 		}
 	}
 
-	private Date getTaskDate(Task t) {
-		assert(!(t instanceof Floating));
-		if(t instanceof Event) {
-			Event e = (Event)t;
-			return e.getStartDateAndTime();
+	private DateTime getTaskDate(Task t) {
+		assert(!(t.getTaskType().equals("todo")));
+		if(t.getTaskType().equals("event")) {
+			return t.getStart();
 		} else {
-			Deadline d = (Deadline)t;
-			return d.getDueBy();
+			return t.getCompleteBy();
 		} 
 	}
 		

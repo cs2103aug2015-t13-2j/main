@@ -1,660 +1,383 @@
 package NexTask;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.logging.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-/**
- * Command Parser parses user input and create commands with appropriate fields
- * initialized.
- * 
- * @author Jenny
- */
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
 public class CommandParser {
-	private static final String REGEX_WHITESPACES = "[\\s,]+";
+	// Date time format
+	private static final String DATE_TIME_FMT_1 = "dd/MM/yy";
+	private static final String DATE_TIME_FMT_2 = "dd/MM/yy hh:mma";
+	private static final String DATE_TIME_FMT_3 = "dd/MM/yy hh:mm a";
 
-	private static final int POSITION_OF_COMMAND = 0;
-	private static final int POSITION_OF_FIRST_ARGUMENT = 1;
-	private static final int POSITION_OF_TASK_TYPE = 0;
-	private static final int POSITION_OF_FIRST_TASK_FIELD = 1;
-	private static final int POSITION_OF_TASK_NUMBER = 0;
-	private static final int POSITION_OF_FIELD_TO_EDIT = 1;
-	private static final int POSITION_OF_EDIT = 2;
-	private static final int POSITION_OF_DEADLINE_START = 0;
-	private static final int POSITION_OF_DEADLINE_END = 3;
-	private static final int POSITION_OF_EVENT_NAME = 8;
-	private static final int POSITION_OF_FIELD_TO_SORT = 0;
-
-
-	private static final int NUM_EDIT_ARGS = 3;
-	private static final int NUM_TODO_ARGS = 1;
-	private static final int NUM_DELETE_ARGS = 1;
-	private static final int NUM_COMPLETE_ARGS = 1;
-	private static final int NUM_EVENT_ARGS = 9;
-	private static final int NUM_DEADLINE_ARGS = 4;
-	private static final int NUM_SORT_ARGS = 1;
-	private static final int NUM_SEARCH_ARGS = 1;
-
-
-
-	private static final int INVALID_TASK_NUMBER = -1;
-	private static final String INVALID_EVENT_FORMAT = "Please input event according to format. Type help to view manual.";
-	private static final String INVALID_DATE_FORMAT = "Error parsing date.";
-	private static final String INVALID_NUM_ARGUMENTS = "Not enough arguments. Type help to refer to manual.";
-	private static final String INVALID_COMMAND = "Invalid Command";
-	private static final String INVALID_TASK_TYPE = "Invalid task type";
-	private static final String INVALID_TASK_NUM = "Please provide a valid task number.";
-
+	// Indices
+	private static final int POSITION_OF_CMD = 0;
+	private static final int POSITION_OF_CMD_ARGS = 1;
+	// Size
+	private static final String EMPTY_STRING = "";
+	// Command types
 	private static final String USER_COMMAND_ADD = "add";
 	private static final String USER_COMMAND_DELETE = "delete";
 	private static final String USER_COMMAND_DISPLAY = "display";
 	private static final String USER_COMMAND_EDIT = "edit";
 	private static final String USER_COMMAND_EXIT = "exit";
 	private static final String USER_COMMAND_STORE = "store";
-	private static final String USER_COMMAND_INVALID = "invalid";
 	private static final String USER_COMMAND_SEARCH = "search";
 	private static final String USER_COMMAND_COMPLETE = "complete";
 	private static final String USER_COMMAND_HELP = "help";
 	private static final String USER_COMMAND_UNDO = "undo";
 	private static final String USER_COMMAND_SORT = "sort";
 	private static final String USER_COMMAND_ARCHIVE = "archive";
+	private static final String INVALID = "invalid";
 
+	// Task types
 	private static final String TASK_TYPE_EVENT = "event";
 	private static final String TASK_TYPE_DEADLINE = "deadline";
 	private static final String TASK_TYPE_TODO = "todo";
+	// Keywords
+	private static final String KW_START = "start";
+	private static final String KW_END = "end";
+	private static final String KW_ON = "on";
+	private static final String KW_BY = "by";
+	private static final String KW_CLEAR = "clear";
 
-	private static final String EVENT_KEYWORD_START = "start";
-	private static final String EVENT_KEYWORD_END = "end";
+	// Patterns
+	private static final String PATTERN_DATE = "\"([^\"]*)\"";
+	private static final String PATTERN_TASK_NAME = "([\\w\\s]+)";
 
-	private static final SimpleDateFormat DATE_TIME_FORMAT = new SimpleDateFormat("dd/MM/yy h:mm a");
-
-	private static Logger logger = Logger.getLogger("CommandParser");
-
-	/**
-	 * Parses user input and returns a command object with appropriate fields
-	 * initialized. If user input is of incorrect format, an invalid will be 
-	 * initialized. 
-	 * 
-	 * @param userInput
-	 * @return instance of Command with appropriate fields initialized.
-	 */
 	public Command parse(String userInput) {
-		ArrayList<String> parameters = splitString(userInput);
-		String userCommand = getCommand(parameters);
-		ArrayList<String> arguments = getCommandDetails(parameters);
-		Command command = null;
-		switch (userCommand.toLowerCase().trim()) {
+		// check if user input empty
+		String[] input = userInput.split(" ", 2);
+		String userCommand;
+		String commandArgs;
+		if (input.length > 1) {
+			userCommand = getCommand(input);
+			commandArgs = getCommandArgs(input);
+		} else {
+			userCommand = userInput.trim();
+			commandArgs = EMPTY_STRING;
+		}
+		switch (userCommand) {
 		case USER_COMMAND_ADD:
-			command = initAddCommand(arguments);
-			break;
-		case USER_COMMAND_DELETE:
-			command = initDeleteCommand(arguments);
-			break;
-		case USER_COMMAND_DISPLAY:
-			command = initDisplayCommand();
-			break;
+			return initAddCommand(commandArgs);
 		case USER_COMMAND_EDIT:
-			command = initEditCommand(arguments);
-			break;
-		case USER_COMMAND_STORE:
-			command = initStoreCommand(arguments);
-			break;
-		case USER_COMMAND_SEARCH:
-			command = initSearchCommand(arguments);
-			break;
-		case USER_COMMAND_UNDO:
-			command = initUndoCommand();
-			break;
-		case USER_COMMAND_SORT:
-			command = initSortCommand(arguments);
-			break;
-		case USER_COMMAND_HELP:
-			command = initHelpCommand();
-			break;
+			return initEditCommand(commandArgs);
+		case USER_COMMAND_DELETE:
+			return initDeleteCommand(commandArgs);
 		case USER_COMMAND_COMPLETE:
-			command = initCompleteCommand(arguments);
-			break;
+			return initCompleteCommand(commandArgs);
+		case USER_COMMAND_SEARCH:
+			return initSearchCommand(commandArgs);
+		case USER_COMMAND_SORT:
+			return initSortCommand(commandArgs);
+		case USER_COMMAND_STORE:
+			return initStoreCommand(commandArgs);
+		case USER_COMMAND_DISPLAY:
+			return initCommand(USER_COMMAND_DISPLAY);
 		case USER_COMMAND_ARCHIVE:
-			command = initArchiveCommand();
-			break;
+			return initCommand(USER_COMMAND_ARCHIVE);
+		case USER_COMMAND_HELP:
+			return initCommand(USER_COMMAND_HELP);
+		case USER_COMMAND_UNDO:
+			return initCommand(USER_COMMAND_UNDO);
 		case USER_COMMAND_EXIT:
-			command = initExitCommand();
-			break;
+			return initCommand(USER_COMMAND_EXIT);
 		default:
-			command = initInvalidCommand(INVALID_COMMAND);
+			return initInvalidCommand("Please enter a command");
 		}
-		// logger.log(Level.INFO, "end of parsing");
-		return command;
 	}
 
-	/**
-	 * Initializes an add command.
-	 * 
-	 * @param commandDetails
-	 *            The details for the add command.
-	 * @return Command object with "task" initialized accordingly. if the user
-	 *         does not provide an appropriate command type, an invalid command
-	 *         will be initialized.
-	 */
-	private Command initAddCommand(ArrayList<String> commandDetails) {
-		// logger.log(Level.INFO, "going to start parse add command");
-		Command addCommand;
-		String taskType = commandDetails.get(POSITION_OF_TASK_TYPE);
-		ArrayList<String> taskDetails = new ArrayList<String>(
-				commandDetails.subList(POSITION_OF_FIRST_TASK_FIELD, commandDetails.size()));
-		switch (taskType.toLowerCase().trim()) {
-		case TASK_TYPE_EVENT:
-			addCommand = initAddEventCommand(taskDetails);
-			break;
-		case TASK_TYPE_DEADLINE:
-			addCommand = initAddDeadlineCommand(taskDetails);
-			break;
-		case TASK_TYPE_TODO:
-			addCommand = initAddTodoCommand(taskDetails);
-			break;
-		default:
-			addCommand = initInvalidCommand(INVALID_TASK_TYPE);
-			break;
-		}
-		return addCommand;
+	public String getCommand(String[] input) {
+		return input[POSITION_OF_CMD];
 	}
 
-	/**
-	 * Initializes an add command for events.
-	 * 
-	 * @param eventDetails
-	 *            The details regarding the event.
-	 * @return Command object with "task" initialized as a new event. If the
-	 *         user does not enter event details in the appropriate format, an
-	 *         invalid command will be initialized.
-	 */
-	private Command initAddEventCommand(ArrayList<String> eventDetails) {
+	public String getCommandArgs(String[] input) {
+		return input[POSITION_OF_CMD_ARGS];
+	}
+
+	private Command initAddCommand(String commandArgs) {
 		Command cmd = new Command();
-		if (isCorrectNumArguments(TASK_TYPE_EVENT, eventDetails)) {
-			Event e = parseEvent(eventDetails);
-			if (e.getName().equals(INVALID_EVENT_FORMAT)) {
-				// logger.log(Level.INFO, "invalid event format, initializing
-				// invalid command");
-				cmd = initInvalidCommand(INVALID_EVENT_FORMAT);
-			} else if (e.getName().equals(INVALID_DATE_FORMAT)) {
-				// logger.log(Level.INFO, "invalid data format, initializing
-				// invalid command");
-				cmd = initInvalidCommand(INVALID_DATE_FORMAT);
+		if (isEvent(commandArgs.toLowerCase())) {
+			Task newEvent = parseEvent(commandArgs);
+			if (newEvent.getName().equals(INVALID)) {
+				return initInvalidCommand("Error parsing date");
 			} else {
 				cmd.setCommandName(USER_COMMAND_ADD);
-				cmd.setTask(e);
+				cmd.setTask(newEvent);
 			}
-		} else {
-			// logger.log(Level.INFO, "not enough arguments provided,
-			// initializing invalid command");
-			cmd = initInvalidCommand(INVALID_NUM_ARGUMENTS);
-		}
-		return cmd;
-	}
-
-	/**
-	 * Parses event details and creates an Event object.
-	 * 
-	 * @param eventDetails
-	 * @return An event object with fields initialized according. If the user
-	 *         does not enter in event details in the correct format, an invalid
-	 *         event will be created.
-	 */
-	private Event parseEvent(ArrayList<String> eventDetails) {
-		// logger.log(Level.INFO, "going to start parse event");
-
-		if (eventDetails.contains(EVENT_KEYWORD_START) && eventDetails.contains(EVENT_KEYWORD_END)) {
-			// Get start date from input
-			int indexOfStart = eventDetails.indexOf(EVENT_KEYWORD_START);
-			ArrayList<String> startDateParts = new ArrayList<String>(
-					eventDetails.subList(indexOfStart + 1, indexOfStart + 4));
-			String startDateString = concatenate(startDateParts);
-			// Get end date from input
-			int indexOfEnd = eventDetails.indexOf(EVENT_KEYWORD_END);
-			ArrayList<String> endDateParts = new ArrayList<String>(
-					eventDetails.subList(indexOfEnd + 1, indexOfEnd + 4));
-			String endDateString = concatenate(endDateParts);
-			// Get name from input
-			ArrayList<String> nameParts = new ArrayList<String>(
-					eventDetails.subList(POSITION_OF_EVENT_NAME, eventDetails.size()));
-			String name = concatenate(nameParts);
-
-			Date startDate = new Date();
-			Date endDate = new Date();
-
-			try {
-				startDate = DATE_TIME_FORMAT.parse(startDateString);
-				endDate = DATE_TIME_FORMAT.parse(endDateString);
-			} catch (ParseException e) {
-				//logger.log(Level.WARNING, "error parsing event date");
-				return new Event(INVALID_DATE_FORMAT);
-			}
-			return new Event(name, startDate, endDate);
-		} else {
-			return new Event(INVALID_EVENT_FORMAT);
-		}
-	}
-
-	/**
-	 * Initializes an add command for deadlines.
-	 * 
-	 * @param deadlineDetails
-	 *            The details regarding the deadline.
-	 * @return Command object with "task" initialized as a new deadline. If the
-	 *         user does not enter deadline details in the appropriate format,
-	 *         an invalid command will be initialized.
-	 */
-	private Command initAddDeadlineCommand(ArrayList<String> deadlineDetails) {
-		Command cmd = new Command();
-		if (isCorrectNumArguments(TASK_TYPE_DEADLINE, deadlineDetails)) {
-			Deadline d = parseDeadline(deadlineDetails);
-			if (d.getName().equals(INVALID_DATE_FORMAT)) {
-				cmd = initInvalidCommand(INVALID_DATE_FORMAT);
+		} else if (isDeadline(commandArgs.toLowerCase())) {
+			Task newDeadline = parseDeadline(commandArgs);
+			if (newDeadline.getName().equals(INVALID)) {
+				return initInvalidCommand("Error parsing date");
 			} else {
 				cmd.setCommandName(USER_COMMAND_ADD);
-				cmd.setTask(d);
+				cmd.setTask(newDeadline);
 			}
 		} else {
-			//logger.log(Level.WARNING, "invalid number of arguments");
-			cmd = initInvalidCommand(INVALID_NUM_ARGUMENTS);
+			Task newTodo = parseTodo(commandArgs);
+			if (newTodo.getName().equals(INVALID)) {
+				return initInvalidCommand("Error parsing date");
+			} else {
+				cmd.setCommandName(USER_COMMAND_ADD);
+				cmd.setTask(newTodo);
+			}
 		}
 		return cmd;
 	}
 
-	/**
-	 * Parses deadline details and creates an Deadline object.
-	 * 
-	 * @param deadlineDetails
-	 * @return An deadline object with fields initialized according. If the user
-	 *         does not enter in deadline details in the correct format, an
-	 *         invalid deadline will be created.
-	 */
-	private Deadline parseDeadline(ArrayList<String> deadlineDetails) {
-		ArrayList<String> dateParts = new ArrayList<String>(
-				deadlineDetails.subList(POSITION_OF_DEADLINE_START, POSITION_OF_DEADLINE_END));
-		String date = concatenate(dateParts);
-
-		ArrayList<String> nameParts = new ArrayList<String>(
-				deadlineDetails.subList(POSITION_OF_DEADLINE_END, deadlineDetails.size()));
-		String name = concatenate(nameParts);
-
-		Date dueBy = new Date();
-		try {
-			dueBy = DATE_TIME_FORMAT.parse(date);
-		} catch (ParseException e) {
-			//logger.log(Level.WARNING, "invalid date format");
-			return new Deadline(INVALID_DATE_FORMAT);
-		}
-		return new Deadline(name, dueBy);
-	}
-
-	/**
-	 * Initializes an add command for todo tasks.
-	 * 
-	 * @param todoDetails
-	 *            The details for the Todo task.
-	 * @return Command object with "task" initialized as a Floating task. If the
-	 *         user does not enter a name for todo task, an invalid command will
-	 *         be initialized.
-	 */
-	private Command initAddTodoCommand(ArrayList<String> todoDetails) {
-		Command cmd = new Command();
-		if (isCorrectNumArguments(TASK_TYPE_TODO, todoDetails)) {
-			cmd.setCommandName(USER_COMMAND_ADD);
-			cmd.setTask(parseTodo(todoDetails));
-		} else {
-			cmd = initInvalidCommand(INVALID_NUM_ARGUMENTS);
-		}
-		return cmd;
-	}
-
-	/**
-	 * Create new todo task.
-	 * 
-	 * @param todoDetails
-	 *            The details for the Todo task.
-	 * @return Task object with name initialized according to input.
-	 */
-	private Floating parseTodo(ArrayList<String> todoDetails) {
-		return new Floating(concatenate(todoDetails));
-	}
-
-	/**
-	 * Initialize an edit command.
-	 * 
-	 * @param arguments
-	 * @return Command object with "editSpecification" initialized accordingly.
-	 *         If user does not input command details in the correct format, an
-	 *         invalid command will be initialzed.
-	 * 
-	 */
-	private Command initEditCommand(ArrayList<String> arguments) {
+	private Command initEditCommand(String commandArgs) {
 		Command cmd = new Command();
 		EditSpecification edit = new EditSpecification();
-		if (isCorrectNumArguments(USER_COMMAND_EDIT, arguments)) {
-			int taskNumber = retrieveTaskNumber(arguments);
-			if (taskNumber == INVALID_TASK_NUMBER) {
-				cmd = initInvalidCommand(INVALID_TASK_NUM);
-			} else {
-				edit.setTaskNumber(taskNumber);
-				edit.setFieldToEdit(retrieveFieldToEdit(arguments));
-				edit.setTheEdit(retrieveTheEdit(arguments));
+		String[] editArgs = commandArgs.split(" ", 3);
+		try {
+			edit.setTaskNumber(Integer.parseInt(editArgs[0]));
+		} catch (NumberFormatException e) {
+			return initInvalidCommand("Please specify an integer for task number.");
+		}
 
-				cmd.setCommandName(USER_COMMAND_EDIT);
-				cmd.setEditSpecification(edit);
+		String fieldOrClear;
+		String argumentsForEdit;
+		try {
+			fieldOrClear = editArgs[1];
+			argumentsForEdit = editArgs[2];
+		} catch (IndexOutOfBoundsException e) {
+			return initInvalidCommand("Invalid number of arguments");
+		}
+
+		switch (fieldOrClear) {
+		case KW_CLEAR:
+			edit.setFieldToClear(argumentsForEdit);
+			break;
+		default:
+			edit.setFieldToEdit(editArgs[1]);
+			edit.setTheEdit(argumentsForEdit);
+		}
+
+		cmd.setEditSpecification(edit);
+		cmd.setCommandName(USER_COMMAND_EDIT);
+		return cmd;
+	}
+
+	private Command initDeleteCommand(String commandArgs) {
+		Command cmd = new Command();
+		cmd.setCommandName(USER_COMMAND_DELETE);
+		if (commandArgs.equals(EMPTY_STRING)) {
+			cmd = initInvalidCommand("Please provide a task number.");
+		} else {
+			try {
+				cmd.setTaskNumber(Integer.parseInt(commandArgs));
+			} catch (NumberFormatException e) {
+				return initInvalidCommand("Please specify an integer for task number.");
 			}
-		} else {
-			cmd = initInvalidCommand(INVALID_NUM_ARGUMENTS);
-		}
-
-		return cmd;
-	}
-
-	/**
-	 * Initializes a display command.
-	 * 
-	 * @return Command object with commandName set to "display"
-	 */
-	private Command initDisplayCommand() {
-		Command c = new Command();
-		c.setCommandName(USER_COMMAND_DISPLAY);
-		return c;
-	}
-
-	/**
-	 * Initializes an archive command.
-	 * 
-	 * @return Command object with commandName set to "archive"
-	 */
-	private Command initArchiveCommand() {
-		Command c = new Command();
-		c.setCommandName(USER_COMMAND_ARCHIVE);
-		return c;
-	}
-
-	/**
-	 * Initializes an undo command.
-	 * 
-	 * @return Command object with commandName set to "archive"
-	 */
-	private Command initUndoCommand() {
-		Command c = new Command();
-		c.setCommandName(USER_COMMAND_UNDO);
-		return c;
-	}
-
-	/**
-	 * Initializes a sort command.
-	 * 
-	 * @return Command object with sortField set accordingly. If the user does
-	 *         not enter a field, an invalid command will be initialized.
-	 */
-	private Command initSortCommand(ArrayList<String> arguments) {
-		Command cmd = new Command();
-		String sortField;
-		if (isCorrectNumArguments(USER_COMMAND_SORT, arguments)) {
-			sortField = arguments.get(POSITION_OF_FIELD_TO_SORT);
-			cmd.setCommandName(USER_COMMAND_SORT);
-			cmd.setSortField(sortField);
-		} else {
-			cmd = initInvalidCommand(INVALID_NUM_ARGUMENTS);
 		}
 		return cmd;
 	}
-	
 
-	/**
-	 * Initializes a delete command.
-	 * 
-	 * @param arguments
-	 *            The details for the delete command.
-	 * @return Command object with taskNumber initialized accordingly. If the
-	 *         user does not enter a valid task number, or if the user does not
-	 *         provide a task number, an invalid command will be initialized.
-	 */
-	private Command initDeleteCommand(ArrayList<String> arguments) {
+	private Command initCompleteCommand(String commandArgs) {
 		Command cmd = new Command();
-		int itemToDelete;
-		if (isCorrectNumArguments(USER_COMMAND_DELETE, arguments)) {
-			itemToDelete = retrieveTaskNumber(arguments);
-			if (itemToDelete == INVALID_TASK_NUMBER) {
-				cmd = initInvalidCommand(INVALID_TASK_NUM);
-			} else {
-				cmd.setCommandName(USER_COMMAND_DELETE);
-				cmd.setTaskNumber(itemToDelete);
+		cmd.setCommandName(USER_COMMAND_COMPLETE);
+		if (commandArgs.equals(EMPTY_STRING)) {
+			cmd = initInvalidCommand("Please provide a task number.");
+		} else {
+			try {
+				cmd.setTaskNumber(Integer.parseInt(commandArgs));
+			} catch (NumberFormatException e) {
+				return initInvalidCommand("Please specify an integer for task number.");
 			}
-		} else {
-			cmd = initInvalidCommand(INVALID_NUM_ARGUMENTS);
 		}
 		return cmd;
 	}
 
-	/**
-	 * Initializes a complete command.
-	 * 
-	 * @param arguments
-	 *            The details for the complete command.
-	 * @return Command object with taskNumber initialized accordingly. If the
-	 *         user does not enter a valid task number, or if the user does not
-	 *         provide a task number, an invalid command will be initialized.
-	 */
-	private Command initCompleteCommand(ArrayList<String> arguments) {
+	private Command initSearchCommand(String commandArgs) {
 		Command cmd = new Command();
-		int itemCompleted;
-		if (isCorrectNumArguments(USER_COMMAND_COMPLETE, arguments)) {
-			itemCompleted = retrieveTaskNumber(arguments);
-			if (itemCompleted == INVALID_TASK_NUMBER) {
-				cmd = initInvalidCommand(INVALID_TASK_NUM);
-			} else {
-				cmd.setCommandName(USER_COMMAND_COMPLETE);
-				cmd.setTaskNumber(itemCompleted);
-			}
+		if (commandArgs.equals(EMPTY_STRING)) {
+			return initInvalidCommand("Please provide a search keyword.");
 		} else {
-			cmd = initInvalidCommand(INVALID_NUM_ARGUMENTS);
-		}
-		return cmd;
-	}
-
-	/**
-	 * Initializes a search command.
-	 * 
-	 * @param arguments
-	 *            The details for the search command.
-	 * @return Command object with searchSpecification initialized accordingly.
-	 *         If user does not enter a term to search for, an invalid argument
-	 *         will be initialized.
-	 * 
-	 */
-	private Command initSearchCommand(ArrayList<String> arguments) {
-		Command cmd = new Command();
-		if (isCorrectNumArguments(USER_COMMAND_SEARCH, arguments)) {
 			cmd.setCommandName(USER_COMMAND_SEARCH);
-			cmd.setSearchSpecification(concatenate(arguments));
-		} else {
-			cmd = initInvalidCommand(INVALID_NUM_ARGUMENTS);
+			cmd.setSearchSpecification(commandArgs.trim());
 		}
 		return cmd;
 	}
 
-	/**
-	 * Initialize a store command.
-	 * 
-	 * @return Command object with commandName set to "store"
-	 */
-	private Command initStoreCommand(ArrayList<String> arguments) {
-		Command c = new Command();
-		c.setCommandName(USER_COMMAND_STORE);
-		if (arguments.size()>0){
-			c.setDirectory(arguments.get(0));
+	private Command initSortCommand(String commandArgs) {
+		Command cmd = new Command();
+		if (commandArgs.equals(EMPTY_STRING)) {
+			return initInvalidCommand("Please specify field you wish to sort by.");
+		} else {
+			cmd.setCommandName(USER_COMMAND_SORT);
+			cmd.setSortField(commandArgs.trim());
 		}
-		
-		return c;
+		return cmd;
 	}
 
-	/**
-	 * Initialize a help command.
-	 * 
-	 * @return Command object with commandName set to "help"
-	 */
-	private Command initHelpCommand() {
-		Command c = new Command();
-		c.setCommandName(USER_COMMAND_HELP);
-		return c;
+	private Command initStoreCommand(String commandArgs) {
+		Command cmd = new Command();
+		cmd.setCommandName(USER_COMMAND_STORE);
+		cmd.setDirectory(commandArgs.trim());
+		return cmd;
 	}
 
-	/**
-	 * Initializes an invalid command.
-	 * 
-	 * @return Command object with commandName set to "invalid" and error
-	 *         message initialized accordingly.
-	 */
+	public Task parseEvent(String args) {
+		Task newEvent = new Task();
+		newEvent.setTaskType(TASK_TYPE_EVENT);
+		boolean hasStart = false;
+		boolean hasEnd = false;
+		if (args.contains(KW_START)) {
+			try {
+				newEvent.setStart(parseDateTime(getDateTime(args, KW_START)));
+				newEvent.setName(getTaskName(args, KW_START));
+				hasStart = true;
+			} catch (IllegalArgumentException e) {
+				return new Task(INVALID);
+			}
+		}
+		if (args.contains(KW_END)) {
+			try {
+				if (!hasStart) {
+					newEvent.setName(getTaskName(args, KW_END));
+				}
+				newEvent.setEnd(parseDateTime(getDateTime(args, KW_END)));
+				hasEnd = true;
+			} catch (IllegalArgumentException e) {
+				return new Task(INVALID);
+			}
+		}
+		if (!hasStart) {
+			DateTime start = newEvent.getEnd().minusHours(1);
+			newEvent.setStart(start);
+		}
+		if (!hasEnd) {
+			DateTime end = newEvent.getStart().plusHours(1);
+			newEvent.setEnd(end);
+		}
+		return newEvent;
+	}
+
+	public Task parseDeadline(String args) {
+		Task newDeadline = new Task();
+		newDeadline.setTaskType(TASK_TYPE_DEADLINE);
+		if (args.contains(KW_ON)) {
+			try {
+				newDeadline.setCompleteBy(parseDateTime(getDateTime(args, KW_ON)));
+				newDeadline.setName(getTaskName(args, KW_ON));
+			} catch (IllegalArgumentException e) {
+				return new Task(INVALID);
+			}
+		} else {
+			try {
+				newDeadline.setCompleteBy(parseDateTime(getDateTime(args, KW_BY)));
+				newDeadline.setName(getTaskName(args, KW_BY));
+			} catch (IllegalArgumentException e) {
+				return new Task(INVALID);
+			}
+		}
+		return newDeadline;
+	}
+
+	public Task parseTodo(String args) {
+		Task newTodo = new Task();
+		newTodo.setTaskType(TASK_TYPE_TODO);
+		if ((args.trim()).equals(EMPTY_STRING)) {
+			return new Task(INVALID);
+		} else {
+			newTodo.setName(args);
+		}
+		return newTodo;
+	}
+
+	private Command initCommand(String commandName) {
+		Command cmd = new Command();
+		cmd.setCommandName(commandName);
+		return cmd;
+	}
+
 	private Command initInvalidCommand(String errorMessage) {
 		Command c = new Command();
-		c.setCommandName(USER_COMMAND_INVALID);
+		c.setCommandName(INVALID);
 		c.setErrorMessage(errorMessage);
 		return c;
 	}
 
 	/**
-	 * Initializes an exit command.
-	 * 
-	 * @return Command object with commandName set to "exit"
+	 * Helper method to get task name. Task name appears before first keyword.
 	 */
-	private Command initExitCommand() {
-		Command c = new Command();
-		c.setCommandName(USER_COMMAND_EXIT);
-		return c;
-	}
-
-	// ------------------ HELPER METHODS -------------------//
-	/**
-	 * Helper method to retrieve the task number from arguments.
-	 * 
-	 * @param arguments
-	 *            The details for the user command.
-	 * @return The appropriate task number if parse is successful, -1 otherwise.
-	 */
-	private int retrieveTaskNumber(ArrayList<String> arguments) {
-		int taskNumber;
-		try {
-			taskNumber = Integer.parseInt(arguments.get(POSITION_OF_TASK_NUMBER));
-		} catch (NumberFormatException exception) {
-			taskNumber = INVALID_TASK_NUMBER;
+	private String getTaskName(String args, String keyword) {
+		Pattern taskNamePattern = Pattern.compile(PATTERN_TASK_NAME + keyword);
+		Matcher m = taskNamePattern.matcher(args);
+		if (m.find()) {
+			return m.group(1).trim();
+		} else {
+			return "";
 		}
-		return taskNumber;
 	}
 
 	/**
-	 * Retrieve the field the user would like to edit. e.g. edit 2 name Call
-	 * home. This method will retrieve "name"
-	 * 
-	 * @param arguments
-	 *            The details for the edit command.
-	 * @return The field specified by user.
+	 * Helper method to get the date time from user input. Date time are wrapped
+	 * in quotes.
 	 */
-	private String retrieveFieldToEdit(ArrayList<String> arguments) {
-		return arguments.get(POSITION_OF_FIELD_TO_EDIT);
-	}
-
-	/**
-	 * Retrieve the last argument of edit command. e.g. edit 2 name Call home.
-	 * This method will retrieve "Call home."
-	 * 
-	 * @param arguments
-	 *            The details for the edit command.
-	 * @return The edit specified by user.
-	 */
-	private String retrieveTheEdit(ArrayList<String> arguments) {
-		return concatenate(new ArrayList<String>(arguments.subList(POSITION_OF_EDIT, arguments.size())));
-	}
-
-	/**
-	 * Helper method to concatenate the Strings of an ArrayList together.
-	 * Initially each parts of a name are different elements of an ArrayList
-	 * because of splitString. This method concatenates them to a single string.
-	 * 
-	 * @param nameParts
-	 *            An ArrayList<String> where each element is a word in the name.
-	 * @return The result string after concatenation.
-	 */
-	private String concatenate(ArrayList<String> nameParts) {
-		StringBuilder name = new StringBuilder();
-		for (int i = 0; i < nameParts.size(); i++) {
-			name.append(" " + nameParts.get(i));
+	public String getDateTime(String args) {
+		Pattern dateTimePattern = Pattern.compile(PATTERN_DATE);
+		Matcher m = dateTimePattern.matcher(args);
+		if (m.find()) {
+			return m.group(1);
+		} else {
+			return "";
 		}
-		return name.toString().trim();
+	}
+	
+	/**
+	 * Helper method to get the date time from user input. Date time are wrapped
+	 * in quotes.
+	 */
+	public String getDateTime(String args, String keyword) {
+		Pattern dateTimePattern = Pattern.compile(keyword + " " + PATTERN_DATE);
+		Matcher m = dateTimePattern.matcher(args);
+		if (m.find()) {
+			return m.group(1);
+		} else {
+			return "";
+		}
 	}
 
-	/**
-	 * Helper method for parse that splits user input string by white spaces.
-	 * 
-	 * @param arguments
-	 * @return
-	 */
-	private ArrayList<String> splitString(String arguments) {
-		String[] strArray = arguments.trim().split(REGEX_WHITESPACES);
-		return new ArrayList<String>(Arrays.asList(strArray));
-	}
-
-	/**
-	 * Helper method to retrieve the command of user input.
-	 * 
-	 * @param parameters
-	 * @return
-	 */
-	private String getCommand(ArrayList<String> parameters) {
-		return parameters.get(POSITION_OF_COMMAND);
-	}
-
-	/**
-	 * Helper method to retrieve the commandDetails entered with command.
-	 * 
-	 * @param commandDetails
-	 * @return
-	 */
-	private ArrayList<String> getCommandDetails(ArrayList<String> commandDetails) {
-		return new ArrayList<String>(commandDetails.subList(POSITION_OF_FIRST_ARGUMENT, commandDetails.size()));
-	}
-
-	/**
-	 * Helper method that checks if the correct number of arguments are entered.
-	 * 
-	 * @return If at least minimum number of arguments provided return true,
-	 *         otherwise return false.
-	 */
-	private boolean isCorrectNumArguments(String command, ArrayList<String> arguments) {
-		boolean isCorrectNumArgs = false;
-		switch (command) {
-		case USER_COMMAND_EDIT:
-			isCorrectNumArgs = arguments.size() >= NUM_EDIT_ARGS;
-			break;
-		case USER_COMMAND_DELETE:
-			isCorrectNumArgs = arguments.size() >= NUM_DELETE_ARGS;
-			break;
-		case USER_COMMAND_COMPLETE:
-			isCorrectNumArgs = arguments.size() >= NUM_COMPLETE_ARGS;
-			break;
-		case USER_COMMAND_SORT:
-			isCorrectNumArgs = arguments.size() >= NUM_SORT_ARGS;
-			break;	
-		case USER_COMMAND_SEARCH:
-			isCorrectNumArgs = arguments.size() >= NUM_SEARCH_ARGS;
-			break;	
-		case TASK_TYPE_TODO:
-			isCorrectNumArgs = arguments.size() >= NUM_TODO_ARGS;
-			break;
-		case TASK_TYPE_DEADLINE:
-			isCorrectNumArgs = arguments.size() >= NUM_DEADLINE_ARGS;
-			break;
-		case TASK_TYPE_EVENT:
-			isCorrectNumArgs = arguments.size() >= NUM_EVENT_ARGS;
-			break;
+	public DateTime parseDateTime(String dateTimeString) {
+		DateTimeFormatter formatter;
+		int numParams = getNumDateTimeParam(dateTimeString);
+		switch (numParams) {
+		case 1:
+			formatter = DateTimeFormat.forPattern(DATE_TIME_FMT_1);
+			return formatter.parseDateTime(dateTimeString);
+		case 2:
+			formatter = DateTimeFormat.forPattern(DATE_TIME_FMT_2);
+			return formatter.parseDateTime(dateTimeString);
 		default:
-			break;
+			formatter = DateTimeFormat.forPattern(DATE_TIME_FMT_3);
+			return formatter.parseDateTime(dateTimeString);
 		}
-		return isCorrectNumArgs;
+	}
+
+	/**
+	 * Helper method to determine how many parts did the user input date in.
+	 */
+	private int getNumDateTimeParam(String dateTimeString) {
+		return dateTimeString.split(" ").length;
+	}
+
+	private boolean isEvent(String args) {
+		if (args.contains(KW_START) || args.contains(KW_END)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	private boolean isDeadline(String addCmdArgs) {
+		if (addCmdArgs.contains(KW_ON) || addCmdArgs.contains(KW_BY)) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 }

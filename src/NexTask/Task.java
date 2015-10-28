@@ -1,33 +1,76 @@
 package NexTask;
 
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-public abstract class Task implements Cloneable{
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
+
+public class Task implements Cloneable{
 	private String name;
-	
+	private String taskType;
+	private DateTime start;
+	private DateTime end;
+	private DateTime completeBy;
 
 	public Task() {
 		this.name = "";
+		this.taskType = "";
+		this.start = null;
+		this.end = null;
+		this.completeBy = null;		
 	}
 	public Task(String name){
 		this.name = name;
 	}
-	
-	
 	public Object clone()throws CloneNotSupportedException{  
 		return super.clone();  
 	}
-	
-	public String getName() {
-		return this.name;
-	}
-	
-	public void editName(String name){
-		this.name = name;
-	}
-	abstract boolean equals(Task other);
 	public String getSearchField() {
 		return null;
 	}
-
+	public String getTaskType() {
+		return taskType;
+	}
+	public void setTaskType(String taskType) {
+		this.taskType = taskType;
+	}
+	public DateTime getStart() {
+		return start;
+	}
+	public void setStart(DateTime start) {
+		this.start = start;
+	}
+	public DateTime getEnd() {
+		return end;
+	}
+	public void setEnd(DateTime end) {
+		this.end = end;
+	}
+	public DateTime getCompleteBy() {
+		return completeBy;
+	}
+	public void setCompleteBy(DateTime completeBy) {
+		this.completeBy = completeBy;
+	}
+	public String getName() {
+		return this.name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String toString() {
+		DateTimeFormatter formmater = DateTimeFormat.forPattern("dd MMM yyyy hh:mm a");
+		if(taskType == "event") {
+			return this.getName() + ": start " + formmater.print(this.getStart())
+		+ " end " + formmater.print(this.getEnd());
+		} else if(taskType == "deadline") {
+			return this.getName() + ": " + formmater.print(this.getCompleteBy());
+		} else {
+			return this.getName();
+		}
+	}
 }
