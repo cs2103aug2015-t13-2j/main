@@ -1,7 +1,6 @@
 
 package NexTask;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -13,155 +12,149 @@ import java.util.ArrayList;
  *
  */
 public class Storage {
-    
-    
-    private static final String FILE_NAME = "NexTask.txt";
-    private static final String USER_FILE_NAME = "\\NexTask.txt";
-    private static final String PREV_ADD = "add";
-    private static final String PREV_DELETE = "delete";
-    private static final String PREV_EDIT = "edit";
-    private static String userPath = "";
-    private static int taskNum = 1;
-    public ArrayList<Task> taskArray;
-	public ArrayList<Command> prevCommands;
-	public ArrayList<Task> completedTasks;
-    
-    
-    public Storage(String directory, ArrayList<Task> taskArray) {
-        this.userPath = directory;
-        this.taskArray = taskArray;
-        this.prevCommands = new ArrayList<Command>();
-        this.completedTasks = new ArrayList<Task>();
-    }
-    
-    public String getPath(){
-            String dir = "";
-            if (userPath.equals("")){
-                dir = FILE_NAME;
-            } else{
-                dir = userPath + USER_FILE_NAME;
-            }        
-            return dir;
-    }
-    
+	// Constants
+	private static final String FILE_NAME = "NexTask.txt";
+	private static final String USER_FILE_NAME = "\\NexTask.txt";
 
-    public void storeToFile() {
-        String savePath = getPath();
-        try (PrintWriter writer = new PrintWriter(savePath)) {
-            for (Task line : taskArray) {
-                    
-                writer.println(taskNum + ". " + line.getName());
-                taskNum ++;
-            }
-          } catch (FileNotFoundException e) {
-              System.out.println(String.format(FILE_NAME));
-          }
-      }
-    
-    public String retrive(String fileName){   // Use this later.        
-            return fileName;
-    }
-    
-    /* Memory Manager */
-    
-    public void markComplete(int taskNum){
-    	completedTasks.add(taskArray.get(taskNum));
-    	taskArray.remove(taskNum);
-    }
-    
-    public int getCompletedSize(){
-    	return completedTasks.size();
-    }
-    
-    public ArrayList<Task> getCompletedTasks(){
-    	return completedTasks;
-    }
-    
-    public String getCompletedName(int num){
-    	Task task = completedTasks.get(num);
+	private static Storage theOne;
+
+	private String userPath;
+	private int taskNum;
+	private ArrayList<Task> taskArray;
+	private ArrayList<Command> prevCommands;
+	private ArrayList<Task> completedTasks;
+
+	private Storage() {
+		this.userPath = "";
+		this.taskNum = 1;
+		this.taskArray = new ArrayList<Task>();
+		this.prevCommands = new ArrayList<Command>();
+		this.completedTasks = new ArrayList<Task>();
+	}
+
+	public static Storage getInstance() {
+		if (theOne == null) {
+			theOne = new Storage();
+		}
+		return theOne;
+	}
+
+	public String getPath() {
+		return this.userPath;
+	}
+
+	public void setPath(String directory) {
+		if (userPath.equals("")) {
+			this.userPath = FILE_NAME;
+		} else {
+			this.userPath = directory + USER_FILE_NAME;
+		}
+	}
+
+	public void storeToFile() {
+		String savePath = getPath();
+		try (PrintWriter writer = new PrintWriter(savePath)) {
+			for (Task line : taskArray) {
+				writer.println(taskNum + ". " + line.getName());
+				taskNum++;
+			}
+		} catch (FileNotFoundException e) {
+			System.out.println(String.format(FILE_NAME));
+		}
+	}
+
+	public String retrieve(String fileName) { // Use this later.
+		return fileName;
+	}
+
+	/* Memory Manager */
+
+	public void markComplete(int taskNum) {
+		completedTasks.add(taskArray.get(taskNum));
+		taskArray.remove(taskNum);
+	}
+
+	public int getCompletedSize() {
+		return completedTasks.size();
+	}
+
+	public ArrayList<Task> getCompletedTasks() {
+		return completedTasks;
+	}
+
+	public String getCompletedName(int num) {
+		Task task = completedTasks.get(num);
 		String taskName = task.getName();
 		return taskName;
-    }
-    
+	}
 
-    
-    
-    
-	
-	public void undoEdit(){
+	public void undoEdit() {
 		Command cmd = getPrevCommand();
 		taskArray.set(cmd.getTaskNumber(), cmd.getTask());
-		prevCommands.remove(getCommandSize()-1);
-		
-	}
-	
-	public void undoAdd(){
-		taskArray.remove(getSize()-1);
-		prevCommands.remove(getCommandSize()-1);
-	}
-	
-	public void undoDelete(){
-		Command cmd = getPrevCommand();
-		taskArray.add(cmd.getTaskNumber()-1, cmd.getTask());
-		prevCommands.remove(getCommandSize()-1);
-	}
-    
-    public void addCommand(Command cmd){
-    	prevCommands.add(cmd);
-    }
-    
-    public Command getLastCommand(){
-    	return prevCommands.get(prevCommands.size()-1);
-    }
-    
-    public int getCommandSize(){
-    	return prevCommands.size();
-    }
-    
-    public Command getPrevCommand(){
-    	return prevCommands.get(prevCommands.size()-1);
-    }
+		prevCommands.remove(getCommandSize() - 1);
 
-	public void add(Task task){
-		taskArray.add(task);
 	}
-	
-	public Task getTaskObject(int num){
+
+	public void undoAdd() {
+		taskArray.remove(getSize() - 1);
+		prevCommands.remove(getCommandSize() - 1);
+	}
+
+	public void undoDelete() {
+		Command cmd = getPrevCommand();
+		taskArray.add(cmd.getTaskNumber() - 1, cmd.getTask());
+		prevCommands.remove(getCommandSize() - 1);
+	}
+
+	public void addCommand(Command cmd) {
+		prevCommands.add(cmd);
+	}
+
+	public Command getLastCommand() {
+		return prevCommands.get(prevCommands.size() - 1);
+	}
+
+	public int getCommandSize() {
+		return prevCommands.size();
+	}
+
+	public Command getPrevCommand() {
+		return prevCommands.get(prevCommands.size() - 1);
+	}
+
+	public void add(Task task) {
+		this.taskArray.add(task);
+	}
+
+	public Task getTaskObject(int num) {
 		return taskArray.get(num);
 	}
-	
-	public void delete(int num){
-		taskArray.remove(num-1);
+
+	public void delete(int num) {
+		taskArray.remove(num - 1);
 	}
-	
-	public void edit(int num, Task task){
+
+	public void edit(int num, Task task) {
 		// Task only has name?
-		taskArray.set(num,task);
+		taskArray.set(num, task);
 	}
 
 	public ArrayList<Task> getTaskArray() {
-		return taskArray;
+		return this.taskArray;
 	}
-	
 
 	public int getNumberOfTasks() {
 		int numberOfTasks = taskArray.size();
 		return numberOfTasks;
 	}
-	
+
 	public String getTask(int index) {
 		Task task = taskArray.get(index);
 		String taskName = task.getName();
 		return taskName;
 	}
-	
-	public int getSize(){
+
+	public int getSize() {
 		return taskArray.size();
 	}
-	
-	// Do we really need set method?
-	// in case there is a need for us to use this? (Javan)
-	public void setTaskArray(ArrayList<Task> taskArray) {
-		this.taskArray = taskArray;
-	}
-  }
+}

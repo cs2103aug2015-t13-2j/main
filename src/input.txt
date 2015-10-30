@@ -14,7 +14,7 @@ delete 2
 delete 3
 delete 4
 display
-edit 1 name meeting with ham
+edit 1 name meeting with hammmyy bffl
 edit 1 clear end
 display
 edit 1 clear times 
@@ -25,6 +25,7 @@ edit 1 clear start
 edit 3 end "11/11/15 5:00pm"
 edit 4 start "1/11/15 8:00am"
 edit 2 clear times
+
 display 
 add line
 undo
@@ -42,3 +43,4 @@ search with
 complete 2
 archive
 store
+exit
