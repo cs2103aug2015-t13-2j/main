@@ -5,6 +5,9 @@ import java.util.Collections;
 
 import org.joda.time.DateTime;
 
+import Command.Command;
+import Command.CommandParser;
+
 /**
  * Logic is the class where the user commands, once parsed by CommandParser,
  * will be passed to this component where Logic will streamline what the user
@@ -53,15 +56,31 @@ public class Logic {
 	private static final int EXEC_STORE = 11;
 	private static final int EXEC_ARCHIVE = 12;
 	private static final int EXEC_SORT = 13;
+	
+	private static final String COMMAND_HELP = "The following commands are as shown:\n"
+			+ "To add an event: add event start (date & time) end (date & time) (description of task).\n"
+			+ "To add a task with deadline: add deadline due by (date & time) (description of task).\n"
+			+ "To add a task with no deadline: add todo (description of task).\n"
+			+ "To add a recurring task: add repeat (description of task).\n"
+			+ "To mark a task as completed: finished/completed (task number).\n"
+			+ "To delete a task: delete (task number).\n"
+			+ "To edit a specific task: edit (task number) (name/date/start/end) (the edit).\n"
+			+ "To undo a certain task: undo"
+			+ "To search: search (field you want to search) (description of search term).\n"
+			+ "To retrieve an archive of completed tasks: archive.\n"
+			+ "To display the current list of tasks: display.\n" 
+			+ "To save to: save to (filename).";
+	
+	private static final String INVALID_COMMAND = "There is no such command available for usage.";
 
 	private Storage storage;
 	private CommandParser parser;
-	private DisplayManager display;
+
 
 	public Logic() {
 		storage = Storage.getInstance();
 		parser = new CommandParser();
-		display = new DisplayManager();
+
 	}
 	/**
 	 * Takes user input and determines if valid. If it is valid, will perform,
@@ -78,7 +97,7 @@ public class Logic {
 			printMsg = performCommand(cmd, storage);
 		} else {
 			System.out.println(cmd.getErrorMessage());
-			printMsg = display.messageSelector(EXEC_ERROR, EXEC_SUCCESSFUL);
+			printMsg = INVALID_COMMAND;
 		}
 		return printMsg;
 	}
@@ -99,356 +118,39 @@ public class Logic {
 		String messageToPrint = "";
 		String commandName = cmd.getCommandName();
 		if (commandName == CMD_ADD) {
-			messageToPrint = addCommand(cmd);
+			messageToPrint = cmd.execute();
 		} else if (commandName == CMD_EDIT) {
-			messageToPrint = editCommand(cmd);
+			messageToPrint = cmd.execute();
 		} else if (commandName == CMD_DELETE) {
-			messageToPrint = deleteCommand(cmd);
+			messageToPrint = cmd.execute();
 		} else if (commandName == CMD_DISPLAY) {
-			messageToPrint = displayCommand(cmd);
+			messageToPrint = cmd.execute();
 		} else if (commandName == CMD_STORE) {
-			messageToPrint = storeCommand(cmd);
+			messageToPrint = cmd.execute();
 		} else if (commandName == CMD_EXIT) {
 			System.exit(0);
 		} else if (commandName == CMD_UNDO) {
-			messageToPrint = undoCommand(cmd);
+			messageToPrint = cmd.execute();
 		} else if (commandName == CMD_COMPLETE) {
-			messageToPrint = completeCommand(cmd);
+			messageToPrint = cmd.execute();
 		} else if (commandName == CMD_HELP) {
-			messageToPrint = display.messageSelector(EXEC_HELP, EXEC_SUCCESSFUL);
+			messageToPrint = COMMAND_HELP;
 		} else if (commandName == CMD_SORT) {
-			messageToPrint = sortCommand(cmd);
+			messageToPrint = cmd.execute();
 		} else if (commandName == CMD_ARCHIVE) {
-			messageToPrint = archiveCommand(cmd);
+			messageToPrint = cmd.execute();
 		} else if (commandName == CMD_SEARCH){
-			messageToPrint = searchCommand(cmd);
+			messageToPrint = cmd.execute();
 		}
 		return messageToPrint;
-	}
-	
-	
-
-	private String completeCommand(Command cmd) {
-		cmd.setTask(storage.getTaskObject(cmd.getTaskNumber() - 1));
-		storage.markComplete(cmd.getTaskNumber() - 1);
-		return display.messageSelector(EXEC_COMPLETED, EXEC_SUCCESSFUL);
-	}
-
-	// No undo store for now.
-	private String undoCommand(Command cmd) {
-		String undoMsg = "";
-		if (storage.getCommandSize() == 0) {
-			undoMsg = display.messageSelector(EXEC_UNDO, EXEC_UNSUCCESSFUL);
-		} else if (storage.getLastCommand().getCommandName().equals("edit")) {
-			storage.undoEdit();
-		} else if (storage.getLastCommand().getCommandName().equals("delete")) {
-			storage.undoDelete();
-		} else {
-			storage.undoAdd();
-		}
-		undoMsg = display.messageSelector(EXEC_UNDO, EXEC_SUCCESSFUL);
-		return undoMsg;
-	}
-
-	private String deleteCommand(Command cmd) {
-		String delMsg = "";
-		int taskNum = cmd.getTaskNumber();
-		int size = storage.getSize();
-
-		if (taskNum > 0 && taskNum <= size) {
-			// Store the deleted task in delete command
-			cmd.setTask(storage.getTaskObject(taskNum - 1));
-			storage.delete(taskNum);
-			storage.addCommand(cmd);
-			delMsg = display.messageSelector(EXEC_DELETE, EXEC_SUCCESSFUL);
-		} else if (taskNum > size) {
-			delMsg = display.messageSelector(EXEC_DELETE, EXEC_UNSUCCESSFUL);
-		} else {
-			delMsg = display.messageSelector(EXEC_DELETE, EXEC_UNSUCCESSFUL2);
-		}
-		return delMsg;
-	}
-
-	public String addCommand(Command cmd) {
-		// cmd had task alr in add
-		Task task = cmd.getTask();
-		storage.add(task);
-		storage.addCommand(cmd);
-		return display.messageSelector(EXEC_ADD, EXEC_SUCCESSFUL);
-	}
-	
-	private String searchCommand(Command cmd){
-		String searchMsg = "";
-		String[] searchSpecification = cmd.getSearchSpecification().split(" ");
-		
-		int numOfIncomplete = storage.getSize();
-		int numOfCompleted  = storage.getCompletedSize();
-		int numOfResult = 0;
-		
-		if (numOfIncomplete > 0){
-			System.out.println("Incomplete:");
-			for (int i = 0; i < numOfIncomplete; i++){
-				Task task = storage.getTaskArray().get(i);
-				boolean match = false;
-				String [] searchField = task.toString().split("[ :]+");
-				for (String search: searchField){
-					for (String specification: searchSpecification){
-						if (search.equals(specification)){
-							match = true;
-							numOfResult ++;
-						}
-					}
-				}
-				if (match){
-					System.out.println(i + 1 + ". " + task.toString());
-				}	
-			}
-		}
-		if (numOfCompleted > 0){
-			System.out.println("Completed:");
-			for (int i = 0; i < numOfCompleted; i++){
-				Task task = storage.getCompletedTasks().get(i);
-				boolean match = false;
-				String [] searchField = task.toString().split(" :");
-				for (String search: searchField){
-					for (String specification: searchSpecification){
-						if (search.equals(specification)){
-							match = true;
-							numOfResult ++;
-						}
-					}
-				}	
-				if (match){
-					System.out.println(i + 1 + ". " + task.toString());
-				}
-			}
-		}
-		if (numOfResult == 0){
-			searchMsg = display.messageSelector(EXEC_SEARCH, EXEC_UNSUCCESSFUL);
-		} 
-		return searchMsg;
-	}
-
-	private String editCommand(Command cmd) {
-		String editMsg = "";
-		EditSpecification edit = cmd.getEditSpecification();
-		int taskNumber = edit.getTaskNumber() - 1;
-		String fieldToClear = edit.getFieldToClear();
-
-		if (isValidTaskNumber(taskNumber)) {
-			Task t = storage.getTaskObject(edit.getTaskNumber() - 1);
-			Task temp;
-			try {
-				temp = (Task) t.clone();
-				cmd.setTaskNumber(taskNumber);
-				storage.addCommand(cmd);
-				cmd.setTask(temp);
-			} catch (CloneNotSupportedException e) {
-				e.printStackTrace();
-			}
-			
-			if(!fieldToClear.equals("")) {
-				editMsg = clearField(edit);
-			} else {
-				editMsg = editAppropriateField(edit);
-			}
-		} else {
-			editMsg = display.messageSelector(EXEC_EDIT, EXEC_UNSUCCESSFUL2);
-		}
-		return editMsg;
-	}
-
-	private String editAppropriateField(EditSpecification edit) {
-		String editMsg = "";
-		String fieldToEdit = edit.getFieldToEdit().trim().toLowerCase();
-		String theEdit = edit.getTheEdit().trim().toLowerCase();
-		Task t = storage.getTaskObject(edit.getTaskNumber() - 1);
-		if(fieldToEdit.equals(FIELD_START)) {
-			try{ 
-				t.setStart(parser.parseDateTime(parser.getDateTime(theEdit)));
-			} catch(IllegalArgumentException e) {
-				return display.messageSelector(EXEC_EDIT, 4);
-			}
-			if(t.getTaskType().equals("deadline")) {
-				t.setEnd(t.getCompleteBy());
-				t.setCompleteBy(null);
-				t.setTaskType("event");
-			} else if(t.getTaskType().equals("todo")) {
-				t.setEnd(t.getStart().plusHours(1));
-				t.setTaskType("event");
-			}
-			editMsg = display.messageSelector(EXEC_EDIT, EXEC_SUCCESSFUL);
-		} else if(fieldToEdit.equals(FIELD_END)) {
-			try{ 
-				t.setEnd(parser.parseDateTime(parser.getDateTime(theEdit)));
-			} catch(IllegalArgumentException e) {
-				return display.messageSelector(EXEC_EDIT, 4);
-			}
-			if(t.getTaskType().equals("deadline")) {
-				t.setStart(t.getCompleteBy());
-				t.setCompleteBy(null);
-				t.setTaskType("event");
-			} else if(t.getTaskType().equals("todo")) {
-				t.setStart(t.getEnd().minusHours(1));
-				t.setTaskType("event");
-			}
-			editMsg = display.messageSelector(EXEC_EDIT, EXEC_SUCCESSFUL);
-		} else if(fieldToEdit.equals("by")) {
-			try{ 
-				t.setCompleteBy(parser.parseDateTime(parser.getDateTime(theEdit)));
-			} catch(IllegalArgumentException e) {
-				return display.messageSelector(EXEC_EDIT, 4);
-			}
-			if(t.getTaskType().equals("event")) {
-				t.setStart(null);
-				t.setEnd(null);
-			}
-			t.setTaskType("deadline");
-			editMsg = display.messageSelector(EXEC_EDIT, EXEC_SUCCESSFUL);
-		} else if(fieldToEdit.equals("on")) {
-			try{ 
-				t.setCompleteBy(parser.parseDateTime(parser.getDateTime(theEdit)));
-			} catch(IllegalArgumentException e) {
-				return display.messageSelector(EXEC_EDIT, 4);
-			}
-			if(t.getTaskType().equals("event")) {
-				t.setStart(null);
-				t.setEnd(null);
-			}
-			t.setTaskType("deadline");
-			editMsg = display.messageSelector(EXEC_EDIT, EXEC_SUCCESSFUL);
-		} else if(fieldToEdit.equals("name")) {
-			editMsg = display.messageSelector(EXEC_EDIT, EXEC_SUCCESSFUL);
-			t.setName(theEdit);
-			editMsg = display.messageSelector(EXEC_EDIT, EXEC_SUCCESSFUL);
-		} else {
-			editMsg = display.messageSelector(EXEC_EDIT, 4);
-		}
-		return editMsg;
-	}
-
-	private String clearField(EditSpecification edit) {
-		String editMsg = "";
-		String fieldToClear = edit.getFieldToClear().trim().toLowerCase();
-		Task t = storage.getTaskObject(edit.getTaskNumber() - 1);
-		if(fieldToClear.equals(FIELD_START)) {
-			if(t.getTaskType().equals("event")) {
-				t.setCompleteBy(t.getEnd());
-				t.setStart(null);
-				t.setEnd(null);
-				t.setTaskType("deadline");
-				editMsg = display.messageSelector(EXEC_EDIT, EXEC_SUCCESSFUL);
-			}
-		} else if (fieldToClear.equals(FIELD_END)) {
-			if(t.getTaskType().equals("event")) {
-				t.setCompleteBy(t.getStart());
-				t.setStart(null);
-				t.setEnd(null);
-				t.setTaskType("deadline");
-				editMsg = display.messageSelector(EXEC_EDIT, EXEC_SUCCESSFUL);
-			}
-		} else if (fieldToClear.equals("times")) {
-			if(t.getTaskType().equals("event")) {
-				t.setStart(null);
-				t.setEnd(null);	
-				editMsg = display.messageSelector(EXEC_EDIT, EXEC_SUCCESSFUL);
-			} else if(t.getTaskType().equals("deadline")) {
-				t.setCompleteBy(null);
-				editMsg = display.messageSelector(EXEC_EDIT, EXEC_SUCCESSFUL);
-			}
-			t.setTaskType("todo");
-		} else if (fieldToClear.equals("by")) {
-			if(t.getTaskType().equals("deadline")) {
-				t.setCompleteBy(null);
-				t.setTaskType("todo");
-				editMsg = display.messageSelector(EXEC_EDIT, EXEC_SUCCESSFUL);
-			}
-		} else if (fieldToClear.equals("on")) {
-			if(t.getTaskType().equals("deadline")) {
-				t.setCompleteBy(null);
-				t.setTaskType("todo");
-				editMsg = display.messageSelector(EXEC_EDIT, EXEC_SUCCESSFUL);
-			}
-		} else {
-			editMsg = display.messageSelector(EXEC_EDIT, 4);
-		}
-		return editMsg;
-	}
-
-	private String storeCommand(Command cmd) {
-		storage.setPath(cmd.getDirectory());
-		storage.storeToFile();
-		return display.messageSelector(EXEC_STORE, EXEC_SUCCESSFUL);
-	}
-
-	private String displayCommand(Command cmd) {
-		String dispMsg = "";
-		int numberOfLines = storage.getNumberOfTasks();
-		if (numberOfLines == 0) {
-			dispMsg = display.messageSelector(EXEC_DISPLAY, EXEC_UNSUCCESSFUL);
-		} else {
-			for (int i = 0; i < numberOfLines; i++) {
-				String lineToDisplay = (i + 1) + ". " + storage.getTaskObject(i).toString();
-				System.out.println(lineToDisplay);
-			}
-		}
-		return dispMsg;
-	}
-
-	
-	private String archiveCommand(Command cmd) {
-		String archMsg = "";
-		int numberOfCompleted = storage.getCompletedSize();
-		if (numberOfCompleted == 0) {
-			archMsg = display.messageSelector(EXEC_ARCHIVE, EXEC_UNSUCCESSFUL);
-		} else {
-			for (int i = 0; i < numberOfCompleted; i++) {
-				String taskToDisplay = storage.getCompletedName(i);
-				String lineToDisplay = (i + 1) + ". " + taskToDisplay;
-				System.out.println(lineToDisplay);
-			}
-		}
-		return archMsg;
-	}
-
-	private String sortCommand(Command cmd) {
-		String sortMsg = "";
-		switch (cmd.getSortField()) {
-		case FIELD_NAME:
-			sortByName();
-			sortMsg = display.messageSelector(EXEC_SORT, EXEC_SUCCESSFUL);
-			break;
-		case FIELD_DATE:
-			sortByDate();
-			sortMsg = display.messageSelector(EXEC_SORT, EXEC_SUCCESSFUL);
-			break;
-		default:
-			sortMsg = display.messageSelector(EXEC_SORT, EXEC_UNSUCCESSFUL);
-		}
-		return sortMsg;
-
-	}
-
-	private void sortByName() {
-		Collections.sort(storage.getTaskArray(), new NameSorter());
-	}
-
-	private void sortByDate() {
-		Collections.sort(storage.getTaskArray(), new DateSorter());
-	}
-
-	private boolean isValidTaskNumber(int taskNumber) {
-		if (taskNumber < 0) {
-			return false;
-		} else if (taskNumber >= storage.getNumberOfTasks()) {
-			return false;
-		} else {
-			return true;
-		}
 	}
 
 	public Storage getStorage() {
 		return storage;
+	}
+	
+	public ArrayList<Task> getTaskList(){
+		return storage.getTaskArray();
 	}
 
 }

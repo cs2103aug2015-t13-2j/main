@@ -1,4 +1,8 @@
-package NexTask;
+package Command;
+
+import NexTask.EditSpecification;
+import NexTask.Storage;
+import NexTask.Task;
 
 /**
  * Represents a command object. Each command object has commandName and one
@@ -11,7 +15,7 @@ package NexTask;
  * @author Jenny
  *
  */
-public class Command {
+public abstract class Command {
 	private String commandName;
 	private String directory;
 	private int taskNumber;
@@ -20,6 +24,7 @@ public class Command {
 	private String searchSpecification;
 	private String errorMessage;
 	private String sortField;
+	protected Storage storage;
 	
 
 	public Command() {
@@ -32,7 +37,19 @@ public class Command {
 		searchSpecification = "";
 		errorMessage = "";
 		sortField = "";
+		storage = storage.getInstance();
 	}
+	
+	public String execute(){
+		String msg = "";
+		return msg;
+	}
+	
+	public String undo(){
+		String msg = "";
+		return msg;
+	}
+	
 	
 	public void setDirectory(String directory){
 		this.directory = directory;

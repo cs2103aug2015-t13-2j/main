@@ -4,6 +4,9 @@ import NexTask.*;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
+import Command.Command;
+import Command.CommandParser;
+
 public class CommandParserTest {
 
 	@Test

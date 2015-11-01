@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
+import Command.Command;
+
 /**
  * This class is to save tasks into txt file.
  * 
@@ -53,10 +55,11 @@ public class Storage {
 
 	public void storeToFile() {
 		String savePath = getPath();
+		int num = 1;
 		try (PrintWriter writer = new PrintWriter(savePath)) {
 			for (Task line : taskArray) {
-				writer.println(taskNum + ". " + line.getName());
-				taskNum++;
+				writer.println(num + ". " + line.getName());
+				num++;
 			}
 		} catch (FileNotFoundException e) {
 			System.out.println(String.format(FILE_NAME));

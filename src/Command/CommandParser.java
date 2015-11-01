@@ -1,4 +1,4 @@
-package NexTask;
+package Command;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -6,6 +6,10 @@ import java.util.regex.Pattern;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+
+import Command.*;
+import NexTask.EditSpecification;
+import NexTask.Task;
 
 public class CommandParser {
 	// Date time format
@@ -47,11 +51,13 @@ public class CommandParser {
 	// Patterns
 	private static final String PATTERN_DATE = "\"([^\"]*)\"";
 	private static final String PATTERN_TASK_NAME = "([\\w\\s]+)";
+	
+	private static String userCommand;
 
 	public Command parse(String userInput) {
 		// check if user input empty
 		String[] input = userInput.split(" ", 2);
-		String userCommand;
+		
 		String commandArgs;
 		if (input.length > 1) {
 			userCommand = getCommand(input);
@@ -76,18 +82,22 @@ public class CommandParser {
 		case USER_COMMAND_STORE:
 			return initStoreCommand(commandArgs);
 		case USER_COMMAND_DISPLAY:
-			return initCommand(USER_COMMAND_DISPLAY);
+			return initDisplayCommand(USER_COMMAND_DISPLAY);
 		case USER_COMMAND_ARCHIVE:
-			return initCommand(USER_COMMAND_ARCHIVE);
-		case USER_COMMAND_HELP:
-			return initCommand(USER_COMMAND_HELP);
+			return initArchiveCommand(USER_COMMAND_ARCHIVE);
+		/*case USER_COMMAND_HELP:
+			return initHelpCommand(USER_COMMAND_HELP);*/
 		case USER_COMMAND_UNDO:
-			return initCommand(USER_COMMAND_UNDO);
+			return initUndoCommand(USER_COMMAND_UNDO);
 		case USER_COMMAND_EXIT:
 			return initCommand(USER_COMMAND_EXIT);
 		default:
 			return initInvalidCommand("Please enter a command");
 		}
+	}
+	
+	public String getUserCommand(){
+		return userCommand;
 	}
 
 	public String getCommand(String[] input) {
@@ -98,12 +108,12 @@ public class CommandParser {
 		return input[POSITION_OF_CMD_ARGS];
 	}
 
-	private Command initAddCommand(String commandArgs) {
-		Command cmd = new Command();
+	private Add initAddCommand(String commandArgs) {
+		Add cmd = new Add();
 		if (isEvent(commandArgs.toLowerCase())) {
 			Task newEvent = parseEvent(commandArgs);
 			if (newEvent.getName().equals(INVALID)) {
-				return initInvalidCommand("Error parsing date");
+				return (Add) initInvalidCommand("Error parsing date");
 			} else {
 				cmd.setCommandName(USER_COMMAND_ADD);
 				cmd.setTask(newEvent);
@@ -111,7 +121,7 @@ public class CommandParser {
 		} else if (isDeadline(commandArgs.toLowerCase())) {
 			Task newDeadline = parseDeadline(commandArgs);
 			if (newDeadline.getName().equals(INVALID)) {
-				return initInvalidCommand("Error parsing date");
+				return (Add) initInvalidCommand("Error parsing date");
 			} else {
 				cmd.setCommandName(USER_COMMAND_ADD);
 				cmd.setTask(newDeadline);
@@ -119,7 +129,7 @@ public class CommandParser {
 		} else {
 			Task newTodo = parseTodo(commandArgs);
 			if (newTodo.getName().equals(INVALID)) {
-				return initInvalidCommand("Error parsing date");
+				return (Add) initInvalidCommand("Error parsing date");
 			} else {
 				cmd.setCommandName(USER_COMMAND_ADD);
 				cmd.setTask(newTodo);
@@ -128,14 +138,14 @@ public class CommandParser {
 		return cmd;
 	}
 
-	private Command initEditCommand(String commandArgs) {
-		Command cmd = new Command();
+	private Edit initEditCommand(String commandArgs) {
+		Edit cmd = new Edit();
 		EditSpecification edit = new EditSpecification();
 		String[] editArgs = commandArgs.split(" ", 3);
 		try {
 			edit.setTaskNumber(Integer.parseInt(editArgs[0]));
 		} catch (NumberFormatException e) {
-			return initInvalidCommand("Please specify an integer for task number.");
+			return (Edit) initInvalidCommand("Please specify an integer for task number.");
 		}
 
 		String fieldOrClear;
@@ -144,7 +154,7 @@ public class CommandParser {
 			fieldOrClear = editArgs[1];
 			argumentsForEdit = editArgs[2];
 		} catch (IndexOutOfBoundsException e) {
-			return initInvalidCommand("Invalid number of arguments");
+			return (Edit) initInvalidCommand("Invalid number of arguments");
 		}
 
 		switch (fieldOrClear) {
@@ -161,40 +171,40 @@ public class CommandParser {
 		return cmd;
 	}
 
-	private Command initDeleteCommand(String commandArgs) {
-		Command cmd = new Command();
+	private Delete initDeleteCommand(String commandArgs) {
+		Delete cmd = new Delete();
 		cmd.setCommandName(USER_COMMAND_DELETE);
 		if (commandArgs.equals(EMPTY_STRING)) {
-			cmd = initInvalidCommand("Please provide a task number.");
+			cmd = (Delete) initInvalidCommand("Please provide a task number.");
 		} else {
 			try {
 				cmd.setTaskNumber(Integer.parseInt(commandArgs));
 			} catch (NumberFormatException e) {
-				return initInvalidCommand("Please specify an integer for task number.");
+				return (Delete) initInvalidCommand("Please specify an integer for task number.");
 			}
 		}
 		return cmd;
 	}
 
-	private Command initCompleteCommand(String commandArgs) {
-		Command cmd = new Command();
+	private Completed initCompleteCommand(String commandArgs) {
+		Completed cmd = new Completed();
 		cmd.setCommandName(USER_COMMAND_COMPLETE);
 		if (commandArgs.equals(EMPTY_STRING)) {
-			cmd = initInvalidCommand("Please provide a task number.");
+			cmd = (Completed) initInvalidCommand("Please provide a task number.");
 		} else {
 			try {
 				cmd.setTaskNumber(Integer.parseInt(commandArgs));
 			} catch (NumberFormatException e) {
-				return initInvalidCommand("Please specify an integer for task number.");
+				return (Completed) initInvalidCommand("Please specify an integer for task number.");
 			}
 		}
 		return cmd;
 	}
 
-	private Command initSearchCommand(String commandArgs) {
-		Command cmd = new Command();
+	private Search initSearchCommand(String commandArgs) {
+		Search cmd = new Search();
 		if (commandArgs.equals(EMPTY_STRING)) {
-			return initInvalidCommand("Please provide a search keyword.");
+			return (Search) initInvalidCommand("Please provide a search keyword.");
 		} else {
 			cmd.setCommandName(USER_COMMAND_SEARCH);
 			cmd.setSearchSpecification(commandArgs.trim());
@@ -202,10 +212,10 @@ public class CommandParser {
 		return cmd;
 	}
 
-	private Command initSortCommand(String commandArgs) {
-		Command cmd = new Command();
+	private Sort initSortCommand(String commandArgs) {
+		Sort cmd = new Sort();
 		if (commandArgs.equals(EMPTY_STRING)) {
-			return initInvalidCommand("Please specify field you wish to sort by.");
+			return (Sort) initInvalidCommand("Please specify field you wish to sort by.");
 		} else {
 			cmd.setCommandName(USER_COMMAND_SORT);
 			cmd.setSortField(commandArgs.trim());
@@ -213,8 +223,8 @@ public class CommandParser {
 		return cmd;
 	}
 
-	private Command initStoreCommand(String commandArgs) {
-		Command cmd = new Command();
+	private Store initStoreCommand(String commandArgs) {
+		Store cmd = new Store();
 		cmd.setCommandName(USER_COMMAND_STORE);
 		cmd.setDirectory(commandArgs.trim());
 		return cmd;
@@ -289,13 +299,33 @@ public class CommandParser {
 	}
 
 	private Command initCommand(String commandName) {
-		Command cmd = new Command();
+		InitCommand cmd = new InitCommand();
 		cmd.setCommandName(commandName);
 		return cmd;
 	}
+	
+	private Command initDisplayCommand(String commandName) {
+		Display cmd = new Display();
+		cmd.setCommandName(commandName);
+		return cmd;
+	}
+	
+	private Command initUndoCommand(String commandName) {
+		Undo cmd = new Undo();
+		cmd.setCommandName(commandName);
+		return cmd;
+	}
+	
+	private Command initArchiveCommand(String commandName) {
+		Archive cmd = new Archive();
+		cmd.setCommandName(commandName);
+		return cmd;
+	}
+	
+	
 
 	private Command initInvalidCommand(String errorMessage) {
-		Command c = new Command();
+		InitCommand c = new InitCommand();
 		c.setCommandName(INVALID);
 		c.setErrorMessage(errorMessage);
 		return c;
