@@ -24,7 +24,7 @@ public class Search extends Command{
 				String [] searchField = task.toString().split("[ :]+");
 				for (String search: searchField){
 					for (String specification: searchSpecification){
-						if (search.equals(specification)){
+						if (search.contains(specification)){
 							match = true;
 							numOfResult ++;
 						}
@@ -35,6 +35,7 @@ public class Search extends Command{
 				}	
 			}
 		}
+		
 		if (numOfCompleted > 0){
 			System.out.println("Completed:");
 			for (int i = 0; i < numOfCompleted; i++){
@@ -43,7 +44,7 @@ public class Search extends Command{
 				String [] searchField = task.toString().split(" :");
 				for (String search: searchField){
 					for (String specification: searchSpecification){
-						if (search.equals(specification)){
+						if (search.contains(specification)){
 							match = true;
 							numOfResult ++;
 						}
