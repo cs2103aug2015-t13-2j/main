@@ -68,7 +68,6 @@ public class Storage implements java.io.Serializable {
 	         out.writeObject(taskArray);
 	         out.close();
 	         fileOut.close();
-	         System.out.printf("Serialized data is saved in ForRetrieval.ser");
 	      }catch(IOException i)
 	      {
 	          i.printStackTrace();
@@ -103,7 +102,6 @@ public class Storage implements java.io.Serializable {
 	         return;
 	      }catch(ClassNotFoundException c)
 	      {
-	         System.out.println("Employee class not found");
 	         c.printStackTrace();
 	         return;
 	      }
