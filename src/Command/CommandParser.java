@@ -11,7 +11,7 @@ import Command.*;
 import NexTask.EditSpecification;
 import NexTask.Task;
 
-public class CommandParser {
+public class CommandParser implements java.io.Serializable{
 	// Date time format
 	private static final String DATE_TIME_FMT_1 = "dd/MM/yy";
 	private static final String DATE_TIME_FMT_2 = "dd/MM/yy hh:mma";
@@ -35,6 +35,7 @@ public class CommandParser {
 	private static final String USER_COMMAND_UNDO = "undo";
 	private static final String USER_COMMAND_SORT = "sort";
 	private static final String USER_COMMAND_ARCHIVE = "archive";
+	private static final String USER_COMMAND_RETRIEVE = "retrieve";
 	private static final String INVALID = "invalid";
 
 	// Task types
@@ -91,6 +92,8 @@ public class CommandParser {
 			return initUndoCommand(USER_COMMAND_UNDO);
 		case USER_COMMAND_EXIT:
 			return initCommand(USER_COMMAND_EXIT);
+		case USER_COMMAND_RETRIEVE:
+			return initRetrieveCommand(USER_COMMAND_RETRIEVE);
 		default:
 			return initInvalidCommand("Please enter a command");
 		}
@@ -227,6 +230,12 @@ public class CommandParser {
 		Store cmd = new Store();
 		cmd.setCommandName(USER_COMMAND_STORE);
 		cmd.setDirectory(commandArgs.trim());
+		return cmd;
+	}
+	
+	private Retrieve initRetrieveCommand(String commandName){
+		Retrieve cmd = new Retrieve();
+		cmd.setCommandName(commandName);
 		return cmd;
 	}
 

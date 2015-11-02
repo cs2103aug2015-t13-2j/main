@@ -1,7 +1,12 @@
 
 package NexTask;
 
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
@@ -13,10 +18,11 @@ import Command.Command;
  * @author Jingjing Wang
  *
  */
-public class Storage {
+public class Storage implements java.io.Serializable {
 	// Constants
 	private static final String FILE_NAME = "NexTask.txt";
 	private static final String USER_FILE_NAME = "\\NexTask.txt";
+	private static final String FILE_TO_RETREIVE = "ForRetrieval.ser";
 
 	private static Storage theOne;
 
@@ -53,6 +59,22 @@ public class Storage {
 		}
 	}
 
+	public void storeToDefault() throws FileNotFoundException{
+		try
+	      {
+	         FileOutputStream fileOut =
+	         new FileOutputStream(FILE_TO_RETREIVE);
+	         ObjectOutputStream out = new ObjectOutputStream(fileOut);
+	         out.writeObject(taskArray);
+	         out.close();
+	         fileOut.close();
+	         System.out.printf("Serialized data is saved in ForRetrieval.ser");
+	      }catch(IOException i)
+	      {
+	          i.printStackTrace();
+	      }
+	}
+	
 	public void storeToFile() {
 		String savePath = getPath();
 		int num = 1;
@@ -66,8 +88,27 @@ public class Storage {
 		}
 	}
 
-	public String retrieve(String fileName) { // Use this later.
-		return fileName;
+	public void retrieve() { // Use this later.
+		ArrayList<Task> retrievedTasks = null;
+		try
+	      {
+	         FileInputStream fileIn = new FileInputStream(FILE_TO_RETREIVE);
+	         ObjectInputStream in = new ObjectInputStream(fileIn);
+	         retrievedTasks = (ArrayList<Task>) in.readObject();
+	         in.close();
+	         fileIn.close();
+	      }catch(IOException i)
+	      {
+	         i.printStackTrace();
+	         return;
+	      }catch(ClassNotFoundException c)
+	      {
+	         System.out.println("Employee class not found");
+	         c.printStackTrace();
+	         return;
+	      }
+		
+		this.taskArray = retrievedTasks;
 	}
 
 	/* Memory Manager */

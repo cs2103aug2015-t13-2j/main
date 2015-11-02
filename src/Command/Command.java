@@ -15,7 +15,7 @@ import NexTask.Task;
  * @author Jenny
  *
  */
-public abstract class Command {
+public abstract class Command implements java.io.Serializable{
 	private String commandName;
 	private String directory;
 	private int taskNumber;

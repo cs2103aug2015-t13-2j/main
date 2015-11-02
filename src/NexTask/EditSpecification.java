@@ -8,7 +8,7 @@ package NexTask;
  * @author Jenny
  *
  */
-public class EditSpecification {
+public class EditSpecification implements java.io.Serializable {
 	private int taskNumber;
 	private String fieldToEdit;
 	private String theEdit;

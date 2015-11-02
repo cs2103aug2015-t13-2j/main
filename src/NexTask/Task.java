@@ -9,7 +9,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 
-public class Task implements Cloneable{
+public class Task implements Cloneable, java.io.Serializable{
 	private String name;
 	private String taskType;
 	private DateTime start;

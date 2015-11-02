@@ -1,5 +1,6 @@
 package NexTask;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -29,33 +30,8 @@ public class Logic {
 	private static final String CMD_SORT = "sort";
 	private static final String CMD_ARCHIVE = "archive";
 	private static final String CMD_SEARCH = "search";
-
-	private static final String FIELD_START = "start";
-	private static final String FIELD_END = "end";
-	private static final String FIELD_NAME = "name";
-	private static final String FIELD_DATE = "date";
-
-	private static final String ERROR_NOTHING_TO_UNDO = "There is nothing to undo";
-	private static final String ERROR_INVALID_NUM_ARGS_FOR_EDIT = "Invalid number of arguments for edit.";
-	private static final String ERROR_INVALID_TASK_NUMBER = "Please enter a valid task number.";
-	private static final String ERROR_PLS_ENTER_INT = "Please enter an integer as the task number.";
-
-	private static final int EXEC_SUCCESSFUL = 1;
-	private static final int EXEC_UNSUCCESSFUL = 2;
-	private static final int EXEC_UNSUCCESSFUL2 = 3;
-
-	private static final int EXEC_HELP = 2;
-	private static final int EXEC_ADD = 3;
-	private static final int EXEC_DELETE = 4;
-	private static final int EXEC_EDIT = 5;
-	private static final int EXEC_COMPLETED = 6;
-	private static final int EXEC_UNDO = 7;
-	private static final int EXEC_SEARCH = 8;
-	private static final int EXEC_ERROR = 9;
-	private static final int EXEC_DISPLAY = 10;
-	private static final int EXEC_STORE = 11;
-	private static final int EXEC_ARCHIVE = 12;
-	private static final int EXEC_SORT = 13;
+	private static final String CMD_RETRIEVE = "retrieve";
+	private static final String FILE_TO_RETREIVE = "ForRetrieval.txt";
 	
 	private static final String COMMAND_HELP = "The following commands are as shown:\n"
 			+ "To add an event: add event start (date & time) end (date & time) (description of task).\n"
@@ -119,10 +95,25 @@ public class Logic {
 		String commandName = cmd.getCommandName();
 		if (commandName == CMD_ADD) {
 			messageToPrint = cmd.execute();
+			try {
+				storage.storeToDefault();
+			} catch (FileNotFoundException e) {
+				System.out.println(String.format(FILE_TO_RETREIVE));
+			}
 		} else if (commandName == CMD_EDIT) {
 			messageToPrint = cmd.execute();
+			try {
+				storage.storeToDefault();
+			} catch (FileNotFoundException e) {
+				System.out.println(String.format(FILE_TO_RETREIVE));
+			}
 		} else if (commandName == CMD_DELETE) {
 			messageToPrint = cmd.execute();
+			try {
+				storage.storeToDefault();
+			} catch (FileNotFoundException e) {
+				System.out.println(String.format(FILE_TO_RETREIVE));
+			}
 		} else if (commandName == CMD_DISPLAY) {
 			messageToPrint = cmd.execute();
 		} else if (commandName == CMD_STORE) {
@@ -131,15 +122,32 @@ public class Logic {
 			System.exit(0);
 		} else if (commandName == CMD_UNDO) {
 			messageToPrint = cmd.execute();
+			try {
+				storage.storeToDefault();
+			} catch (FileNotFoundException e) {
+				System.out.println(String.format(FILE_TO_RETREIVE));
+			}
 		} else if (commandName == CMD_COMPLETE) {
 			messageToPrint = cmd.execute();
+			try {
+				storage.storeToDefault();
+			} catch (FileNotFoundException e) {
+				System.out.println(String.format(FILE_TO_RETREIVE));
+			}
 		} else if (commandName == CMD_HELP) {
 			messageToPrint = COMMAND_HELP;
 		} else if (commandName == CMD_SORT) {
 			messageToPrint = cmd.execute();
+			try {
+				storage.storeToDefault();
+			} catch (FileNotFoundException e) {
+				System.out.println(String.format(FILE_TO_RETREIVE));
+			}
 		} else if (commandName == CMD_ARCHIVE) {
 			messageToPrint = cmd.execute();
 		} else if (commandName == CMD_SEARCH){
+			messageToPrint = cmd.execute();
+		} else if (commandName == CMD_RETRIEVE){
 			messageToPrint = cmd.execute();
 		}
 		return messageToPrint;
