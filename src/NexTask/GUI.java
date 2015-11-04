@@ -1,8 +1,7 @@
 package NexTask;
 
-import java.util.Scanner;
-
-
+import java.util.ArrayList;
+import java.util.List;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -12,6 +11,9 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
@@ -28,15 +30,18 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
 /**
  * GUI class will display the appropriate print messages required when user
- * input is processed and appropriate actions are executed.
- * GUI is the main interface for user interaction.
+ * input is processed and appropriate actions are executed. GUI is the main
+ * interface for user interaction where users are updated through
+ * the GUI with any changes made through their inputs.
  * 
- * @author Javan
+ * @@author Javan Huang
  *
  */
 
@@ -46,16 +51,20 @@ public class GUI extends Application {
 	private static final int WELCOME_CONDITION = 1;
 	private static final int PROMPT_CONDITION = 2;
 	private static final String HELP_COMMAND = "help";
-	private static Scanner scanner;
+	private static final String EDIT_HELP_COMMAND = "edit help";
+	private static final String SEARCH_COMMAND = "search";
+	private static final String RETRIEVE_COMMAND = "retrieve";
+	// private static Scanner scanner;
 	private static Logic logic;
 	private static DisplayManager display;
-	
+	private ArrayList<Task> updatedArray;
+
 	public static void main(String[] args) {
 		launch(args);
 	}
 
 	public static void initialize() {
-		scanner = new Scanner(System.in);
+		// scanner = new Scanner(System.in);
 		logic = new Logic();
 		display = new DisplayManager();
 	}
@@ -63,93 +72,183 @@ public class GUI extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		initialize();
-		primaryStage.setTitle("nexTask");
-		String userInput = new String();
-		
+		updatedArray = logic.getTaskList();
+
 		GridPane grid = initialiseGridPane();
 		Label nexTaskLabel = initialiseNexTaskLabel();
+		initialiseStage(primaryStage, grid);
+		Label clockLabel = initialiseClock();	
+		Separator clockSeperator = initialiseClkSeperator();
+		Label commandLabel = initialiseCommandLabel();
+		Label actionLabel = initialiseActionLabel();
+		TreeView<String> tree = initialiseTree();
+		TextField userInputBox = initialiseTextBox(actionLabel);
+		Separator cmdSeperator = initialiseCmdSeperator();
 		
-		// Clock
+		handleInput(actionLabel, userInputBox, updatedArray);
+
+		grid.getChildren().addAll(commandLabel, userInputBox, clockLabel, nexTaskLabel, actionLabel);
+		grid.getChildren().addAll(clockSeperator, cmdSeperator);
+		grid.getChildren().add(tree);
+	}
+
+	private Label initialiseClock() {
 		Label clockLabel = new Label();
 		DateTimeFormatter format = DateTimeFormat.forPattern("EEEE, dd MMMM yyyy HH:mm:ss");
+		Timeline timeline = initialiseTime(clockLabel, format);
+		timeline.setCycleCount(Animation.INDEFINITE);
+		timeline.play();
+		GridPane.setConstraints(clockLabel, 20, 0, 54, 6);
+		return clockLabel;
+	}
+
+	private Timeline initialiseTime(Label clockLabel, DateTimeFormatter format) {
 		Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
 				DateTime dt = new DateTime();
 				clockLabel.setText(format.print(dt));
+				clockLabel.setFont(Font.font("Courier New", FontWeight.BOLD, 15));
 			}
 		}));
-		timeline.setCycleCount(Animation.INDEFINITE);
-		timeline.play();
-		GridPane.setConstraints(clockLabel, 24, 0, 35, 5);
+		return timeline;
+	}
+
+	private Separator initialiseClkSeperator() {
 		Separator clockSeperator = new Separator();
 		clockSeperator.setHalignment(HPos.CENTER);
-		GridPane.setConstraints(clockSeperator, 0, 4, 90, 2);
-		
+		GridPane.setConstraints(clockSeperator, 2, 5, 90, 2);
+		return clockSeperator;
+	}
 
-		Label commandLabel = initialiseCommandLabel();
-		
-		Label actionLabel = new Label();
-		GridPane.setConstraints(actionLabel, 3, 76, 70, 6);
-		actionLabel.setText(display.messageSelector(WELCOME_COMMAND, WELCOME_CONDITION));
-	
-		TreeView<String> tree = initialiseTree();
-		
-		// Text box
+	private TextField initialiseTextBox(Label actionLabel) {
 		TextField userInputBox = new TextField();
 		userInputBox.setPromptText("Enter your input here!");
-		GridPane.setConstraints(userInputBox, 3, 83, 87, 1);
-		//capture input
+		userInputBox.setFont(Font.font("Verdana", 12));
+		GridPane.setConstraints(userInputBox, 7, 83, 85, 3);
+		// capture input
+		return userInputBox;
+	}
+
+	private Label initialiseActionLabel() {
+		Label actionLabel = new Label();
+		GridPane.setConstraints(actionLabel, 7, 76, 80, 6);
+		actionLabel.setText(display.messageSelector(WELCOME_COMMAND, WELCOME_CONDITION));
+		actionLabel.setFont(Font.font("Verdana", 12));
+		return actionLabel;
+	}
+
+	private void handleInput(Label actionLabel, TextField userInputBox, ArrayList<Task> taskArray) {
 		userInputBox.setOnKeyPressed(new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent keyEvent) {
 				if (keyEvent.getCode() == KeyCode.ENTER) {
 					String userInput = userInputBox.getText();
 					userInputBox.setText("");
-					if (userInput.contains(HELP_COMMAND)) {
+					if (userInput.equals(HELP_COMMAND)) {
 						Stage helpStage = new Stage();
 						StackPane help = new StackPane();
 						Label helpText = new Label(display.messageSelector(2, 1));
+						helpText.setFont(Font.font("Verdana", 12));
 						StackPane.setAlignment(helpText, Pos.CENTER);
 						help.getChildren().add(helpText);
-						Scene helpScene = new Scene(help, 600, 260);
+						Scene helpScene = new Scene(help, 650, 240);
 						helpStage.setTitle("HELP GUIDE");
 						helpStage.setScene(helpScene);
 						// pop-up enabled
 						helpStage.initModality(Modality.APPLICATION_MODAL);
-						helpStage.setMinHeight(260);
-						helpStage.setMaxHeight(260);
-						helpStage.setMinWidth(600);
-						helpStage.setMaxWidth(600);
+						helpStage.setMinHeight(250);
+						helpStage.setMaxHeight(250);
+						helpStage.setMinWidth(650);
+						helpStage.setMaxWidth(650);
 						helpStage.show();
-					}
-					else {
+						helpScene.setOnKeyPressed(new EventHandler<KeyEvent>() {
+							@Override
+							public void handle(KeyEvent keyEvent) {
+								if (keyEvent.getCode() == KeyCode.ESCAPE) {
+									helpStage.close();
+								}
+							}
+						});
+					} else if (userInput.equals(EDIT_HELP_COMMAND)) {
+						Stage editStage = new Stage();
+						StackPane edit = new StackPane();
+						Label helpText = new Label(display.messageSelector(2, 1));
+						helpText.setFont(Font.font("Verdana", 12));
+						StackPane.setAlignment(helpText, Pos.CENTER);
+						edit.getChildren().add(helpText);
+						Scene editScene = new Scene(edit, 650, 250);
+						editStage.setTitle("EDIT GUIDE");
+						editStage.setScene(editScene);
+						// pop-up enabled
+						editStage.initModality(Modality.APPLICATION_MODAL);
+						editStage.setMinHeight(250);
+						editStage.setMaxHeight(250);
+						editStage.setMinWidth(650);
+						editStage.setMaxWidth(650);
+						editStage.show();
+						editScene.setOnKeyPressed(new EventHandler<KeyEvent>() {
+							@Override
+							public void handle(KeyEvent keyEvent) {
+								if (keyEvent.getCode() == KeyCode.ESCAPE) {
+									editStage.close();
+								}
+							}
+						});
+					} else if (userInput.equals(SEARCH_COMMAND)) {
+						Stage searchStage = new Stage();
+						StackPane search = new StackPane();
+						Label searchText = new Label(display.messageSelector(2, 1));
+						searchText.setFont(Font.font("Verdana", 12));
+						StackPane.setAlignment(searchText, Pos.CENTER);
+						search.getChildren().add(searchText);
+						Scene searchScene = new Scene(search, 650, 250);
+						searchStage.setTitle("Search results");
+						searchStage.setScene(searchScene);
+						// pop-up enabled
+						searchStage.initModality(Modality.APPLICATION_MODAL);
+						searchStage.setMinHeight(250);
+						searchStage.setMaxHeight(250);
+						searchStage.setMinWidth(650);
+						searchStage.setMaxWidth(650);
+						searchStage.show();
+						searchScene.setOnKeyPressed(new EventHandler<KeyEvent>() {
+							@Override
+							public void handle(KeyEvent keyEvent) {
+								if (keyEvent.getCode() == KeyCode.ESCAPE) {
+									searchStage.close();
+								}
+							}
+						});
+					} else {
 						actionLabel.setText(logic.executeUserCommand(userInput));
-						updateTree(tree);
+						List<Task> list = updatedArray;
+						ObservableList<Task> observableList = FXCollections.observableList(list);
+						observableList.addListener((ListChangeListener<Task>) change -> {
+							while (change.next()) {
+								if (change.wasUpdated()) {
+								System.out.print("change detected");
+								}
+							}
+						});
 					}
 				}
 			}
 
 		});
-		Separator cmdSeperator = initialiseCmdSeperator();
-		
-		grid.getChildren().addAll(commandLabel, userInputBox, clockLabel, nexTaskLabel, actionLabel);
-		grid.getChildren().addAll(clockSeperator, cmdSeperator);
-		grid.getChildren().add(tree);
-		
-		initialiseStage(primaryStage, grid);
 	}
 
 	private Separator initialiseCmdSeperator() {
 		Separator cmdSeperator = new Separator();
 		cmdSeperator.setHalignment(HPos.CENTER);
-		GridPane.setConstraints(cmdSeperator, 0, 74, 90, 2);
+		GridPane.setConstraints(cmdSeperator, 2, 74, 90, 2);
 		return cmdSeperator;
 	}
 
 	private void initialiseStage(Stage primaryStage, GridPane grid) {
+		primaryStage.setTitle("nexTask");
 		Scene mainScene = new Scene(grid, 620, 520);
-		
+
 		primaryStage.setScene(mainScene);
 		primaryStage.setMinWidth(640);
 		primaryStage.setMinHeight(540);
@@ -159,44 +258,51 @@ public class GUI extends Application {
 	}
 
 	private TreeView<String> initialiseTree() {
-		//Initialise Tree View
-		TreeItem<String> root, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday;
-		
-		//root
+		// Initialise Tree View
+		TreeItem<String> root;
+
+		// root
 		root = new TreeItem<>();
 		root.setExpanded(true);
 		
-		Monday = makeBranch("Monday", root);
-		Tuesday = makeBranch("Tuesday", root);
-		Wednesday = makeBranch("Wednesday", root);
-		Thursday = makeBranch("Thursday", root);
-		Friday = makeBranch("Friday", root);
-		Saturday = makeBranch("Saturday", root);
-		Sunday = makeBranch("Sunday", root);
-		
-		//Create tree
+		retrieveTaskList();
+		ArrayList<Task> updatedArray = new ArrayList<Task>();
+		updatedArray = logic.getTaskList();
+		for (int i = 0; i < updatedArray.size(); i++) {
+			String taskName = i + 1 + ". " + updatedArray.get(i).getName();
+			makeBranch(taskName, root);
+		}
+
+		// Create tree
 		TreeView<String> tree = new TreeView<String>(root);
 		tree.setShowRoot(false);
-		GridPane.setConstraints(tree, 0, 7, 90, 66);
+		GridPane.setConstraints(tree, 2, 7, 90, 66);
+		// updateTree(tree);
 		return tree;
+	}
+
+	private void retrieveTaskList() {
+		logic.executeUserCommand(RETRIEVE_COMMAND);
 	}
 
 	private Label initialiseCommandLabel() {
 		// Command prompt
 		Label commandLabel = new Label(display.messageSelector(WELCOME_COMMAND, PROMPT_CONDITION));
-		GridPane.setConstraints(commandLabel, 0, 83, 2, 1);
+		GridPane.setConstraints(commandLabel, 0, 84, 7, 1);
+		commandLabel.setFont(Font.font("Helvetica", FontWeight.BOLD, 12));
 		return commandLabel;
 	}
 
 	private Label initialiseNexTaskLabel() {
-		//nexTask label
+		// nexTask label
 		Label nexTaskLabel = new Label("nexTask");
-		GridPane.setConstraints(nexTaskLabel, 0, 0, 2, 2);
+		nexTaskLabel.setFont(Font.font("Verdana", 15));
+		GridPane.setConstraints(nexTaskLabel, 0, 0, 7, 4);
 		return nexTaskLabel;
 	}
 
 	private GridPane initialiseGridPane() {
-		//Initialising gridpane
+		// Initialising gridpane
 		GridPane grid = new GridPane();
 		grid.setPadding(new Insets(15, 15, 15, 15));
 		grid.setVgap(5);
@@ -210,21 +316,5 @@ public class GUI extends Application {
 		parent.getChildren().add(item);
 		return item;
 	}
-	
-	private void updateTree(TreeView<String> tree) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-/*	public static String getUserInput(String input) {
-		String userInput = input;
-		if (scanner.hasNextLine()) {
-			userInput = scanner.nextLine();
-		} else {
-			System.exit(0);
-		}
-		return userInput;
-	}
-	
-*/
+
 }

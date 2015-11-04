@@ -3,6 +3,15 @@ package NexTask;
 import java.lang.String;
 import java.util.ArrayList;
 
+/**
+ * GUI class will display the appropriate print messages required when user
+ * input is processed and appropriate actions are executed. GUI is the main
+ * interface for user interaction.
+ * 
+ * @@author Javan Huang
+ *
+ */
+
 public class DisplayManager {
 	/*
 	 * Print Messages
@@ -15,23 +24,22 @@ public class DisplayManager {
 	private static final String COMMAND_DELETED = "Task has been deleted!";
 	private static final String COMMAND_EDIT = "Task has been edited!";
 	private static final String COMMAND_UNDO = "Previous task has been undone!";
-	private static final String COMMAND_SEARCH = "Search results in %1$s: \n";
+	private static final String COMMAND_SEARCH = "Search results are as follows: \n";
 	private static final String COMMAND_ARCHIVE = "Archive has been retrieved. Here is the list of completed tasks!";
 	private static final String COMMAND_SORT = "Tasks has been sorted";
 	private static final String COMMAND_STORED = "File has been saved!";
 	private static final String COMMAND_HELP = "The following commands are as shown:\n"
-			+ "To add an event: add event start (date & time) end (date & time) (description of task).\n"
-			+ "To add a task with deadline: add deadline due by (date & time) (description of task).\n"
-			+ "To add a task with no deadline: add todo (description of task).\n"
-			+ "To add a recurring task: add repeat (description of task).\n"
-			+ "To mark a task as completed: finished/completed (task number).\n"
+			+ "To add an event: add (description of task) start \"date & time\" end \"date & time\".\n"
+			+ "To add a task with deadline: add (description of task) on/by \"date & time\".\n"
+			+ "To add a task with no deadline: add (description of task).\n"
+			+ "To mark a task as completed: complete (task number).\n"
 			+ "To delete a task: delete (task number).\n"
-			+ "To edit a specific task: edit (task number) (name/date/start/end) (the edit).\n"
+			+ "To edit a specific task: please refer to \"EDIT GUIDE\" for more information. \n"
 			+ "To undo a certain task: undo"
-			+ "To search: search (field you want to search) (description of search term).\n"
+			+ "To search: search (description of search term).\n"
 			+ "To retrieve an archive of completed tasks: archive.\n"
 			+ "To display the current list of tasks: display.\n" 
-			+ "To save to: save to (filename).";
+			+ "To save to: store (filename).";
 	private static final String NO_CONTENT_TO_DELETE = "%1$s is empty. There is no content to delete from!";
 	private static final String NO_CONTENT_TO_DISPLAY = "Task list is empty. There is no content to display!";
 	private static final String NO_ARCHIVE = "There are no completed tasks in archive!";
