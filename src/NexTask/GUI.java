@@ -87,7 +87,7 @@ public class GUI extends Application {
 		TextField userInputBox = initialiseTextBox(actionLabel);
 		Separator cmdSeperator = initialiseCmdSeperator();
 		
-		handleInput(actionLabel, userInputBox, updatedArray);
+		handleInput(actionLabel, userInputBox, tree);
 
 		grid.getChildren().addAll(commandLabel, userInputBox, clockLabel, nexTaskLabel, actionLabel);
 		grid.getChildren().addAll(clockSeperator, cmdSeperator);
@@ -140,7 +140,7 @@ public class GUI extends Application {
 		return actionLabel;
 	}
 
-	private void handleInput(Label actionLabel, TextField userInputBox, ArrayList<Task> taskArray) {
+	private void handleInput(Label actionLabel, TextField userInputBox, TreeView<String> tree) {
 		userInputBox.setOnKeyPressed(new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent keyEvent) {
@@ -227,6 +227,14 @@ public class GUI extends Application {
 						if(logic.getHasUpdate()) {
 							System.out.println("change detected");
 							logic.resetHasUpdate();
+							tree.setRoot(null);
+							TreeItem<String> root = new TreeItem<>();
+							root.setExpanded(true);
+							tree.setRoot(root);
+							ArrayList<Task> updatedArray = logic.getTaskList();
+							for (int i = 0; i < updatedArray.size(); i++) {
+								makeBranch(updatedArray.get(i), root);
+							}
 						}
 					}
 				}
@@ -263,16 +271,15 @@ public class GUI extends Application {
 		root.setExpanded(true);
 		
 		retrieveTaskList();
-		ArrayList<Task> updatedArray = new ArrayList<Task>();
-		updatedArray = logic.getTaskList();
+		ArrayList<Task> updatedArray = logic.getTaskList();
 		for (int i = 0; i < updatedArray.size(); i++) {
-			String taskName = i + 1 + ". " + updatedArray.get(i).getName();
-			makeBranch(taskName, root);
+			makeBranch(updatedArray.get(i), root);
 		}
 
 		// Create tree
 		TreeView<String> tree = new TreeView<String>(root);
 		tree.setShowRoot(false);
+		tree.setEditable(true);
 		GridPane.setConstraints(tree, 2, 7, 90, 66);
 		// updateTree(tree);
 		return tree;
@@ -307,11 +314,23 @@ public class GUI extends Application {
 		return grid;
 	}
 
-	private TreeItem<String> makeBranch(String string, TreeItem<String> parent) {
-		TreeItem<String> item = new TreeItem<>(string);
+	private void makeBranch(Task task, TreeItem<String> parent) {
+		String taskName = task.getName();
+		String taskEnd = task.endToString();
+		String taskStart = task.startToString();
+		TreeItem<String> item = new TreeItem<>(taskName);
 		item.setExpanded(true);
 		parent.getChildren().add(item);
-		return item;
+		if (taskStart != null && taskEnd != null) {
+			TreeItem<String> endTiming = new TreeItem<>(taskEnd);
+			TreeItem<String> startTiming = new TreeItem<>(taskStart);
+			item.getChildren().add(endTiming);
+			item.getChildren().add(startTiming);
+		}
+		else if (taskStart == null && taskEnd != null) {
+			TreeItem<String> endTiming = new TreeItem<>(taskEnd);
+			item.getChildren().add(endTiming);
+		}
 	}
 
 }
