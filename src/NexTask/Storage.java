@@ -97,6 +97,7 @@ public class Storage implements java.io.Serializable, Observable {
 	         FileInputStream fileIn = new FileInputStream(FILE_TO_RETREIVE);
 	         ObjectInputStream in = new ObjectInputStream(fileIn);
 	         retrievedTasks = (ArrayList<Task>) in.readObject();
+	         
 	         in.close();
 	         fileIn.close();
 	      }catch(IOException i)

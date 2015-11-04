@@ -48,6 +48,9 @@ public class Logic implements Observer {
 			+ "To save to: save to (filename).";
 	
 	private static final String INVALID_COMMAND = "There is no such command available for usage.";
+	private static final String SUCCESSFUL_SORT = "Tasks has been sorted";
+	private final String SUCCESSFUL_EDIT = "Task has been edited!";
+
 
 	private Storage storage;
 	private CommandParser parser;
@@ -58,8 +61,8 @@ public class Logic implements Observer {
 		storage = Storage.getInstance();
 		parser = new CommandParser();
 		hasUpdate = false;
+
 	}
-	
 	/**
 	 * Takes user input and determines if valid. If it is valid, will perform,
 	 * otherwise return error message.
@@ -104,6 +107,9 @@ public class Logic implements Observer {
 			}
 		} else if (commandName == CMD_EDIT) {
 			messageToPrint = cmd.execute();
+			if(messageToPrint.equals(SUCCESSFUL_EDIT)) {
+				hasUpdate = true;
+			}
 			try {
 				storage.storeToDefault();
 			} catch (FileNotFoundException e) {
@@ -140,6 +146,9 @@ public class Logic implements Observer {
 			messageToPrint = COMMAND_HELP;
 		} else if (commandName == CMD_SORT) {
 			messageToPrint = cmd.execute();
+			if(messageToPrint.equals(SUCCESSFUL_SORT)) {
+				hasUpdate = true;
+			}
 			try {
 				storage.storeToDefault();
 			} catch (FileNotFoundException e) {
