@@ -65,7 +65,9 @@ public class GUI extends Application {
 
 	public static void initialize() {
 		// scanner = new Scanner(System.in);
+		Storage storage = Storage.getInstance();
 		logic = new Logic();
+		storage.addObserver(logic);
 		display = new DisplayManager();
 	}
 
@@ -222,15 +224,10 @@ public class GUI extends Application {
 						});
 					} else {
 						actionLabel.setText(logic.executeUserCommand(userInput));
-						List<Task> list = updatedArray;
-						ObservableList<Task> observableList = FXCollections.observableList(list);
-						observableList.addListener((ListChangeListener<Task>) change -> {
-							while (change.next()) {
-								if (change.wasUpdated()) {
-								System.out.print("change detected");
-								}
-							}
-						});
+						if(logic.getHasUpdate()) {
+							System.out.println("change detected");
+							logic.resetHasUpdate();
+						}
 					}
 				}
 			}

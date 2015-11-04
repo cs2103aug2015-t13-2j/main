@@ -17,7 +17,7 @@ import Command.CommandParser;
  * @author
  *
  */
-public class Logic {
+public class Logic implements Observer {
 	private static final String CMD_EDIT = "edit";
 	private static final String CMD_ADD = "add";
 	private static final String CMD_DISPLAY = "display";
@@ -51,13 +51,15 @@ public class Logic {
 
 	private Storage storage;
 	private CommandParser parser;
+	private boolean hasUpdate;
 
 
 	public Logic() {
 		storage = Storage.getInstance();
 		parser = new CommandParser();
-
+		hasUpdate = false;
 	}
+	
 	/**
 	 * Takes user input and determines if valid. If it is valid, will perform,
 	 * otherwise return error message.
@@ -160,5 +162,17 @@ public class Logic {
 	public ArrayList<Task> getTaskList(){
 		return storage.getTaskArray();
 	}
+	@Override
+	public void update() {
+		hasUpdate = true;	
+	}
+	
+	public boolean getHasUpdate() {
+		return hasUpdate;
+	}
+	
+	public void resetHasUpdate() {
+		hasUpdate = false;
+	} 
 
 }

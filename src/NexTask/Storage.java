@@ -18,19 +18,21 @@ import Command.Command;
  * @author Jingjing Wang
  *
  */
-public class Storage implements java.io.Serializable {
+public class Storage implements java.io.Serializable, Observable {
 	// Constants
 	private static final String FILE_NAME = "NexTask.txt";
 	private static final String USER_FILE_NAME = "\\NexTask.txt";
 	private static final String FILE_TO_RETREIVE = "ForRetrieval.ser";
 
 	private static Storage theOne;
-
+	private final Object MUTEX= new Object();
+	
 	private String userPath;
 	private int taskNum;
 	private ArrayList<Task> taskArray;
 	private ArrayList<Command> prevCommands;
 	private ArrayList<Task> completedTasks;
+	private ArrayList<Observer> observerList;
 
 	private Storage() {
 		this.userPath = "";
@@ -38,6 +40,7 @@ public class Storage implements java.io.Serializable {
 		this.taskArray = new ArrayList<Task>();
 		this.prevCommands = new ArrayList<Command>();
 		this.completedTasks = new ArrayList<Task>();
+		this.observerList = new ArrayList<Observer>();
 	}
 
 	public static Storage getInstance() {
@@ -114,6 +117,7 @@ public class Storage implements java.io.Serializable {
 	public void markComplete(int taskNum) {
 		completedTasks.add(taskArray.get(taskNum));
 		taskArray.remove(taskNum);
+		notifyObservers();
 	}
 
 	public int getCompletedSize() {
@@ -134,18 +138,20 @@ public class Storage implements java.io.Serializable {
 		Command cmd = getPrevCommand();
 		taskArray.set(cmd.getTaskNumber(), cmd.getTask());
 		prevCommands.remove(getCommandSize() - 1);
-
+		notifyObservers();
 	}
 
 	public void undoAdd() {
 		taskArray.remove(getSize() - 1);
 		prevCommands.remove(getCommandSize() - 1);
+		notifyObservers();
 	}
 
 	public void undoDelete() {
 		Command cmd = getPrevCommand();
 		taskArray.add(cmd.getTaskNumber() - 1, cmd.getTask());
 		prevCommands.remove(getCommandSize() - 1);
+		notifyObservers();
 	}
 
 	public void addCommand(Command cmd) {
@@ -166,6 +172,7 @@ public class Storage implements java.io.Serializable {
 
 	public void add(Task task) {
 		this.taskArray.add(task);
+		notifyObservers();
 	}
 
 	public Task getTaskObject(int num) {
@@ -174,11 +181,13 @@ public class Storage implements java.io.Serializable {
 
 	public void delete(int num) {
 		taskArray.remove(num - 1);
+		notifyObservers();
 	}
 
 	public void edit(int num, Task task) {
 		// Task only has name?
 		taskArray.set(num, task);
+		notifyObservers();
 	}
 
 	public ArrayList<Task> getTaskArray() {
@@ -198,5 +207,22 @@ public class Storage implements java.io.Serializable {
 
 	public int getSize() {
 		return taskArray.size();
+	}
+
+	@Override
+	public void addObserver(Observer obj) {
+		if(obj == null) {
+			throw new NullPointerException("Null Observer");
+		} else if(!observerList.contains(obj)) {
+			observerList.add(obj);
+		}
+        
+	}
+
+	@Override
+	public void notifyObservers() {
+		for(Observer o : observerList) {
+			o.update();
+		}
 	}
 }
