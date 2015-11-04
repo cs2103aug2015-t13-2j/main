@@ -64,10 +64,10 @@ public class Task implements Cloneable, java.io.Serializable{
 	}
 	public String toString() {
 		DateTimeFormatter formmater = DateTimeFormat.forPattern("dd MMM yyyy hh:mm a");
-		if(taskType == "event") {
+		if(taskType.trim().equals("event")) {
 			return this.getName() + ": start " + formmater.print(this.getStart())
 		+ " end " + formmater.print(this.getEnd());
-		} else if(taskType == "deadline") {
+		} else if(taskType.trim().equals("deadline")) {
 			return this.getName() + ": " + formmater.print(this.getCompleteBy());
 		} else {
 			return this.getName();
@@ -75,7 +75,7 @@ public class Task implements Cloneable, java.io.Serializable{
 	}
 	public String startToString() {
 		DateTimeFormatter formmater = DateTimeFormat.forPattern("dd MMM yyyy hh:mm a");
-		if (taskType == "event") {
+		if (taskType.trim().equals("event")) {
 			return formmater.print(this.getStart());
 		}
 		else 
@@ -84,10 +84,10 @@ public class Task implements Cloneable, java.io.Serializable{
 	
 	public String endToString() {
 		DateTimeFormatter formmater = DateTimeFormat.forPattern("dd MMM yyyy hh:mm a");
-		if (taskType == "event") {
+		if (taskType.trim().equals("event")) {
 			return formmater.print(this.getEnd());
 		}
-		else if (taskType == "deadline") {
+		else if (taskType.trim().equals("deadline")) {
 			return formmater.print(this.getCompleteBy());
 		}
 		else 
