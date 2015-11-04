@@ -73,4 +73,24 @@ public class Task implements Cloneable, java.io.Serializable{
 			return this.getName();
 		}
 	}
+	public String startToString() {
+		DateTimeFormatter formmater = DateTimeFormat.forPattern("dd MMM yyyy hh:mm a");
+		if (taskType == "event") {
+			return formmater.print(this.getStart());
+		}
+		else 
+			return null;
+	}
+	
+	public String endToString() {
+		DateTimeFormatter formmater = DateTimeFormat.forPattern("dd MMM yyyy hh:mm a");
+		if (taskType == "event") {
+			return formmater.print(this.getEnd());
+		}
+		else if (taskType == "deadline") {
+			return formmater.print(this.getCompleteBy());
+		}
+		else 
+			return null;
+		}
 }
