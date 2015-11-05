@@ -11,7 +11,7 @@ import Command.*;
 import NexTask.EditSpecification;
 import NexTask.Task;
 
-public class CommandParser implements java.io.Serializable{
+public class CommandParser implements java.io.Serializable {
 	// Date time format
 	private static final String DATE_TIME_FMT_1 = "dd/MM/yy";
 	private static final String DATE_TIME_FMT_2 = "dd/MM/yy hh:mma";
@@ -52,13 +52,13 @@ public class CommandParser implements java.io.Serializable{
 	// Patterns
 	private static final String PATTERN_DATE = "\"([^\"]*)\"";
 	private static final String PATTERN_TASK_NAME = "([\\w\\s]+)";
-	
+
 	private static String userCommand;
 
 	public Command parse(String userInput) {
 		// check if user input empty
 		String[] input = userInput.split(" ", 2);
-		
+
 		String commandArgs;
 		if (input.length > 1) {
 			userCommand = getCommand(input);
@@ -86,8 +86,9 @@ public class CommandParser implements java.io.Serializable{
 			return initDisplayCommand(USER_COMMAND_DISPLAY);
 		case USER_COMMAND_ARCHIVE:
 			return initArchiveCommand(USER_COMMAND_ARCHIVE);
-		/*case USER_COMMAND_HELP:
-			return initHelpCommand(USER_COMMAND_HELP);*/
+		/*
+		 * case USER_COMMAND_HELP: return initHelpCommand(USER_COMMAND_HELP);
+		 */
 		case USER_COMMAND_UNDO:
 			return initUndoCommand(USER_COMMAND_UNDO);
 		case USER_COMMAND_EXIT:
@@ -98,8 +99,8 @@ public class CommandParser implements java.io.Serializable{
 			return initInvalidCommand("Please enter a command");
 		}
 	}
-	
-	public String getUserCommand(){
+
+	public String getUserCommand() {
 		return userCommand;
 	}
 
@@ -111,12 +112,14 @@ public class CommandParser implements java.io.Serializable{
 		return input[POSITION_OF_CMD_ARGS];
 	}
 
-	private Add initAddCommand(String commandArgs) {
+	private Command initAddCommand(String commandArgs) {
 		Add cmd = new Add();
 		if (isEvent(commandArgs.toLowerCase())) {
 			Task newEvent = parseEvent(commandArgs);
 			if (newEvent.getName().equals(INVALID)) {
-				return (Add) initInvalidCommand("Error parsing date");
+				return initInvalidCommand("Error parsing date.");
+			} else if (newEvent.getName().equals(EMPTY_STRING)) {
+				return initInvalidCommand("Pleae provide a name for your task.");
 			} else {
 				cmd.setCommandName(USER_COMMAND_ADD);
 				cmd.setTask(newEvent);
@@ -124,7 +127,7 @@ public class CommandParser implements java.io.Serializable{
 		} else if (isDeadline(commandArgs.toLowerCase())) {
 			Task newDeadline = parseDeadline(commandArgs);
 			if (newDeadline.getName().equals(INVALID)) {
-				return (Add) initInvalidCommand("Error parsing date");
+				return initInvalidCommand("Error parsing date");
 			} else {
 				cmd.setCommandName(USER_COMMAND_ADD);
 				cmd.setTask(newDeadline);
@@ -132,7 +135,7 @@ public class CommandParser implements java.io.Serializable{
 		} else {
 			Task newTodo = parseTodo(commandArgs);
 			if (newTodo.getName().equals(INVALID)) {
-				return (Add) initInvalidCommand("Error parsing date");
+				return initInvalidCommand("Error parsing date");
 			} else {
 				cmd.setCommandName(USER_COMMAND_ADD);
 				cmd.setTask(newTodo);
@@ -141,14 +144,14 @@ public class CommandParser implements java.io.Serializable{
 		return cmd;
 	}
 
-	private Edit initEditCommand(String commandArgs) {
+	private Command initEditCommand(String commandArgs) {
 		Edit cmd = new Edit();
 		EditSpecification edit = new EditSpecification();
 		String[] editArgs = commandArgs.split(" ", 3);
 		try {
 			edit.setTaskNumber(Integer.parseInt(editArgs[0]));
 		} catch (NumberFormatException e) {
-			return (Edit) initInvalidCommand("Please specify an integer for task number.");
+			return initInvalidCommand("Please specify an integer for task number.");
 		}
 
 		String fieldOrClear;
@@ -157,7 +160,7 @@ public class CommandParser implements java.io.Serializable{
 			fieldOrClear = editArgs[1];
 			argumentsForEdit = editArgs[2];
 		} catch (IndexOutOfBoundsException e) {
-			return (Edit) initInvalidCommand("Invalid number of arguments");
+			return initInvalidCommand("Invalid number of arguments");
 		}
 
 		switch (fieldOrClear) {
@@ -174,40 +177,40 @@ public class CommandParser implements java.io.Serializable{
 		return cmd;
 	}
 
-	private Delete initDeleteCommand(String commandArgs) {
+	private Command initDeleteCommand(String commandArgs) {
 		Delete cmd = new Delete();
 		cmd.setCommandName(USER_COMMAND_DELETE);
 		if (commandArgs.equals(EMPTY_STRING)) {
-			cmd = (Delete) initInvalidCommand("Please provide a task number.");
+			return initInvalidCommand("Please provide a task number.");
 		} else {
 			try {
 				cmd.setTaskNumber(Integer.parseInt(commandArgs));
 			} catch (NumberFormatException e) {
-				return (Delete) initInvalidCommand("Please specify an integer for task number.");
+				return initInvalidCommand("Please specify an integer for task number.");
 			}
 		}
 		return cmd;
 	}
 
-	private Completed initCompleteCommand(String commandArgs) {
+	private Command initCompleteCommand(String commandArgs) {
 		Completed cmd = new Completed();
 		cmd.setCommandName(USER_COMMAND_COMPLETE);
 		if (commandArgs.equals(EMPTY_STRING)) {
-			cmd = (Completed) initInvalidCommand("Please provide a task number.");
+			return initInvalidCommand("Please provide a task number.");
 		} else {
 			try {
 				cmd.setTaskNumber(Integer.parseInt(commandArgs));
 			} catch (NumberFormatException e) {
-				return (Completed) initInvalidCommand("Please specify an integer for task number.");
+				return initInvalidCommand("Please specify an integer for task number.");
 			}
 		}
 		return cmd;
 	}
 
-	private Search initSearchCommand(String commandArgs) {
+	private Command initSearchCommand(String commandArgs) {
 		Search cmd = new Search();
 		if (commandArgs.equals(EMPTY_STRING)) {
-			return (Search) initInvalidCommand("Please provide a search keyword.");
+			return initInvalidCommand("Please provide a search keyword.");
 		} else {
 			cmd.setCommandName(USER_COMMAND_SEARCH);
 			cmd.setSearchSpecification(commandArgs.trim());
@@ -215,10 +218,10 @@ public class CommandParser implements java.io.Serializable{
 		return cmd;
 	}
 
-	private Sort initSortCommand(String commandArgs) {
+	private Command initSortCommand(String commandArgs) {
 		Sort cmd = new Sort();
 		if (commandArgs.equals(EMPTY_STRING)) {
-			return (Sort) initInvalidCommand("Please specify field you wish to sort by.");
+			return initInvalidCommand("Please specify field you wish to sort by.");
 		} else {
 			cmd.setCommandName(USER_COMMAND_SORT);
 			cmd.setSortField(commandArgs.trim());
@@ -226,17 +229,49 @@ public class CommandParser implements java.io.Serializable{
 		return cmd;
 	}
 
-	private Store initStoreCommand(String commandArgs) {
+	private Command initStoreCommand(String commandArgs) {
 		Store cmd = new Store();
 		cmd.setCommandName(USER_COMMAND_STORE);
 		cmd.setDirectory(commandArgs.trim());
 		return cmd;
 	}
-	
-	private Retrieve initRetrieveCommand(String commandName){
+
+	private Command initRetrieveCommand(String commandName) {
 		Retrieve cmd = new Retrieve();
 		cmd.setCommandName(commandName);
 		return cmd;
+	}
+
+	private Command initCommand(String commandName) {
+		InitCommand cmd = new InitCommand();
+		cmd.setCommandName(commandName);
+		return cmd;
+	}
+
+	private Command initDisplayCommand(String commandName) {
+		Display cmd = new Display();
+		cmd.setCommandName(commandName);
+		return cmd;
+	}
+
+	private Command initUndoCommand(String commandName) {
+		Undo cmd = new Undo();
+		cmd.setCommandName(commandName);
+		return cmd;
+	}
+
+	private Command initArchiveCommand(String commandName) {
+		Archive cmd = new Archive();
+		cmd.setCommandName(commandName);
+		return cmd;
+	}
+
+	private Command initInvalidCommand(String errorMessage) {
+		assert (!errorMessage.equals(EMPTY_STRING));
+		InitCommand c = new InitCommand();
+		c.setCommandName(INVALID);
+		c.setErrorMessage(errorMessage);
+		return c;
 	}
 
 	public Task parseEvent(String args) {
@@ -278,22 +313,25 @@ public class CommandParser implements java.io.Serializable{
 	public Task parseDeadline(String args) {
 		Task newDeadline = new Task();
 		newDeadline.setTaskType(TASK_TYPE_DEADLINE);
-		if (args.contains(KW_ON)) {
+		if (hasDateTime(args)) {
 			try {
-				newDeadline.setCompleteBy(parseDateTime(getDateTime(args, KW_ON)));
-				newDeadline.setName(getTaskName(args, KW_ON));
+				newDeadline.setCompleteBy(parseDateTime(getDateTime(args, getKeyword(args))));
+				newDeadline.setName(getTaskName(args, getKeyword(args)));
 			} catch (IllegalArgumentException e) {
 				return new Task(INVALID);
 			}
 		} else {
-			try {
-				newDeadline.setCompleteBy(parseDateTime(getDateTime(args, KW_BY)));
-				newDeadline.setName(getTaskName(args, KW_BY));
-			} catch (IllegalArgumentException e) {
-				return new Task(INVALID);
-			}
+			return parseTodo(args);
 		}
 		return newDeadline;
+	}
+
+	public String getKeyword(String args) {
+		if (args.contains(KW_ON)) {
+			return KW_ON;
+		} else {
+			return KW_BY;
+		}
 	}
 
 	public Task parseTodo(String args) {
@@ -305,39 +343,6 @@ public class CommandParser implements java.io.Serializable{
 			newTodo.setName(args);
 		}
 		return newTodo;
-	}
-
-	private Command initCommand(String commandName) {
-		InitCommand cmd = new InitCommand();
-		cmd.setCommandName(commandName);
-		return cmd;
-	}
-	
-	private Command initDisplayCommand(String commandName) {
-		Display cmd = new Display();
-		cmd.setCommandName(commandName);
-		return cmd;
-	}
-	
-	private Command initUndoCommand(String commandName) {
-		Undo cmd = new Undo();
-		cmd.setCommandName(commandName);
-		return cmd;
-	}
-	
-	private Command initArchiveCommand(String commandName) {
-		Archive cmd = new Archive();
-		cmd.setCommandName(commandName);
-		return cmd;
-	}
-	
-	
-
-	private Command initInvalidCommand(String errorMessage) {
-		InitCommand c = new InitCommand();
-		c.setCommandName(INVALID);
-		c.setErrorMessage(errorMessage);
-		return c;
 	}
 
 	/**
@@ -354,6 +359,19 @@ public class CommandParser implements java.io.Serializable{
 	}
 
 	/**
+	 * Given a string, determine if it has date time.
+	 */
+	public boolean hasDateTime(String args) {
+		Pattern dateTimePattern = Pattern.compile(PATTERN_DATE);
+		Matcher m = dateTimePattern.matcher(args);
+		if (m.find()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
 	 * Helper method to get the date time from user input. Date time are wrapped
 	 * in quotes.
 	 */
@@ -366,7 +384,7 @@ public class CommandParser implements java.io.Serializable{
 			return "";
 		}
 	}
-	
+
 	/**
 	 * Helper method to get the date time from user input. Date time are wrapped
 	 * in quotes.
@@ -407,9 +425,6 @@ public class CommandParser implements java.io.Serializable{
 	private boolean isEvent(String args) {
 		String start = " " + KW_START + " ";
 		String end = " " + KW_END + " ";
-		//System.out.println(start);
-		//sSystem.out.println(end);
-		
 		if (args.contains(start) || args.contains(end)) {
 			return true;
 		} else {
@@ -418,8 +433,12 @@ public class CommandParser implements java.io.Serializable{
 	}
 
 	private boolean isDeadline(String addCmdArgs) {
-		if (addCmdArgs.contains(KW_ON) || addCmdArgs.contains(KW_BY)) {
-			return true;
+		if (hasDateTime(addCmdArgs)) {
+			if (addCmdArgs.contains(KW_ON) || addCmdArgs.contains(KW_BY)) {
+				return true;
+			} else {
+				return false;
+			}
 		} else {
 			return false;
 		}

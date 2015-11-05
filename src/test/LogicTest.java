@@ -14,41 +14,43 @@ public class LogicTest {
 	@Test
 	public void testAddGood() {
 		Logic logic = new Logic();
-		String res1 = logic.executeUserCommand("add todo laundry");
-		String res2 = logic.executeUserCommand("add event start 22/10/15 2:00 pm end 10/10/15 3:00 pm meeting1");
-		String res3 = logic.executeUserCommand("add deadline 23/10/15 2:00 pm assn1");
+		//Testing date formats
+		String res1 = logic.executeUserCommand("add meeting start \"11/11/11 1:00 pm\" end \"11/11/11 2:00pm\"");
+		String res2 = logic.executeUserCommand("add big event start \"11/11/11\"");
+		
+		String res3 = logic.executeUserCommand("add assn 1 due by \"5/11/15 1:00 pm\"");
+		String res4 = logic.executeUserCommand("add visit nancy on \"7/11/15 3:00 pm\"");
 
+		String res5 = logic.executeUserCommand("add continue working on assignment 1");
+		String res6 = logic.executeUserCommand("add start working on assignment 1");
+		String res7 = logic.executeUserCommand("add end scarf");
+		
 		String expected = "Task has been added!";
-
-		assertEquals(true, res1.equals(expected));
-		assertEquals(true, res2.equals(expected));
-		assertEquals(true, res3.equals(expected));
+		
+		assertEquals(expected, res1);
+		assertEquals(expected, res2);
+		assertEquals(expected, res3);
+		assertEquals(expected, res4);
+		assertEquals(expected, res5);
+		assertEquals(expected, res6);
+		assertEquals(expected, res7);
 	}
 
 	// Test executing add command
 	@Test
 	public void testAddBad() {
 		Logic logic = new Logic();
-		// invalid num args
-		ArrayList<String> executionResult = new ArrayList<String>();
-		executionResult.add(logic.executeUserCommand("add todo "));
-		executionResult.add(logic.executeUserCommand("add event start 22/10/152:00 pm end 10/10/15 3:00 pm meeting1"));
-		executionResult.add(logic.executeUserCommand("add deadline 23/10/15 2:00pm assn1"));
+		// boundary test cases
+		String res1 = logic.executeUserCommand("add meeting1 start \"11/13/11 1:00 pm\" end \"11/11/11 2:00pm\"");
+		String res2 = logic.executeUserCommand("add meeting2 start \"32/1/11 5:00 pm\"");
+		String res3 = logic.executeUserCommand("add meeting2 start \"31/1/11 25:00 pm\"");
+		// empty task name
+		//String res4 = logic.executeUserCommand("add start \"11/13/11 25:00 pm\"");
 
-		// invalid task type
-		executionResult.add(logic.executeUserCommand("add to-do laundry "));
-
-		// invalid date format
-		executionResult.add(logic.executeUserCommand("add event start 22/10/15 2 pm end 10/10/15 3:00 pm meeting1"));
-		executionResult.add(logic.executeUserCommand("add deadline 23/10/15 2 pm assn1"));
-
-		// invalid event format
-		executionResult.add(logic.executeUserCommand("add event begin 22/10/15 2:00 pm end 10/10/15 3:00 pm meeting1"));
-		executionResult.add(logic.executeUserCommand("add event start 22/10/15 1:00 pm no 10/10/15 3:00 pm meeting1"));
-
-		for (String s : executionResult) {
-			assertEquals(true, s.equals(COMMAND_ERROR));
-		}
+		assertEquals("There is no such command available for usage.", res1);
+		assertEquals("There is no such command available for usage.", res2);
+		assertEquals("There is no such command available for usage.", res3);
+		//assertEquals("Pleae provide a name for your task.", res4);
 	}
 
 	// Test executing edit command
@@ -57,30 +59,25 @@ public class LogicTest {
 		Logic logic = new Logic();
 		ArrayList<String> executionResult = new ArrayList<String>();
 
-		logic.executeUserCommand("add todo laundry");
-		logic.executeUserCommand("add event start 22/10/15 2:00 pm end 10/10/15 3:00 pm meeting1");
-		logic.executeUserCommand("add deadline 23/10/15 2:00 pm assn1");
+		logic.executeUserCommand("add laundry");
+		logic.executeUserCommand("add meeting1 start \"11/11/11 1:00 pm\" end \"11/11/11 2:00pm\"");
+		logic.executeUserCommand("add assn1 due by \"23/10/15 2:00 pm\"");
 
 		// 1 and 3 are boundary cases for valid task numbers
 		// edit names
-		executionResult.add(logic.executeUserCommand("edit 1 name exercise"));
-		executionResult.add(logic.executeUserCommand("edit 2 name lecture"));
-		executionResult.add(logic.executeUserCommand("edit 3 name hw"));
+		String res1 = logic.executeUserCommand("edit 1 name happy");
+		String res2 = logic.executeUserCommand("edit 2 name lecture");
+		String res3 = logic.executeUserCommand("edit 3 name hw");
 
-		// edit dates
-		executionResult.add(logic.executeUserCommand("edit 2 start 11/11/11 3:00 pm"));
-		executionResult.add(logic.executeUserCommand("edit 2 end 11/11/11 4:00 pm"));
-		executionResult.add(logic.executeUserCommand("edit 3 due 11/11/11 5:00 pm"));
+		String expected = "Task has been edited!";
 
-		String expected = "Task has been editted!";
-
-		for (String s : executionResult) {
-			assertEquals(true, s.equals(expected));
-		}
+		assertEquals(true, res1.equals(expected));
+		assertEquals(true, res2.equals(expected));
+		assertEquals(true, res3.equals(expected));
 	}
 
 	// Test executing edit command
-	@Test
+	//@Test
 	public void testEditBad() {
 		Logic logic = new Logic();
 		ArrayList<String> executionResult1 = new ArrayList<String>();

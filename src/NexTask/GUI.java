@@ -225,7 +225,6 @@ public class GUI extends Application {
 					} else {
 						actionLabel.setText(logic.executeUserCommand(userInput));
 						if(logic.getHasUpdate()) {
-							System.out.println("change detected");
 							logic.resetHasUpdate();
 							tree.setRoot(null);
 							TreeItem<String> root = new TreeItem<>();
