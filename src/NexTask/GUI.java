@@ -260,7 +260,7 @@ public class GUI extends Application {
 							tree.setRoot(root);
 							ArrayList<Task> updatedArray = logic.getTaskList();
 							for (int i = 0; i < updatedArray.size(); i++) {
-								makeBranch(updatedArray.get(i), root);
+								makeBranch(updatedArray.get(i), root, i);
 							}
 						}
 					}
@@ -300,7 +300,7 @@ public class GUI extends Application {
 		retrieveTaskList();
 		ArrayList<Task> updatedArray = logic.getTaskList();
 		for (int i = 0; i < updatedArray.size(); i++) {
-			makeBranch(updatedArray.get(i), root);
+			makeBranch(updatedArray.get(i), root, i);
 		}
 
 		// Create tree
@@ -341,18 +341,18 @@ public class GUI extends Application {
 		return grid;
 	}
 
-	private void makeBranch(Task task, TreeItem<String> parent) {
+	private void makeBranch(Task task, TreeItem<String> parent, int taskNumber) {
 		String taskName = task.getName();
 		String taskEnd = task.endToString();
 		String taskStart = task.startToString();
-		TreeItem<String> item = new TreeItem<>(taskName);
+		TreeItem<String> item = new TreeItem<>(taskNumber + 1 + ". " + taskName);
 		item.setExpanded(true);
 		parent.getChildren().add(item);
 		if (taskStart != null && taskEnd != null) {
 			TreeItem<String> endTiming = new TreeItem<>(taskEnd);
 			TreeItem<String> startTiming = new TreeItem<>(taskStart);
-			item.getChildren().add(endTiming);
 			item.getChildren().add(startTiming);
+			item.getChildren().add(endTiming);
 		}
 		else if (taskStart == null && taskEnd != null) {
 			TreeItem<String> endTiming = new TreeItem<>(taskEnd);
