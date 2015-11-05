@@ -22,7 +22,8 @@ public class Storage implements java.io.Serializable, Observable {
 	// Constants
 	private static final String FILE_NAME = "NexTask.txt";
 	private static final String USER_FILE_NAME = "\\NexTask.txt";
-	private static final String FILE_TO_RETREIVE = "ForRetrieval.ser";
+	private static final String TASK_FILE_TO_RETREIVE = "ForRetrievalTasks.ser";
+	private static final String COMPLETED_FILE_TO_RETREIVE = "ForRetrievalCompleted.ser";
 
 	private static Storage theOne;
 	private final Object MUTEX= new Object();
@@ -65,16 +66,29 @@ public class Storage implements java.io.Serializable, Observable {
 	public void storeToDefault() throws FileNotFoundException{
 		try
 	      {
-	         FileOutputStream fileOut =
-	         new FileOutputStream(FILE_TO_RETREIVE);
-	         ObjectOutputStream out = new ObjectOutputStream(fileOut);
+	         FileOutputStream tasksOut =
+	         new FileOutputStream(TASK_FILE_TO_RETREIVE);
+	         ObjectOutputStream out = new ObjectOutputStream(tasksOut);
 	         out.writeObject(taskArray);
 	         out.close();
-	         fileOut.close();
+	         tasksOut.close();
 	      }catch(IOException i)
 	      {
 	          i.printStackTrace();
 	      }
+		try
+	      {
+	         FileOutputStream completedOut =
+	         new FileOutputStream(COMPLETED_FILE_TO_RETREIVE);
+	         ObjectOutputStream out = new ObjectOutputStream(completedOut);
+	         out.writeObject(completedTasks);
+	         out.close();
+	         completedOut.close();
+	      }catch(IOException i)
+	      {
+	          i.printStackTrace();
+	      }
+		
 	}
 	
 	public void storeToFile() {
@@ -94,23 +108,34 @@ public class Storage implements java.io.Serializable, Observable {
 		ArrayList<Task> retrievedTasks = null;
 		try
 	      {
-	         FileInputStream fileIn = new FileInputStream(FILE_TO_RETREIVE);
+	         FileInputStream fileIn = new FileInputStream(TASK_FILE_TO_RETREIVE);
 	         ObjectInputStream in = new ObjectInputStream(fileIn);
 	         retrievedTasks = (ArrayList<Task>) in.readObject();
 	         
 	         in.close();
 	         fileIn.close();
-	      }catch(IOException i)
+	      }catch(ClassNotFoundException | IOException i)
 	      {
 	         i.printStackTrace();
 	         return;
-	      }catch(ClassNotFoundException c)
-	      {
-	         c.printStackTrace();
-	         return;
 	      }
 		
+		ArrayList<Task> retrievedCompleted = null;
+		try
+	      {
+	         FileInputStream fileIn = new FileInputStream(COMPLETED_FILE_TO_RETREIVE);
+	         ObjectInputStream in = new ObjectInputStream(fileIn);
+	         retrievedCompleted = (ArrayList<Task>) in.readObject();
+	         
+	         in.close();
+	         fileIn.close();
+	      }catch(ClassNotFoundException | IOException i)
+	      {
+	         i.printStackTrace();
+	         return;
+	      }
 		this.taskArray = retrievedTasks;
+		this.completedTasks = retrievedCompleted;
 	}
 
 	/* Memory Manager */
