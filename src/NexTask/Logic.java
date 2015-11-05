@@ -14,9 +14,11 @@ import Command.CommandParser;
  * will be passed to this component where Logic will streamline what the user
  * plans to do through his inputs.
  * 
- * @author
+ * @author 
  *
  */
+
+//@@author A0145695R
 public class Logic implements Observer {
 	private static final String CMD_EDIT = "edit";
 	private static final String CMD_ADD = "add";

@@ -12,9 +12,11 @@ import NexTask.Task;
  * For edit command, the editSpecification field will be initialized.
  * For search command, the searchSpecification will be initialized.
  * 
- * @author Jenny
+ *@author Jenny
  *
  */
+
+//@@author Jenny
 public abstract class Command implements java.io.Serializable{
 	private String commandName;
 	private String directory;

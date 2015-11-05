@@ -8,9 +8,10 @@ import java.util.ArrayList;
  * input is processed and appropriate actions are executed. GUI is the main
  * interface for user interaction.
  * 
- * @@author Javan Huang
  *
  */
+
+//@@author A0124710W
 
 public class DisplayManager {
 	/*

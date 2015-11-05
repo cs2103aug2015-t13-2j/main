@@ -1,7 +1,6 @@
 package NexTask;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -11,9 +10,6 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
-import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
@@ -41,10 +37,11 @@ import javafx.scene.input.KeyEvent;
  * interface for user interaction where users are updated through
  * the GUI with any changes made through their inputs.
  * 
- * @@author Javan Huang
+ * @@author A0124710W
  *
  */
 
+//@@author A0124710W
 public class GUI extends Application {
 
 	private static final int WELCOME_COMMAND = 1;
