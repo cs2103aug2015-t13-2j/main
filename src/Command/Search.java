@@ -34,7 +34,7 @@ public class Search extends Command{
 					}
 				}
 				if (match){
-					System.out.println(i + 1 + ". " + task.toString());
+					searchMsg += i + 1 + ". " + task.toString() +"\n";
 				}	
 			}
 		}
@@ -54,7 +54,7 @@ public class Search extends Command{
 					}
 				}	
 				if (match){
-					System.out.println(i + 1 + ". " + task.toString());
+					searchMsg += i + 1 + ". " + task.toString() +"\n";
 				}
 			}
 		}
