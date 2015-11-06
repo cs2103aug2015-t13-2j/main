@@ -1,5 +1,7 @@
 package NexTask;
 
+//@@author A0145035N
+
 import java.text.SimpleDateFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -73,6 +75,8 @@ public class Task implements Cloneable, java.io.Serializable{
 			return this.getName();
 		}
 	}
+	
+//	@@author A0124710W
 	public String startToString() {
 		DateTimeFormatter formmater = DateTimeFormat.forPattern("dd MMM yyyy hh:mm a");
 		if (taskType.trim().equals("event")) {

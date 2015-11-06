@@ -8,6 +8,8 @@ package NexTask;
  * @author Jenny
  *
  */
+
+//@@author A0145695R
 public class EditSpecification implements java.io.Serializable {
 	private int taskNumber;
 	private String fieldToEdit;

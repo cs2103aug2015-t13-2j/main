@@ -1,7 +1,6 @@
 package NexTask;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -11,9 +10,6 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
-import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
@@ -41,10 +37,11 @@ import javafx.scene.input.KeyEvent;
  * interface for user interaction where users are updated through
  * the GUI with any changes made through their inputs.
  * 
- * @@author Javan Huang
+ * @@author A0124710W
  *
  */
 
+//@@author A0124710W
 public class GUI extends Application {
 
 	private static final int WELCOME_COMMAND = 1;
@@ -54,10 +51,11 @@ public class GUI extends Application {
 	private static final String EDIT_HELP_COMMAND = "edit help";
 	private static final String SEARCH_COMMAND = "search";
 	private static final String RETRIEVE_COMMAND = "retrieve";
+	private static final String ARCHIVE_COMMAND = "archive";
 	// private static Scanner scanner;
 	private static Logic logic;
 	private static DisplayManager display;
-	private ArrayList<Task> updatedArray;
+	private ArrayList<Task> oldArray;
 
 	public static void main(String[] args) {
 		launch(args);
@@ -74,7 +72,7 @@ public class GUI extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		initialize();
-		updatedArray = logic.getTaskList();
+		oldArray = logic.getTaskList();
 
 		GridPane grid = initialiseGridPane();
 		Label nexTaskLabel = initialiseNexTaskLabel();
@@ -175,10 +173,10 @@ public class GUI extends Application {
 					} else if (userInput.equals(EDIT_HELP_COMMAND)) {
 						Stage editStage = new Stage();
 						StackPane edit = new StackPane();
-						Label helpText = new Label(display.messageSelector(2, 1));
-						helpText.setFont(Font.font("Verdana", 12));
-						StackPane.setAlignment(helpText, Pos.CENTER);
-						edit.getChildren().add(helpText);
+						Label editHelpText = new Label(display.messageSelector(14, 1));
+						editHelpText.setFont(Font.font("Verdana", 14));
+						StackPane.setAlignment(editHelpText, Pos.CENTER);
+						edit.getChildren().add(editHelpText);
 						Scene editScene = new Scene(edit, 650, 250);
 						editStage.setTitle("EDIT GUIDE");
 						editStage.setScene(editScene);
@@ -197,28 +195,55 @@ public class GUI extends Application {
 								}
 							}
 						});
-					} else if (userInput.equals(SEARCH_COMMAND)) {
+					} else if (userInput.contains(SEARCH_COMMAND)) {
+						String searchResults = logic.executeUserCommand(userInput);
 						Stage searchStage = new Stage();
 						StackPane search = new StackPane();
-						Label searchText = new Label(display.messageSelector(2, 1));
-						searchText.setFont(Font.font("Verdana", 12));
-						StackPane.setAlignment(searchText, Pos.CENTER);
-						search.getChildren().add(searchText);
-						Scene searchScene = new Scene(search, 650, 250);
+						Label searchLabel = new Label(searchResults);
+						searchLabel.setFont(Font.font("Verdana", 12));
+						StackPane.setAlignment(searchLabel, Pos.CENTER);
+						search.getChildren().add(searchLabel);
+						Scene searchScene = new Scene(search, 540, 250);
 						searchStage.setTitle("Search results");
 						searchStage.setScene(searchScene);
 						// pop-up enabled
 						searchStage.initModality(Modality.APPLICATION_MODAL);
 						searchStage.setMinHeight(250);
 						searchStage.setMaxHeight(250);
-						searchStage.setMinWidth(650);
-						searchStage.setMaxWidth(650);
+						searchStage.setMinWidth(540);
+						searchStage.setMaxWidth(540);
 						searchStage.show();
 						searchScene.setOnKeyPressed(new EventHandler<KeyEvent>() {
 							@Override
 							public void handle(KeyEvent keyEvent) {
 								if (keyEvent.getCode() == KeyCode.ESCAPE) {
 									searchStage.close();
+								}
+							}
+						});
+					} else if (userInput.equals(ARCHIVE_COMMAND)) {
+						Stage archiveStage = new Stage();
+						StackPane archiveStack = new StackPane();
+						String archiveResults = logic.executeUserCommand(userInput);
+						Label archiveLabel = new Label(archiveResults);
+						archiveLabel.setFont(Font.font("Verdana", 12));
+						StackPane.setAlignment(archiveLabel, Pos.CENTER);
+						archiveStack.getChildren().add(archiveLabel);
+						Scene archiveScene = new Scene(archiveStack, 500, 250);
+						archiveStage.setTitle("Search results");
+						archiveStage.setScene(archiveScene);
+						// pop-up enabled
+						archiveStage.initModality(Modality.APPLICATION_MODAL);
+						archiveStage.setMinHeight(250);
+						archiveStage.setMaxHeight(250);
+						archiveStage.setMinWidth(500);
+						archiveStage.setMaxWidth(500);
+						archiveStage.show();
+						archiveScene.setOnKeyPressed(new EventHandler<KeyEvent>() {
+							@Override
+							public void handle(KeyEvent keyEvent) {
+								if (keyEvent.getCode() == KeyCode.ESCAPE) {
+									archiveStage.close();
 								}
 							}
 						});
@@ -232,7 +257,7 @@ public class GUI extends Application {
 							tree.setRoot(root);
 							ArrayList<Task> updatedArray = logic.getTaskList();
 							for (int i = 0; i < updatedArray.size(); i++) {
-								makeBranch(updatedArray.get(i), root);
+								makeBranch(updatedArray.get(i), root, i);
 							}
 						}
 					}
@@ -272,7 +297,7 @@ public class GUI extends Application {
 		retrieveTaskList();
 		ArrayList<Task> updatedArray = logic.getTaskList();
 		for (int i = 0; i < updatedArray.size(); i++) {
-			makeBranch(updatedArray.get(i), root);
+			makeBranch(updatedArray.get(i), root, i);
 		}
 
 		// Create tree
@@ -313,18 +338,18 @@ public class GUI extends Application {
 		return grid;
 	}
 
-	private void makeBranch(Task task, TreeItem<String> parent) {
+	private void makeBranch(Task task, TreeItem<String> parent, int taskNumber) {
 		String taskName = task.getName();
 		String taskEnd = task.endToString();
 		String taskStart = task.startToString();
-		TreeItem<String> item = new TreeItem<>(taskName);
+		TreeItem<String> item = new TreeItem<>(taskNumber + 1 + ". " + taskName);
 		item.setExpanded(true);
 		parent.getChildren().add(item);
 		if (taskStart != null && taskEnd != null) {
 			TreeItem<String> endTiming = new TreeItem<>(taskEnd);
 			TreeItem<String> startTiming = new TreeItem<>(taskStart);
-			item.getChildren().add(endTiming);
 			item.getChildren().add(startTiming);
+			item.getChildren().add(endTiming);
 		}
 		else if (taskStart == null && taskEnd != null) {
 			TreeItem<String> endTiming = new TreeItem<>(taskEnd);

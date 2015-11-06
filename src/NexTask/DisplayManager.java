@@ -8,9 +8,10 @@ import java.util.ArrayList;
  * input is processed and appropriate actions are executed. GUI is the main
  * interface for user interaction.
  * 
- * @@author Javan Huang
  *
  */
+
+//@@author A0124710W
 
 public class DisplayManager {
 	/*
@@ -40,6 +41,12 @@ public class DisplayManager {
 			+ "To retrieve an archive of completed tasks: archive.\n"
 			+ "To display the current list of tasks: display.\n" 
 			+ "To save to: store (filename).";
+	private static final String EDIT_HELP = "1. edit (task number) clear start [To set only a deadline timing for specified task]\n" 
+			+ "2. edit (task number) clear end [To set only a deadline timing for specified task]\n"
+			+ "3. edit (task number) clear times [To get rid of all times for specified task]\n"
+			+ "4. edit (task number) end (date & time) [To add an end time for specified task]\n"
+			+ "5. edit (task number) start (date & time) [To add a start time for specified task]\n"
+			+ "8. edit (task number) by (date & time)[To add a deadline timing for specified task]\n";
 	private static final String NO_CONTENT_TO_DELETE = "%1$s is empty. There is no content to delete from!";
 	private static final String NO_CONTENT_TO_DISPLAY = "Task list is empty. There is no content to display!";
 	private static final String NO_ARCHIVE = "There are no completed tasks in archive!";
@@ -66,7 +73,7 @@ public class DisplayManager {
 
 	// commandAssigned = specified numbering of commands
 	// 1. welcome message, 2. help, 3. add, 4. delete, 5. edit, 6. completed, 7.
-	// undo. 8. search, 9. error, 10. display, 11. store, 12. archive 13. sort
+	// undo. 8. search, 9. error, 10. display, 11. store, 12. archive, 13. sort, 14. edit help
 
 	public String messageSelector(int commandAssigned, int conditionOfExecution) {
 		String returnMessage = "";
@@ -180,6 +187,9 @@ public class DisplayManager {
 				returnMessage = UNABLE_TO_SORT;
 				break;
 			}	
+		case 14: //edit help message
+			returnMessage = EDIT_HELP;
+			break;
 		default: returnMessage = INVALID_COMMAND;
 				 break;
 		}

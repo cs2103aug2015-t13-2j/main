@@ -1,5 +1,10 @@
 package Command;
 
+//@@author A0145035N
+
+import java.util.ArrayList;
+import NexTask.Task;
+
 public class Archive extends Command{
 	private final String NO_ARCHIVE = "There are no completed tasks in archive!";
 	
@@ -14,9 +19,8 @@ public class Archive extends Command{
 			archMsg = NO_ARCHIVE;
 		} else {
 			for (int i = 0; i < numberOfCompleted; i++) {
-				String taskToDisplay = storage.getCompletedName(i);
-				String lineToDisplay = (i + 1) + ". " + taskToDisplay;
-				System.out.println(lineToDisplay);
+					ArrayList<Task> archiveArray = storage.getCompletedTasks();
+					archMsg += i + 1 + ". " + archiveArray.get(i).toString() + "\n";
 			}
 		}
 		return archMsg;

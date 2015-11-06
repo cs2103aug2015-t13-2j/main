@@ -6,10 +6,11 @@ import java.util.Scanner;
  * UI class will display the appropriate print messages required when called
  * upon by other classes.
  * 
- * @author Javan
+ * @@author Javan
  *
  */
 
+//@@author A0124710W
 public class UI {
 
 	private static final int WELCOME_COMMAND = 1;

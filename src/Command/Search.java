@@ -1,5 +1,7 @@
 package Command;
 
+//@@author A0145035N
+
 import NexTask.Task;
 
 public class Search extends Command{
@@ -20,18 +22,21 @@ public class Search extends Command{
 			System.out.println("Incomplete:");
 			for (int i = 0; i < numOfIncomplete; i++){
 				Task task = storage.getTaskArray().get(i);
+				String start = task.startToString();
+				String end = task.endToString();
 				boolean match = false;
-				String [] searchField = task.toString().split("[ :]+");
+				String toSearch = task.toString() + " " + start + " " + end;
+				String [] searchField = toSearch.split(" ");
 				for (String search: searchField){
 					for (String specification: searchSpecification){
-						if (search.contains(specification)){
+						if (search.toLowerCase().contains(specification.toLowerCase())){
 							match = true;
 							numOfResult ++;
 						}
 					}
 				}
 				if (match){
-					System.out.println(i + 1 + ". " + task.toString());
+					searchMsg += i + 1 + ". " + task.toString() +"\n";
 				}	
 			}
 		}
@@ -51,7 +56,7 @@ public class Search extends Command{
 					}
 				}	
 				if (match){
-					System.out.println(i + 1 + ". " + task.toString());
+					searchMsg += i + 1 + ". " + task.toString() +"\n";
 				}
 			}
 		}
