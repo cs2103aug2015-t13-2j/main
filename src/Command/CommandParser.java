@@ -69,7 +69,7 @@ public class CommandParser implements java.io.Serializable {
 			userCommand = userInput.trim();
 			commandArgs = EMPTY_STRING;
 		}
-		switch (userCommand) {
+		switch (userCommand.toLowerCase()) {
 		case USER_COMMAND_ADD:
 			return initAddCommand(commandArgs);
 		case USER_COMMAND_EDIT:
