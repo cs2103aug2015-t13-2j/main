@@ -10,6 +10,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import Command.*;
+import NexTask.DateTimeParser;
 import NexTask.EditSpecification;
 import NexTask.Task;
 
@@ -292,7 +293,7 @@ public class CommandParser implements java.io.Serializable {
 		boolean hasEnd = false;
 		if (args.contains(KW_START)) {
 			try {
-				newEvent.setStart(parseDateTime(getDateTime(args, KW_START)));
+				newEvent.setStart(DateTimeParser.parse(getDateTime(args, KW_START)));
 				newEvent.setName(getTaskName(args, KW_START));
 				hasStart = true;
 			} catch (IllegalArgumentException e) {
@@ -304,7 +305,7 @@ public class CommandParser implements java.io.Serializable {
 				if (!hasStart) {
 					newEvent.setName(getTaskName(args, KW_END));
 				}
-				newEvent.setEnd(parseDateTime(getDateTime(args, KW_END)));
+				newEvent.setEnd(DateTimeParser.parse(getDateTime(args, KW_END)));
 				hasEnd = true;
 			} catch (IllegalArgumentException e) {
 				return new Task(INVALID);
@@ -326,7 +327,7 @@ public class CommandParser implements java.io.Serializable {
 		newDeadline.setTaskType(TASK_TYPE_DEADLINE);
 		if (hasDateTime(args)) {
 			try {
-				newDeadline.setCompleteBy(parseDateTime(getDateTime(args, getKeyword(args))));
+				newDeadline.setCompleteBy(DateTimeParser.parse(getDateTime(args, getKeyword(args))));
 				newDeadline.setName(getTaskName(args, getKeyword(args)));
 			} catch (IllegalArgumentException e) {
 				return new Task(INVALID);

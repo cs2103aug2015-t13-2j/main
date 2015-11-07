@@ -1,5 +1,7 @@
 package Command;
 
+import NexTask.DateTimeParser;
+
 //@@author A0145035N
 
 import NexTask.EditSpecification;
@@ -53,7 +55,7 @@ public class Edit extends Command{
 		Task t = storage.getTaskObject(edit.getTaskNumber() - 1);
 		if(fieldToEdit.equals(FIELD_START)) {
 			try{ 
-				t.setStart(parser.parseDateTime(parser.getDateTime(theEdit)));
+				t.setStart(DateTimeParser.parse(parser.getDateTime(theEdit)));
 			} catch(IllegalArgumentException e) {
 				return ERROR_INVALID_DATE_FORMAT;
 			}
@@ -68,7 +70,7 @@ public class Edit extends Command{
 			editMsg = EDIT_SUCCESSFUL;
 		} else if(fieldToEdit.equals(FIELD_END)) {
 			try{ 
-				t.setEnd(parser.parseDateTime(parser.getDateTime(theEdit)));
+				t.setEnd(DateTimeParser.parse(parser.getDateTime(theEdit)));
 			} catch(IllegalArgumentException e) {
 				return ERROR_INVALID_DATE_FORMAT;
 			}
@@ -83,7 +85,7 @@ public class Edit extends Command{
 			editMsg = EDIT_SUCCESSFUL;
 		} else if(fieldToEdit.equals("by")) {
 			try{ 
-				t.setCompleteBy(parser.parseDateTime(parser.getDateTime(theEdit)));
+				t.setCompleteBy(DateTimeParser.parse(parser.getDateTime(theEdit)));
 			} catch(IllegalArgumentException e) {
 				return ERROR_INVALID_DATE_FORMAT;
 			}
@@ -95,7 +97,7 @@ public class Edit extends Command{
 			editMsg = EDIT_SUCCESSFUL;
 		} else if(fieldToEdit.equals("on")) {
 			try{ 
-				t.setCompleteBy(parser.parseDateTime(parser.getDateTime(theEdit)));
+				t.setCompleteBy(DateTimeParser.parse(parser.getDateTime(theEdit)));
 			} catch(IllegalArgumentException e) {
 				return ERROR_INVALID_DATE_FORMAT;
 			}
