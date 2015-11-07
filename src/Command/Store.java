@@ -3,7 +3,7 @@ package Command;
 //@@author A0145035N
 
 public class Store extends Command{
-	private final String COMMAND_SORT = "Tasks has been sorted";
+	private final String COMMAND_STORED = "Tasks has been stored into a text file!";
 	
 	public Store(){
 		super();
@@ -12,6 +12,6 @@ public class Store extends Command{
 	public String execute(){
 		storage.setPath(getDirectory());
 		storage.storeToFile();
-		return COMMAND_SORT;
+		return COMMAND_STORED;
 	}
 }

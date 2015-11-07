@@ -2,10 +2,10 @@ package Command;
 
 //@@author A0145035N
 
-public class Display extends Command {
-	private final String NO_CONTENT_TO_DISPLAY = "Task list is empty. There is no content to display!";
+public class ViewIncomplete extends Command {
+	private final String NO_CONTENT_TO_DISPLAY = "Incomplete task list is empty. There is no content to display!";
 	
-	public Display(){
+	public ViewIncomplete(){
 		super();
 	}
 	

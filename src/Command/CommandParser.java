@@ -27,7 +27,7 @@ public class CommandParser implements java.io.Serializable {
 	// Command types
 	private static final String USER_COMMAND_ADD = "add";
 	private static final String USER_COMMAND_DELETE = "delete";
-	private static final String USER_COMMAND_DISPLAY = "display";
+	private static final String USER_COMMAND_VIEW_INCOMPLETE = "view incomplete";
 	private static final String USER_COMMAND_EDIT = "edit";
 	private static final String USER_COMMAND_EXIT = "exit";
 	private static final String USER_COMMAND_STORE = "store";
@@ -36,7 +36,7 @@ public class CommandParser implements java.io.Serializable {
 	private static final String USER_COMMAND_HELP = "help";
 	private static final String USER_COMMAND_UNDO = "undo";
 	private static final String USER_COMMAND_SORT = "sort";
-	private static final String USER_COMMAND_ARCHIVE = "archive";
+	private static final String USER_COMMAND_VIEW_COMPLETED = "view completed";
 	private static final String USER_COMMAND_RETRIEVE = "retrieve";
 	private static final String INVALID = "invalid";
 
@@ -59,17 +59,26 @@ public class CommandParser implements java.io.Serializable {
 
 	public Command parse(String userInput) {
 		// check if user input empty
-		String[] input = userInput.split(" ", 2);
-
 		String commandArgs;
-		if (input.length > 1) {
-			userCommand = getCommand(input);
-			commandArgs = getCommandArgs(input);
-		} else {
-			userCommand = userInput.trim();
+		
+		if (userInput.equals(USER_COMMAND_VIEW_COMPLETED)){
+			userCommand = USER_COMMAND_VIEW_COMPLETED;
 			commandArgs = EMPTY_STRING;
+		} else if (userInput.equals(USER_COMMAND_VIEW_INCOMPLETE)){
+			userCommand = USER_COMMAND_VIEW_INCOMPLETE;
+			commandArgs = EMPTY_STRING;
+		} else{
+			String[] input = userInput.split(" ", 2);
+			if (input.length > 1) {
+				userCommand = getCommand(input);
+				commandArgs = getCommandArgs(input);
+			} else {
+				userCommand = userInput.trim();
+				commandArgs = EMPTY_STRING;
+			}
 		}
-		switch (userCommand) {
+		
+		switch (userCommand.toLowerCase()) {
 		case USER_COMMAND_ADD:
 			return initAddCommand(commandArgs);
 		case USER_COMMAND_EDIT:
@@ -84,10 +93,10 @@ public class CommandParser implements java.io.Serializable {
 			return initSortCommand(commandArgs);
 		case USER_COMMAND_STORE:
 			return initStoreCommand(commandArgs);
-		case USER_COMMAND_DISPLAY:
-			return initDisplayCommand(USER_COMMAND_DISPLAY);
-		case USER_COMMAND_ARCHIVE:
-			return initArchiveCommand(USER_COMMAND_ARCHIVE);
+		case USER_COMMAND_VIEW_COMPLETED:
+			return initViewCompletedCommand(USER_COMMAND_VIEW_COMPLETED);
+		case USER_COMMAND_VIEW_INCOMPLETE:
+			return initViewIncompleteCommand(USER_COMMAND_VIEW_INCOMPLETE);
 		/*
 		 * case USER_COMMAND_HELP: return initHelpCommand(USER_COMMAND_HELP);
 		 */
@@ -250,8 +259,8 @@ public class CommandParser implements java.io.Serializable {
 		return cmd;
 	}
 
-	private Command initDisplayCommand(String commandName) {
-		Display cmd = new Display();
+	private Command initViewIncompleteCommand(String commandName) {
+		ViewIncomplete cmd = new ViewIncomplete();
 		cmd.setCommandName(commandName);
 		return cmd;
 	}
@@ -262,8 +271,8 @@ public class CommandParser implements java.io.Serializable {
 		return cmd;
 	}
 
-	private Command initArchiveCommand(String commandName) {
-		Archive cmd = new Archive();
+	private Command initViewCompletedCommand(String commandName) {
+		ViewCompleted cmd = new ViewCompleted();
 		cmd.setCommandName(commandName);
 		return cmd;
 	}

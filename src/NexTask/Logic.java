@@ -22,7 +22,7 @@ import Command.CommandParser;
 public class Logic implements Observer {
 	private static final String CMD_EDIT = "edit";
 	private static final String CMD_ADD = "add";
-	private static final String CMD_DISPLAY = "display";
+	private static final String CMD_VIEW_INCOMPLETE= "view incomplete";
 	private static final String CMD_DELETE = "delete";
 	private static final String CMD_STORE = "store";
 	private static final String CMD_EXIT = "exit";
@@ -30,7 +30,7 @@ public class Logic implements Observer {
 	private static final String CMD_COMPLETE = "complete";
 	private static final String CMD_HELP = "help";
 	private static final String CMD_SORT = "sort";
-	private static final String CMD_ARCHIVE = "archive";
+	private static final String CMD_VIEW_COMPLETED = "view completed";
 	private static final String CMD_SEARCH = "search";
 	private static final String CMD_RETRIEVE = "retrieve";
 	private static final String FILE_TO_RETREIVE = "ForRetrieval.txt";
@@ -124,7 +124,7 @@ public class Logic implements Observer {
 			} catch (FileNotFoundException e) {
 				System.out.println(String.format(FILE_TO_RETREIVE));
 			}
-		} else if (commandName == CMD_DISPLAY) {
+		} else if (commandName == CMD_VIEW_INCOMPLETE) {
 			messageToPrint = cmd.execute();
 		} else if (commandName == CMD_STORE) {
 			messageToPrint = cmd.execute();
@@ -156,7 +156,7 @@ public class Logic implements Observer {
 			} catch (FileNotFoundException e) {
 				System.out.println(String.format(FILE_TO_RETREIVE));
 			}
-		} else if (commandName == CMD_ARCHIVE) {
+		} else if (commandName == CMD_VIEW_COMPLETED) {
 			messageToPrint = cmd.execute();
 		} else if (commandName == CMD_SEARCH){
 			messageToPrint = cmd.execute();
@@ -173,6 +173,11 @@ public class Logic implements Observer {
 	public ArrayList<Task> getTaskList(){
 		return storage.getTaskArray();
 	}
+	
+	public ArrayList<Task> getCompletedTaskList() {
+		return storage.getCompletedTasks();
+	}
+	
 	@Override
 	public void update() {
 		hasUpdate = true;	

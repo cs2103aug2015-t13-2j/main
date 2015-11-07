@@ -16,7 +16,7 @@ import NexTask.Task;
  *
  */
 
-//@@author Jenny
+//@@author A0145695R
 public abstract class Command implements java.io.Serializable{
 	private String commandName;
 	private String directory;
@@ -140,7 +140,10 @@ public abstract class Command implements java.io.Serializable{
 			case "invalid":
 				isArgEqual = isCmdNameEqual;
 				break;
-			case "display":
+			case "view incomplete":
+				isArgEqual = isCmdNameEqual;
+				break;
+			case "view completed":
 				isArgEqual = isCmdNameEqual;
 				break;
 			case "store":

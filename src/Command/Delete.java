@@ -19,7 +19,7 @@ public class Delete extends Command{
 		if (taskNum > 0 && taskNum <= size) {
 			// Store the deleted task in delete command
 			setTask(storage.getTaskObject(taskNum - 1));
-			storage.delete(taskNum);
+			storage.deleteIncompleted(taskNum);
 			storage.addCommand(this);
 			delMsg = COMMAND_DELETED;
 		} else if (taskNum > size) {
