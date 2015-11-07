@@ -5,10 +5,10 @@ package Command;
 import java.util.ArrayList;
 import NexTask.Task;
 
-public class Archive extends Command{
-	private final String NO_ARCHIVE = "There are no completed tasks in archive!";
+public class ViewCompleted extends Command{
+	private final String NO_COMPLETED = "There is no completed task to show!";
 	
-	public Archive (){
+	public ViewCompleted (){
 		super();
 	}
 	
@@ -16,11 +16,11 @@ public class Archive extends Command{
 		String archMsg = "";
 		int numberOfCompleted = storage.getCompletedSize();
 		if (numberOfCompleted == 0) {
-			archMsg = NO_ARCHIVE;
+			archMsg = NO_COMPLETED;
 		} else {
 			for (int i = 0; i < numberOfCompleted; i++) {
-					ArrayList<Task> archiveArray = storage.getCompletedTasks();
-					archMsg += i + 1 + ". " + archiveArray.get(i).toString() + "\n";
+					ArrayList<Task> CompletedArray = storage.getCompletedTasks();
+					archMsg += i + 1 + ". " + CompletedArray.get(i).toString() + "\n";
 			}
 		}
 		return archMsg;
