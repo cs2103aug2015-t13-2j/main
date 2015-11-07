@@ -49,7 +49,7 @@ public class Edit extends Command{
 	private String editAppropriateField(EditSpecification edit) {
 		String editMsg = "";
 		String fieldToEdit = edit.getFieldToEdit().trim().toLowerCase();
-		String theEdit = edit.getTheEdit().trim().toLowerCase();
+		String theEdit = edit.getTheEdit().trim();
 		Task t = storage.getTaskObject(edit.getTaskNumber() - 1);
 		if(fieldToEdit.equals(FIELD_START)) {
 			try{ 
