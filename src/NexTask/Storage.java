@@ -26,6 +26,11 @@ public class Storage implements java.io.Serializable, Observable {
 	private static final String USER_FILE_NAME = "\\NexTask.txt";
 	private static final String TASK_FILE_TO_RETREIVE = "ForRetrievalTasks.ser";
 	private static final String COMPLETED_FILE_TO_RETREIVE = "ForRetrievalCompleted.ser";
+	private static final String NESTSK_HEADER = "============================== NexTask ==================================";
+	private static final String NEXT_LINE = "\n";
+	private static final String INCOMPLETE_TASK = "Incompleted tasks:";
+	private static final String DASH_LINE = "-----------------";
+	private static final String COMPLETED_TASK = "Completed tasks:";
 
 	private static Storage theOne;
 	private final Object MUTEX= new Object();
@@ -98,17 +103,17 @@ public class Storage implements java.io.Serializable, Observable {
 		int incompletedIndex = 1;
 		int completedIndex = 1;
 		try (PrintWriter writer = new PrintWriter(savePath)) {
-			writer.println("============================== NexTask ==================================");
-			writer.println("\n");
-			writer.println("Incompleted tasks:");
-			writer.println("-----------------");
+			writer.println(NESTSK_HEADER);
+			writer.println(NEXT_LINE);
+			writer.println(INCOMPLETE_TASK);
+			writer.println(DASH_LINE);
 			for (Task line : taskArray) {
 				writer.println(incompletedIndex + ". " + line.toString());
 				incompletedIndex++;
 			}
-			writer.println("\n");
-			writer.println("Completed tasks:");
-			writer.println("---------------");
+			writer.println(NEXT_LINE);
+			writer.println(COMPLETED_TASK);
+			writer.println(DASH_LINE);
 			for (Task line : completedTasks) {
 				writer.println(completedIndex + ". " + line.toString());
 				completedIndex++;
