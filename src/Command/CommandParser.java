@@ -98,7 +98,7 @@ public class CommandParser implements java.io.Serializable {
 		case USER_COMMAND_RETRIEVE:
 			return initRetrieveCommand(USER_COMMAND_RETRIEVE);
 		default:
-			return initInvalidCommand("Please enter a command");
+			return initInvalidCommand("Please enter a valid command");
 		}
 	}
 

@@ -51,7 +51,7 @@ public class Logic implements Observer {
 	
 	private static final String INVALID_COMMAND = "There is no such command available for usage.";
 	private static final String SUCCESSFUL_SORT = "Tasks has been sorted";
-	private final String SUCCESSFUL_EDIT = "Task has been edited!";
+	private static final String SUCCESSFUL_EDIT = "Task has been edited!";
 
 
 	private Storage storage;
