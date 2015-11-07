@@ -173,6 +173,11 @@ public class Logic implements Observer {
 	public ArrayList<Task> getTaskList(){
 		return storage.getTaskArray();
 	}
+	
+	public ArrayList<Task> getCompletedTaskList() {
+		return storage.getCompletedTasks();
+	}
+	
 	@Override
 	public void update() {
 		hasUpdate = true;	

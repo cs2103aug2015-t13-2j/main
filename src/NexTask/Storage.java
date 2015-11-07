@@ -86,7 +86,7 @@ public class Storage implements java.io.Serializable, Observable {
 	         out.writeObject(completedTasks);
 	         out.close();
 	         completedOut.close();
-	      }catch(IOException i)
+	      } catch(IOException i)
 	      {
 	          i.printStackTrace();
 	      }
@@ -95,11 +95,23 @@ public class Storage implements java.io.Serializable, Observable {
 	
 	public void storeToFile() {
 		String savePath = getPath();
-		int num = 1;
+		int incompletedIndex = 1;
+		int completedIndex = 1;
 		try (PrintWriter writer = new PrintWriter(savePath)) {
+			writer.println("============================== NexTask ==================================");
+			writer.println("\n");
+			writer.println("Incompleted tasks:");
+			writer.println("-----------------");
 			for (Task line : taskArray) {
-				writer.println(num + ". " + line.getName());
-				num++;
+				writer.println(incompletedIndex + ". " + line.toString());
+				incompletedIndex++;
+			}
+			writer.println("\n");
+			writer.println("Completed tasks:");
+			writer.println("---------------");
+			for (Task line : completedTasks) {
+				writer.println(completedIndex + ". " + line.toString());
+				completedIndex++;
 			}
 		} catch (FileNotFoundException e) {
 			System.out.println(String.format(FILE_NAME));
@@ -116,7 +128,7 @@ public class Storage implements java.io.Serializable, Observable {
 	         
 	         in.close();
 	         fileIn.close();
-	      }catch(ClassNotFoundException | IOException i)
+	      } catch(ClassNotFoundException | IOException i)
 	      {
 	         i.printStackTrace();
 	         return;
@@ -131,7 +143,7 @@ public class Storage implements java.io.Serializable, Observable {
 	         
 	         in.close();
 	         fileIn.close();
-	      }catch(ClassNotFoundException | IOException i)
+	      } catch(ClassNotFoundException | IOException i)
 	      {
 	         i.printStackTrace();
 	         return;
@@ -207,11 +219,16 @@ public class Storage implements java.io.Serializable, Observable {
 		return taskArray.get(num);
 	}
 
-	public void delete(int num) {
+	public void deleteIncompleted(int num) {
 		taskArray.remove(num - 1);
 		notifyObservers();
 	}
 
+	public void deleteCompleted(int num) {
+		completedTasks.remove(num - 1);
+		notifyObservers();
+	}
+	
 	public void edit(int num, Task task) {
 		// Task only has name?
 		taskArray.set(num, task);
@@ -237,6 +254,7 @@ public class Storage implements java.io.Serializable, Observable {
 		return taskArray.size();
 	}
 
+//@@author A0145695R
 	@Override
 	public void addObserver(Observer obj) {
 		if(obj == null) {
