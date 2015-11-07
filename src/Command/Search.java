@@ -14,7 +14,7 @@ public class Search extends Command{
 		String searchMsg = "";
 		String[] searchSpecification = getSearchSpecification().split(" ");
 		
-		int numOfIncomplete = storage.getSize();
+		int numOfIncomplete = storage.getNumberOfTasks();
 		int numOfCompleted  = storage.getCompletedSize();
 		int numOfResult = 0;
 		

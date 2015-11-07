@@ -42,7 +42,7 @@ public class Storage implements java.io.Serializable, Observable {
 	private ArrayList<Task> completedTasks;
 	private ArrayList<Observer> observerList;
 
-	private Storage() {
+	public Storage() {
 		this.userPath = "";
 		this.taskNum = 1;
 		this.taskArray = new ArrayList<Task>();
@@ -187,7 +187,7 @@ public class Storage implements java.io.Serializable, Observable {
 	}
 
 	public void undoAdd() {
-		taskArray.remove(getSize() - 1);
+		taskArray.remove(getNumberOfTasks() - 1);
 		prevCommands.remove(getCommandSize() - 1);
 		notifyObservers();
 	}
@@ -201,10 +201,6 @@ public class Storage implements java.io.Serializable, Observable {
 
 	public void addCommand(Command cmd) {
 		prevCommands.add(cmd);
-	}
-
-	public Command getLastCommand() {
-		return prevCommands.get(prevCommands.size() - 1);
 	}
 
 	public int getCommandSize() {
@@ -255,9 +251,6 @@ public class Storage implements java.io.Serializable, Observable {
 		return taskName;
 	}
 
-	public int getSize() {
-		return taskArray.size();
-	}
 
 //@@author A0145695R
 	@Override
