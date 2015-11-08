@@ -12,6 +12,7 @@ public class Completed extends Command{
 	public String execute(){
 		setTask(storage.getTaskObject(getTaskNumber() - 1));
 		storage.markComplete(getTaskNumber() - 1);
+		storage.addCommand(this);
 		return COMMAND_DONE;
 	}
 }

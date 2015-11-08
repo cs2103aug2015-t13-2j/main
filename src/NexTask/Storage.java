@@ -235,6 +235,16 @@ public class Storage implements java.io.Serializable, Observable {
 		notifyObservers();
 		logger.log(Level.INFO, LOG_END);
 	}
+	
+	public void undoComplete(){
+		logger.log(Level.INFO, LOG_PROCESS);
+		Command cmd = getPrevCommand();
+		taskArray.add(cmd.getTaskNumber() - 1, cmd.getTask());
+		prevCommands.remove(getCommandSize() - 1);
+		completedTasks.add(cmd.getTask());
+		notifyObservers();
+		logger.log(Level.INFO, LOG_END);
+	}
 
 	public void addCommand(Command cmd) {
 		logger.log(Level.INFO, LOG_PROCESS);

@@ -18,6 +18,8 @@ public class Undo extends Command{
 			storage.undoEdit();
 		} else if (storage.getPrevCommand().getCommandName().equals("delete")) {
 			storage.undoDelete();
+		} else if (storage.getPrevCommand().getCommandName().equals("complete")) {
+			storage.undoComplete();
 		} else {
 			storage.undoAdd();
 		}
