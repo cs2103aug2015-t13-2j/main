@@ -99,17 +99,6 @@ public class CommandParserTest {
 		assertEquals("invalid", res2.getCommandName());
 		assertEquals("Please specify field you wish to sort by.", res2.getErrorMessage());
 	}
-	
-	@Test
-	public void parseDisplayTest() {
-		CommandParser cp = new CommandParser();
-		String str1 = "display";
 		
-		Command res1 = cp.parse(str1);
-		System.out.println(res1.getErrorMessage());
-		assertEquals("display", res1.getCommandName());
-		
-	}
-	
 
 }
