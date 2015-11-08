@@ -1,14 +1,11 @@
 package NexTask;
 
-import java.util.ArrayList;
-
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.stage.Stage;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
@@ -32,15 +29,26 @@ public class GUI extends Application {
 
 	private static final String HELP_COMMAND = "help";
 	private static final String EDIT_HELP_COMMAND = "edit help";
-	private static final String SEARCH_COMMAND = "search";
-	private static final String COMPLETED_COMMAND = "view completed";
-	private static final String INCOMPLETED_COMMAND = "view incompleted";
 	private static final String COMPLETED_HEADING = "Completed!";
 	private static final String INCOMPLETED_HEADING = "Incompleted!";
-	// private static Scanner scanner;
+	private static final String NO_COMPLETED = "no completed tasks available";
+	private static final String COMPLETED = "completed tasks available";
+	private static final String NO_INCOMPLETE = "no incomplete tasks available";
+	private static final String INCOMPLETE = "incomplete tasks available";
+	private static final String NO_INCOMPLETE_DISPLAY = "You do not have any incomplete tasks!";
+	private static final String INCOMPLETE_DISPLAY = "Here is the list of incomplete tasks!";
+	private static final String NO_COMPLETE_DISPLAY = "You do not have any completed tasks!";
+	private static final String COMPLETE_DISPLAY = "Here is the list of completed tasks!";
+	private static final String NEGATIVE_SEARCH = "Sorry, unable to find any results for the search term!";
+	private static final String POSITIVE_SEARCH = "Search results:";
+	private static final String NO_SEARCH_RESULTS = "no search results";
+	private static final String SEARCH_RESULTS = "Here are the search results!";
+	
+	
 	private static Logic logic;
 	private Label incompletedLabel = new Label (INCOMPLETED_HEADING);
 	private Label completedLabel = new Label (COMPLETED_HEADING);
+	public Label actionLabel = new Label();
 
 	public static void main(String[] args) {
 		launch(args);
@@ -56,7 +64,7 @@ public class GUI extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		initialize();
-		Label actionLabel = CommandController.initialiseActionLabel();
+		actionLabel = CommandController.initialiseActionLabel();
 		Label commandLabel = CommandController.initialiseCommandLabel();
 		TextField textBox = CommandController.initialiseTextBox();
 		Separator cmdSeperator = CommandController.initialiseCmdSeperator();
@@ -86,30 +94,43 @@ public class GUI extends Application {
 				if (keyEvent.getCode() == KeyCode.ENTER) {
 					String userInput = userInputBox.getText();
 					userInputBox.setText("");
-					if (userInput.equals(HELP_COMMAND)) {
+					if (userInput.toLowerCase().equals(HELP_COMMAND)) {
 						SceneController.initialiseHelpScene();
-					} else if (userInput.equals(EDIT_HELP_COMMAND)) {
+					} else if (userInput.toLowerCase().equals(EDIT_HELP_COMMAND)) {
 						SceneController.initialiseEditHelpScene();
-					} else if (userInput.contains(SEARCH_COMMAND)) {
-						SceneController.intialiseSearchScene(userInput);
-					} else if (userInput.equals(COMPLETED_COMMAND)) {
-						TreeController.updateTree(tree, logic.getCompletedTaskList());
-						completedLabel.setFont((Font.font("Agency FB", FontWeight.BOLD, 17)));
-						incompletedLabel.setFont((Font.font("Agency FB", 15)));
-					}  else if (userInput.equals(INCOMPLETED_COMMAND)) {
-						TreeController.updateTree(tree, logic.getTaskList());
-						incompletedLabel.setFont((Font.font("Agency FB", FontWeight.BOLD, 17)));
-						completedLabel.setFont((Font.font("Agency FB", 15)));
 					} else {
-						actionLabel.setText(logic.executeUserCommand(userInput));
-						if(logic.getHasUpdate()) {
-							logic.resetHasUpdate();
-							tree.setRoot(null);
-							TreeItem<String> root = new TreeItem<>();
-							root.setExpanded(true);
-							tree.setRoot(root);
-							ArrayList<Task> overviewArray = logic.getTaskList();
-							TreeController.updateTreeView(root, overviewArray);
+						String feedBackMsg = logic.executeUserCommand(userInput);
+						if (feedBackMsg.equals(NO_COMPLETED)) {
+							actionLabel.setText(NO_COMPLETE_DISPLAY);
+							TreeController.updateTree(tree, logic.getTaskList());
+							incompletedLabel.setFont((Font.font("Agency FB", FontWeight.BOLD, 17)));
+							completedLabel.setFont((Font.font("Agency FB", 15)));
+						} else if (feedBackMsg.equals(COMPLETED)) {
+							actionLabel.setText(COMPLETE_DISPLAY);
+							TreeController.updateTree(tree, logic.getTaskList());
+							incompletedLabel.setFont((Font.font("Agency FB", FontWeight.BOLD, 17)));
+							completedLabel.setFont((Font.font("Agency FB", 15)));
+						} else if (feedBackMsg.equals(INCOMPLETE)) {
+							actionLabel.setText(INCOMPLETE_DISPLAY);
+							TreeController.updateTree(tree, logic.getCompletedTaskList());
+							incompletedLabel.setFont((Font.font("Agency FB", FontWeight.BOLD, 17)));
+							completedLabel.setFont((Font.font("Agency FB", 15)));
+						} else if (feedBackMsg.equals(NO_INCOMPLETE)) {
+							actionLabel.setText(NO_INCOMPLETE_DISPLAY);
+							TreeController.updateTree(tree, logic.getCompletedTaskList());
+							incompletedLabel.setFont((Font.font("Agency FB", FontWeight.BOLD, 17)));
+							completedLabel.setFont((Font.font("Agency FB", 15)));
+						} else if (feedBackMsg.equals(NO_SEARCH_RESULTS)) {
+							actionLabel.setText(NEGATIVE_SEARCH);
+						} else if (feedBackMsg.contains(POSITIVE_SEARCH)) {
+							SceneController.intialiseSearchScene(feedBackMsg);
+							actionLabel.setText(SEARCH_RESULTS);
+						} else {
+							actionLabel.setText(feedBackMsg);
+							if (logic.getHasUpdate()) {
+								logic.resetHasUpdate();
+								TreeController.updateTree(tree, logic.getTaskList());
+							}
 						}
 					}
 				}
