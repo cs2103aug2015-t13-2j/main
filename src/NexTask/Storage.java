@@ -26,6 +26,11 @@ public class Storage implements java.io.Serializable, Observable {
 	private static final String USER_FILE_NAME = "\\NexTask.txt";
 	private static final String TASK_FILE_TO_RETREIVE = "ForRetrievalTasks.ser";
 	private static final String COMPLETED_FILE_TO_RETREIVE = "ForRetrievalCompleted.ser";
+	private static final String NESTSK_HEADER = "============================== NexTask ==================================";
+	private static final String NEXT_LINE = "\n";
+	private static final String INCOMPLETE_TASK = "Incompleted tasks:";
+	private static final String DASH_LINE = "-----------------";
+	private static final String COMPLETED_TASK = "Completed tasks:";
 
 	private static Storage theOne;
 	private final Object MUTEX= new Object();
@@ -37,7 +42,7 @@ public class Storage implements java.io.Serializable, Observable {
 	private ArrayList<Task> completedTasks;
 	private ArrayList<Observer> observerList;
 
-	private Storage() {
+	public Storage() {
 		this.userPath = "";
 		this.taskNum = 1;
 		this.taskArray = new ArrayList<Task>();
@@ -98,17 +103,17 @@ public class Storage implements java.io.Serializable, Observable {
 		int incompletedIndex = 1;
 		int completedIndex = 1;
 		try (PrintWriter writer = new PrintWriter(savePath)) {
-			writer.println("============================== NexTask ==================================");
-			writer.println("\n");
-			writer.println("Incompleted tasks:");
-			writer.println("-----------------");
+			writer.println(NESTSK_HEADER);
+			writer.println(NEXT_LINE);
+			writer.println(INCOMPLETE_TASK);
+			writer.println(DASH_LINE);
 			for (Task line : taskArray) {
 				writer.println(incompletedIndex + ". " + line.toString());
 				incompletedIndex++;
 			}
-			writer.println("\n");
-			writer.println("Completed tasks:");
-			writer.println("---------------");
+			writer.println(NEXT_LINE);
+			writer.println(COMPLETED_TASK);
+			writer.println(DASH_LINE);
 			for (Task line : completedTasks) {
 				writer.println(completedIndex + ". " + line.toString());
 				completedIndex++;
@@ -182,7 +187,7 @@ public class Storage implements java.io.Serializable, Observable {
 	}
 
 	public void undoAdd() {
-		taskArray.remove(getSize() - 1);
+		taskArray.remove(getNumberOfTasks() - 1);
 		prevCommands.remove(getCommandSize() - 1);
 		notifyObservers();
 	}
@@ -196,10 +201,6 @@ public class Storage implements java.io.Serializable, Observable {
 
 	public void addCommand(Command cmd) {
 		prevCommands.add(cmd);
-	}
-
-	public Command getLastCommand() {
-		return prevCommands.get(prevCommands.size() - 1);
 	}
 
 	public int getCommandSize() {
@@ -250,9 +251,6 @@ public class Storage implements java.io.Serializable, Observable {
 		return taskName;
 	}
 
-	public int getSize() {
-		return taskArray.size();
-	}
 
 //@@author A0145695R
 	@Override

@@ -4,6 +4,8 @@ package Command;
 
 public class ViewIncomplete extends Command {
 	private final String NO_CONTENT_TO_DISPLAY = "Incomplete task list is empty. There is no content to display!";
+	private static final String NO_INCOMPLETE_TASKS = "no incomplete tasks available";
+	private static final String INCOMPLETE_TASKS = "incomplete tasks available";
 	
 	public ViewIncomplete(){
 		super();
@@ -13,12 +15,9 @@ public class ViewIncomplete extends Command {
 		String dispMsg = "";
 		int numberOfLines = storage.getNumberOfTasks();
 		if (numberOfLines == 0) {
-			dispMsg = NO_CONTENT_TO_DISPLAY;
+			dispMsg = NO_INCOMPLETE_TASKS;
 		} else {
-			for (int i = 0; i < numberOfLines; i++) {
-				String lineToDisplay = (i + 1) + ". " + storage.getTaskObject(i).toString();
-				System.out.println(lineToDisplay);
-			}
+			dispMsg = INCOMPLETE_TASKS;
 		}
 		return dispMsg;
 	}

@@ -14,7 +14,7 @@ public class Delete extends Command{
 	public String execute(){
 		String delMsg = "";
 		int taskNum = getTaskNumber();
-		int size = storage.getSize();
+		int size = storage.getNumberOfTasks();
 
 		if (taskNum > 0 && taskNum <= size) {
 			// Store the deleted task in delete command

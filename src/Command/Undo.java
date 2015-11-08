@@ -14,9 +14,9 @@ public class Undo extends Command{
 		String undoMsg = "";
 		if (storage.getCommandSize() == 0) {
 			undoMsg = NO_CONTENT;
-		} else if (storage.getLastCommand().getCommandName().equals("edit")) {
+		} else if (storage.getPrevCommand().getCommandName().equals("edit")) {
 			storage.undoEdit();
-		} else if (storage.getLastCommand().getCommandName().equals("delete")) {
+		} else if (storage.getPrevCommand().getCommandName().equals("delete")) {
 			storage.undoDelete();
 		} else {
 			storage.undoAdd();

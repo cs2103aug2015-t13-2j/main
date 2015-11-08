@@ -6,23 +6,23 @@ import java.util.ArrayList;
 import NexTask.Task;
 
 public class ViewCompleted extends Command{
-	private final String NO_COMPLETED = "There is no completed task to show!";
+	private final String NO_COMPLETED = "There are no completed tasks to show!";
+	private static final String NO_COMPLETED_TASKS = "no completed tasks available";
+	private static final String COMPLETED_TASKS = "completed tasks available";
 	
-	public ViewCompleted (){
+	public ViewCompleted (){ 
 		super();
 	}
 	
 	public String execute(){
 		String archMsg = "";
 		int numberOfCompleted = storage.getCompletedSize();
-		if (numberOfCompleted == 0) {
-			archMsg = NO_COMPLETED;
-		} else {
-			for (int i = 0; i < numberOfCompleted; i++) {
-					ArrayList<Task> CompletedArray = storage.getCompletedTasks();
-					archMsg += i + 1 + ". " + CompletedArray.get(i).toString() + "\n";
+			if (numberOfCompleted == 0) {
+				archMsg = NO_COMPLETED_TASKS;
 			}
-		}
+			else {
+				archMsg = COMPLETED_TASKS;
+			}
 		return archMsg;
 	}
 }

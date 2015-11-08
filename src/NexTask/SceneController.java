@@ -98,8 +98,7 @@ public class SceneController {
 		});
 	}
 	
-	public static void intialiseSearchScene(String userInput) {
-		String searchResults = logic.executeUserCommand(userInput);
+	public static void intialiseSearchScene(String searchResults) {
 		Stage searchStage = new Stage();
 		StackPane search = new StackPane();
 		Label searchLabel = new Label(searchResults);
@@ -113,9 +112,7 @@ public class SceneController {
 		// pop-up enabled
 		searchStage.initModality(Modality.APPLICATION_MODAL);
 		searchStage.setMinHeight(250);
-		searchStage.setMaxHeight(250);
 		searchStage.setMinWidth(540);
-		searchStage.setMaxWidth(540);
 		searchStage.show();
 		searchScene.setOnKeyPressed(new EventHandler<KeyEvent>() {
 			@Override
