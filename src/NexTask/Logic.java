@@ -1,8 +1,13 @@
 package NexTask;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 import org.joda.time.DateTime;
 
@@ -37,8 +42,16 @@ public class Logic implements Observer {
 	private static final String CMD_SEARCH = "search";
 	private static final String CMD_RETRIEVE = "retrieve";
 	private static final String CMD_INVALID = "invalid";
-	
 	private static final String FILE_TO_RETREIVE = "ForRetrieval.txt";
+	private static final String LOG_PROCESS = "going to start processing";
+	private static final String LOG_END = "end of processing";
+	private static final String LOG_ERROR = "processing error";
+	private static final String LOG_FILE_NAME = "LogicLogFile.log";
+	private static final String LOG_ERROR_INITIALIZE = "Cannot intialize log file!";
+	
+	private static Logger logger = Logger.getLogger("Logic");
+	private static FileHandler fh;
+	private static SimpleFormatter formatter;
 	
 	private static final String COMMAND_HELP = "The following commands are as shown:\n"
 			+ "To add an event: add event start (date & time) end (date & time) (description of task).\n"
@@ -68,6 +81,15 @@ public class Logic implements Observer {
 		storage = Storage.getInstance();
 		parser = new CommandParser();
 		hasUpdate = false;
+		try {
+			this.fh = new FileHandler(LOG_FILE_NAME, true);
+		} catch (SecurityException | IOException e) {
+			System.out.println(LOG_ERROR_INITIALIZE);
+			System.exit(1);
+		}
+		this.logger.addHandler(fh);
+		formatter = new SimpleFormatter();  
+        this.fh.setFormatter(formatter);
 
 	}
 	/**
@@ -79,6 +101,7 @@ public class Logic implements Observer {
 	 *         error message.
 	 */
 	public String executeUserCommand(String userInput) {
+		logger.log(Level.INFO, LOG_PROCESS);
 		Command cmd = getUserCommand(userInput);
 		String printMsg = "";
 		if (isValid(cmd)) {
@@ -86,6 +109,7 @@ public class Logic implements Observer {
 		} else {
 			printMsg = cmd.getErrorMessage();
 		}
+		logger.log(Level.INFO, LOG_END);
 		return printMsg;
 	}
 
@@ -102,6 +126,7 @@ public class Logic implements Observer {
 	}
 
 	private String performCommand(Command cmd, Storage taskList) {
+		logger.log(Level.INFO, LOG_PROCESS);
 		String messageToPrint = "";
 		String commandName = cmd.getCommandName();
 		if (commandName == CMD_ADD) {
@@ -110,6 +135,7 @@ public class Logic implements Observer {
 				storage.storeToDefault();
 			} catch (FileNotFoundException e) {
 				System.out.println(String.format(FILE_TO_RETREIVE));
+				logger.log(Level.WARNING, LOG_ERROR, e);
 			}
 		} else if (commandName == CMD_EDIT) {
 			messageToPrint = cmd.execute();
@@ -120,6 +146,7 @@ public class Logic implements Observer {
 				storage.storeToDefault();
 			} catch (FileNotFoundException e) {
 				System.out.println(String.format(FILE_TO_RETREIVE));
+				logger.log(Level.WARNING, LOG_ERROR, e);
 			}
 		} else if (commandName == CMD_DELETE) {
 			messageToPrint = cmd.execute();
@@ -127,6 +154,7 @@ public class Logic implements Observer {
 				storage.storeToDefault();
 			} catch (FileNotFoundException e) {
 				System.out.println(String.format(FILE_TO_RETREIVE));
+				logger.log(Level.WARNING, LOG_ERROR, e);
 			}
 		} else if (commandName == CMD_VIEW_INCOMPLETE) {
 			messageToPrint = cmd.execute();
@@ -140,6 +168,7 @@ public class Logic implements Observer {
 				storage.storeToDefault();
 			} catch (FileNotFoundException e) {
 				System.out.println(String.format(FILE_TO_RETREIVE));
+				logger.log(Level.WARNING, LOG_ERROR, e);
 			}
 		} else if (commandName == CMD_COMPLETE) {
 			messageToPrint = cmd.execute();
@@ -147,6 +176,7 @@ public class Logic implements Observer {
 				storage.storeToDefault();
 			} catch (FileNotFoundException e) {
 				System.out.println(String.format(FILE_TO_RETREIVE));
+				logger.log(Level.WARNING, LOG_ERROR, e);
 			}
 		} else if (commandName == CMD_HELP) {
 			messageToPrint = COMMAND_HELP;
@@ -159,6 +189,7 @@ public class Logic implements Observer {
 				storage.storeToDefault();
 			} catch (FileNotFoundException e) {
 				System.out.println(String.format(FILE_TO_RETREIVE));
+				logger.log(Level.WARNING, LOG_ERROR, e);
 			}
 		} else if (commandName == CMD_VIEW_COMPLETED) {
 			messageToPrint = cmd.execute();
@@ -167,6 +198,8 @@ public class Logic implements Observer {
 		} else if (commandName == CMD_RETRIEVE){
 			messageToPrint = cmd.execute();
 		}
+		
+		logger.log(Level.INFO, LOG_END);
 		return messageToPrint;
 	}
 
