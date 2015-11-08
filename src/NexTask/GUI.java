@@ -30,7 +30,7 @@ public class GUI extends Application {
 	private static final String HELP_COMMAND = "help";
 	private static final String EDIT_HELP_COMMAND = "edit help";
 	private static final String COMPLETED_HEADING = "Completed!";
-	private static final String INCOMPLETED_HEADING = "Incompleted!";
+	private static final String INCOMPLETED_HEADING = "Incomplete!";
 	private static final String NO_COMPLETED = "no completed tasks available";
 	private static final String COMPLETED = "completed tasks available";
 	private static final String NO_INCOMPLETE = "no incomplete tasks available";
@@ -102,22 +102,22 @@ public class GUI extends Application {
 						String feedBackMsg = logic.executeUserCommand(userInput);
 						if (feedBackMsg.equals(NO_COMPLETED)) {
 							actionLabel.setText(NO_COMPLETE_DISPLAY);
-							TreeController.updateTree(tree, logic.getTaskList());
-							incompletedLabel.setFont((Font.font("Agency FB", FontWeight.BOLD, 17)));
-							completedLabel.setFont((Font.font("Agency FB", 15)));
+							TreeController.updateTree(tree, logic.getCompletedTaskList());
+							completedLabel.setFont((Font.font("Agency FB", FontWeight.BOLD, 17)));
+							incompletedLabel.setFont((Font.font("Agency FB", 15)));
 						} else if (feedBackMsg.equals(COMPLETED)) {
 							actionLabel.setText(COMPLETE_DISPLAY);
-							TreeController.updateTree(tree, logic.getTaskList());
-							incompletedLabel.setFont((Font.font("Agency FB", FontWeight.BOLD, 17)));
-							completedLabel.setFont((Font.font("Agency FB", 15)));
+							TreeController.updateTree(tree, logic.getCompletedTaskList());
+							completedLabel.setFont((Font.font("Agency FB", FontWeight.BOLD, 17)));
+							incompletedLabel.setFont((Font.font("Agency FB", 15)));
 						} else if (feedBackMsg.equals(INCOMPLETE)) {
 							actionLabel.setText(INCOMPLETE_DISPLAY);
-							TreeController.updateTree(tree, logic.getCompletedTaskList());
+							TreeController.updateTree(tree, logic.getTaskList());
 							incompletedLabel.setFont((Font.font("Agency FB", FontWeight.BOLD, 17)));
 							completedLabel.setFont((Font.font("Agency FB", 15)));
 						} else if (feedBackMsg.equals(NO_INCOMPLETE)) {
 							actionLabel.setText(NO_INCOMPLETE_DISPLAY);
-							TreeController.updateTree(tree, logic.getCompletedTaskList());
+							TreeController.updateTree(tree, logic.getTaskList());
 							incompletedLabel.setFont((Font.font("Agency FB", FontWeight.BOLD, 17)));
 							completedLabel.setFont((Font.font("Agency FB", 15)));
 						} else if (feedBackMsg.equals(NO_SEARCH_RESULTS)) {
