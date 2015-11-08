@@ -14,6 +14,9 @@ import Command.CommandParser;
  * will be passed to this component where Logic will streamline what the user
  * plans to do through his inputs.
  * 
+ * The logic class is in charge of handling user command, that is ensuring that 
+ * what the user wants to be done is done. 
+ * 
  * @author 
  *
  */
@@ -33,6 +36,8 @@ public class Logic implements Observer {
 	private static final String CMD_VIEW_COMPLETED = "view completed";
 	private static final String CMD_SEARCH = "search";
 	private static final String CMD_RETRIEVE = "retrieve";
+	private static final String CMD_INVALID = "invalid";
+	
 	private static final String FILE_TO_RETREIVE = "ForRetrieval.txt";
 	
 	private static final String COMMAND_HELP = "The following commands are as shown:\n"
@@ -79,14 +84,13 @@ public class Logic implements Observer {
 		if (isValid(cmd)) {
 			printMsg = performCommand(cmd, storage);
 		} else {
-			System.out.println(cmd.getErrorMessage());
-			printMsg = INVALID_COMMAND;
+			printMsg = cmd.getErrorMessage();
 		}
 		return printMsg;
 	}
 
 	public boolean isValid(Command command) {
-		if (command.getCommandName() != "invalid") {
+		if (command.getCommandName() != CMD_INVALID) {
 			return true;
 		} else {
 			return false;

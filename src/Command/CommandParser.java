@@ -15,16 +15,13 @@ import NexTask.EditSpecification;
 import NexTask.Task;
 
 public class CommandParser implements java.io.Serializable {
-	// Date time format
-	private static final String DATE_TIME_FMT_1 = "dd/MM/yy";
-	private static final String DATE_TIME_FMT_2 = "dd/MM/yy hh:mma";
-	private static final String DATE_TIME_FMT_3 = "dd/MM/yy hh:mm a";
-
 	// Indices
 	private static final int POSITION_OF_CMD = 0;
 	private static final int POSITION_OF_CMD_ARGS = 1;
+
 	// Size
 	private static final String EMPTY_STRING = "";
+
 	// Command types
 	private static final String USER_COMMAND_ADD = "add";
 	private static final String USER_COMMAND_DELETE = "delete";
@@ -45,6 +42,7 @@ public class CommandParser implements java.io.Serializable {
 	private static final String TASK_TYPE_EVENT = "event";
 	private static final String TASK_TYPE_DEADLINE = "deadline";
 	private static final String TASK_TYPE_TODO = "todo";
+
 	// Keywords
 	private static final String KW_START = "start";
 	private static final String KW_END = "end";
@@ -56,19 +54,33 @@ public class CommandParser implements java.io.Serializable {
 	private static final String PATTERN_DATE = "\"([^\"]*)\"";
 	private static final String PATTERN_TASK_NAME = "([\\w\\s]+)";
 
-	private static String userCommand;
+	// Error Messages
+	private static final String ERROR_INVALID_CMD = "Please enter a valid command.";
+	private static final String ERROR_NO_NAME_FOUND = "Pleae provide a name for your task.";
+	private static final String ERROR_INVALID_DATE_FORMAT = "Invalid date. Make sure your date is valid and enter \"help\" if you need to see accepted date formats.";
+	private static final String ERROR_INTEGER_NOT_FOUND = "Please specify task number as an integer.";
+	private static final String ERROR_INVALID_NUM_ARGS = "Invalid number of arguments. Enter \"help\" to view command format.";
+	private static final String ERROR_NO_TASK_NUM = "Please provide a task number.";
+	private static final String ERROR_NO_SORT_FIELD = "Please specify field you wish to sort by.";
+	private static final String ERROR_NO_SEARCH_FIELD = "Please specify what you would like to search for.";
+
+	// Log Messages
+	private static final String LOG_MSG_INVALID_CMD = "Command Parser: Please enter a valid command.";
+	private static final String LOG_MSG_INVALID_DATE_FMT = "Command Parser: Error parsing date.";
+	private static final String LOG_MSG_NO_NAME_FOUND = "Command Parser: User did not provide task name.";
 
 	public Command parse(String userInput) {
+		String userCommand;
 		// check if user input empty
 		String commandArgs;
-		
-		if (userInput.equals(USER_COMMAND_VIEW_COMPLETED)){
+
+		if (userInput.equals(USER_COMMAND_VIEW_COMPLETED)) {
 			userCommand = USER_COMMAND_VIEW_COMPLETED;
 			commandArgs = EMPTY_STRING;
-		} else if (userInput.equals(USER_COMMAND_VIEW_INCOMPLETE)){
+		} else if (userInput.equals(USER_COMMAND_VIEW_INCOMPLETE)) {
 			userCommand = USER_COMMAND_VIEW_INCOMPLETE;
 			commandArgs = EMPTY_STRING;
-		} else{
+		} else {
 			String[] input = userInput.split(" ", 2);
 			if (input.length > 1) {
 				userCommand = getCommand(input);
@@ -78,7 +90,7 @@ public class CommandParser implements java.io.Serializable {
 				commandArgs = EMPTY_STRING;
 			}
 		}
-		
+
 		switch (userCommand.toLowerCase()) {
 		case USER_COMMAND_ADD:
 			return initAddCommand(commandArgs);
@@ -108,12 +120,8 @@ public class CommandParser implements java.io.Serializable {
 		case USER_COMMAND_RETRIEVE:
 			return initRetrieveCommand(USER_COMMAND_RETRIEVE);
 		default:
-			return initInvalidCommand("Please enter a valid command");
+			return initInvalidCommand(ERROR_INVALID_CMD);
 		}
-	}
-
-	public String getUserCommand() {
-		return userCommand;
 	}
 
 	public String getCommand(String[] input) {
@@ -129,9 +137,9 @@ public class CommandParser implements java.io.Serializable {
 		if (isEvent(commandArgs.toLowerCase())) {
 			Task newEvent = parseEvent(commandArgs);
 			if (newEvent.getName().equals(INVALID)) {
-				return initInvalidCommand("Error parsing date.");
+				return initInvalidCommand(ERROR_INVALID_DATE_FORMAT);
 			} else if (newEvent.getName().equals(EMPTY_STRING)) {
-				return initInvalidCommand("Pleae provide a name for your task.");
+				return initInvalidCommand(ERROR_NO_NAME_FOUND);
 			} else {
 				cmd.setCommandName(USER_COMMAND_ADD);
 				cmd.setTask(newEvent);
@@ -139,7 +147,7 @@ public class CommandParser implements java.io.Serializable {
 		} else if (isDeadline(commandArgs.toLowerCase())) {
 			Task newDeadline = parseDeadline(commandArgs);
 			if (newDeadline.getName().equals(INVALID)) {
-				return initInvalidCommand("Error parsing date");
+				return initInvalidCommand(ERROR_INVALID_DATE_FORMAT);
 			} else {
 				cmd.setCommandName(USER_COMMAND_ADD);
 				cmd.setTask(newDeadline);
@@ -147,7 +155,7 @@ public class CommandParser implements java.io.Serializable {
 		} else {
 			Task newTodo = parseTodo(commandArgs);
 			if (newTodo.getName().equals(INVALID)) {
-				return initInvalidCommand("Error parsing date");
+				return initInvalidCommand(ERROR_INVALID_DATE_FORMAT);
 			} else {
 				cmd.setCommandName(USER_COMMAND_ADD);
 				cmd.setTask(newTodo);
@@ -163,7 +171,7 @@ public class CommandParser implements java.io.Serializable {
 		try {
 			edit.setTaskNumber(Integer.parseInt(editArgs[0]));
 		} catch (NumberFormatException e) {
-			return initInvalidCommand("Please specify an integer for task number.");
+			return initInvalidCommand(ERROR_INTEGER_NOT_FOUND);
 		}
 
 		String fieldOrClear;
@@ -172,7 +180,7 @@ public class CommandParser implements java.io.Serializable {
 			fieldOrClear = editArgs[1];
 			argumentsForEdit = editArgs[2];
 		} catch (IndexOutOfBoundsException e) {
-			return initInvalidCommand("Invalid number of arguments");
+			return initInvalidCommand(ERROR_INVALID_NUM_ARGS);
 		}
 
 		switch (fieldOrClear) {
@@ -193,12 +201,12 @@ public class CommandParser implements java.io.Serializable {
 		Delete cmd = new Delete();
 		cmd.setCommandName(USER_COMMAND_DELETE);
 		if (commandArgs.equals(EMPTY_STRING)) {
-			return initInvalidCommand("Please provide a task number.");
+			return initInvalidCommand(ERROR_NO_TASK_NUM);
 		} else {
 			try {
 				cmd.setTaskNumber(Integer.parseInt(commandArgs));
 			} catch (NumberFormatException e) {
-				return initInvalidCommand("Please specify an integer for task number.");
+				return initInvalidCommand(ERROR_INTEGER_NOT_FOUND);
 			}
 		}
 		return cmd;
@@ -208,12 +216,12 @@ public class CommandParser implements java.io.Serializable {
 		Completed cmd = new Completed();
 		cmd.setCommandName(USER_COMMAND_COMPLETE);
 		if (commandArgs.equals(EMPTY_STRING)) {
-			return initInvalidCommand("Please provide a task number.");
+			return initInvalidCommand(ERROR_NO_TASK_NUM);
 		} else {
 			try {
 				cmd.setTaskNumber(Integer.parseInt(commandArgs));
 			} catch (NumberFormatException e) {
-				return initInvalidCommand("Please specify an integer for task number.");
+				return initInvalidCommand(ERROR_INTEGER_NOT_FOUND);
 			}
 		}
 		return cmd;
@@ -222,7 +230,7 @@ public class CommandParser implements java.io.Serializable {
 	private Command initSearchCommand(String commandArgs) {
 		Search cmd = new Search();
 		if (commandArgs.equals(EMPTY_STRING)) {
-			return initInvalidCommand("Please provide a search keyword.");
+			return initInvalidCommand(ERROR_NO_SEARCH_FIELD);
 		} else {
 			cmd.setCommandName(USER_COMMAND_SEARCH);
 			cmd.setSearchSpecification(commandArgs.trim());
@@ -233,7 +241,7 @@ public class CommandParser implements java.io.Serializable {
 	private Command initSortCommand(String commandArgs) {
 		Sort cmd = new Sort();
 		if (commandArgs.equals(EMPTY_STRING)) {
-			return initInvalidCommand("Please specify field you wish to sort by.");
+			return initInvalidCommand(ERROR_NO_SORT_FIELD);
 		} else {
 			cmd.setCommandName(USER_COMMAND_SORT);
 			cmd.setSortField(commandArgs.trim());
@@ -292,22 +300,24 @@ public class CommandParser implements java.io.Serializable {
 		boolean hasStart = false;
 		boolean hasEnd = false;
 		if (args.contains(KW_START)) {
-			try {
-				newEvent.setStart(DateTimeParser.parse(getDateTime(args, KW_START)));
+			DateTime start = DateTimeParser.parse(getDateTime(args, KW_START));
+			if (start != null) {
+				newEvent.setStart(start);
 				newEvent.setName(getTaskName(args, KW_START));
 				hasStart = true;
-			} catch (IllegalArgumentException e) {
+			} else {
 				return new Task(INVALID);
 			}
 		}
 		if (args.contains(KW_END)) {
-			try {
+			DateTime end = DateTimeParser.parse(getDateTime(args, KW_END));
+			if (end != null) {
 				if (!hasStart) {
 					newEvent.setName(getTaskName(args, KW_END));
 				}
-				newEvent.setEnd(DateTimeParser.parse(getDateTime(args, KW_END)));
+				newEvent.setEnd(end);
 				hasEnd = true;
-			} catch (IllegalArgumentException e) {
+			} else {
 				return new Task(INVALID);
 			}
 		}
@@ -326,10 +336,11 @@ public class CommandParser implements java.io.Serializable {
 		Task newDeadline = new Task();
 		newDeadline.setTaskType(TASK_TYPE_DEADLINE);
 		if (hasDateTime(args)) {
-			try {
-				newDeadline.setCompleteBy(DateTimeParser.parse(getDateTime(args, getKeyword(args))));
+			DateTime completeBy = DateTimeParser.parse(getDateTime(args, getKeyword(args)));
+			if (completeBy != null) {
+				newDeadline.setCompleteBy(completeBy);
 				newDeadline.setName(getTaskName(args, getKeyword(args)));
-			} catch (IllegalArgumentException e) {
+			} else {
 				return new Task(INVALID);
 			}
 		} else {
@@ -409,29 +420,6 @@ public class CommandParser implements java.io.Serializable {
 		} else {
 			return "";
 		}
-	}
-
-	public DateTime parseDateTime(String dateTimeString) {
-		DateTimeFormatter formatter;
-		int numParams = getNumDateTimeParam(dateTimeString);
-		switch (numParams) {
-		case 1:
-			formatter = DateTimeFormat.forPattern(DATE_TIME_FMT_1);
-			return formatter.parseDateTime(dateTimeString);
-		case 2:
-			formatter = DateTimeFormat.forPattern(DATE_TIME_FMT_2);
-			return formatter.parseDateTime(dateTimeString);
-		default:
-			formatter = DateTimeFormat.forPattern(DATE_TIME_FMT_3);
-			return formatter.parseDateTime(dateTimeString);
-		}
-	}
-
-	/**
-	 * Helper method to determine how many parts did the user input date in.
-	 */
-	private int getNumDateTimeParam(String dateTimeString) {
-		return dateTimeString.split(" ").length;
 	}
 
 	private boolean isEvent(String args) {
