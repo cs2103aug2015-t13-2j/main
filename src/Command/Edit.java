@@ -1,5 +1,7 @@
 package Command;
 
+import org.joda.time.DateTime;
+
 import NexTask.DateTimeParser;
 
 //@@author A0145035N
@@ -13,6 +15,7 @@ public class Edit extends Command {
 	private CommandParser parser;
 	private final String ERROR_INVALID_DATE_FORMAT = "Invalid date format.";
 	private final String EDIT_SUCCESSFUL = "Task has been edited!";
+	private final String ERROR_INVALID_TASK_NUMBER = "Invalid task number.";
 
 	public Edit() {
 		super();
@@ -37,26 +40,28 @@ public class Edit extends Command {
 				e.printStackTrace();
 			}
 
-			if (!fieldToClear.equals("")) {
-				editMsg = clearField(edit);
-			} else {
+			if (fieldToClear.equals("")) {
 				editMsg = editAppropriateField(edit);
+			} else {
+				editMsg = clearField(edit);
 			}
+
 		} else {
-			editMsg = EDIT_SUCCESSFUL;
+			editMsg = ERROR_INVALID_TASK_NUMBER;
 		}
 		return editMsg;
 	}
 
 	private String editAppropriateField(EditSpecification edit) {
-		String editMsg = EDIT_SUCCESSFUL;
+		String editMsg;
 		String fieldToEdit = edit.getFieldToEdit().trim().toLowerCase();
-		String theEdit = edit.getTheEdit().trim();
+		String theEdit = edit.getTheEdit();
 		Task t = storage.getTaskObject(edit.getTaskNumber() - 1);
 		if (fieldToEdit.equals(FIELD_START)) {
-			try {
-				t.setStart(DateTimeParser.parse(parser.getDateTime(theEdit)));
-			} catch (IllegalArgumentException e) {
+			DateTime newStart = DateTimeParser.parse(parser.getDateTime(theEdit));
+			if(newStart != null) {
+				t.setStart(newStart);
+			} else {
 				return ERROR_INVALID_DATE_FORMAT;
 			}
 			if (t.getTaskType().equals("deadline")) {
@@ -71,9 +76,10 @@ public class Edit extends Command {
 			}
 			editMsg = EDIT_SUCCESSFUL;
 		} else if (fieldToEdit.equals(FIELD_END)) {
-			try {
-				t.setEnd(DateTimeParser.parse(parser.getDateTime(theEdit)));
-			} catch (IllegalArgumentException e) {
+			DateTime newEnd = DateTimeParser.parse(parser.getDateTime(theEdit));
+			if(newEnd != null) {
+				t.setStart(newEnd);
+			} else {
 				return ERROR_INVALID_DATE_FORMAT;
 			}
 			if (t.getTaskType().equals("deadline")) {
@@ -86,9 +92,10 @@ public class Edit extends Command {
 			}
 			editMsg = EDIT_SUCCESSFUL;
 		} else if (fieldToEdit.equals("by")) {
-			try {
+			DateTime newBy = DateTimeParser.parse(parser.getDateTime(theEdit));
+			if(newBy != null) {
 				t.setCompleteBy(DateTimeParser.parse(parser.getDateTime(theEdit)));
-			} catch (IllegalArgumentException e) {
+			} else {
 				return ERROR_INVALID_DATE_FORMAT;
 			}
 			if (t.getTaskType().equals("event")) {
@@ -98,9 +105,10 @@ public class Edit extends Command {
 			t.setTaskType("deadline");
 			editMsg = EDIT_SUCCESSFUL;
 		} else if (fieldToEdit.equals("on")) {
-			try {
+			DateTime newOn = DateTimeParser.parse(parser.getDateTime(theEdit));
+			if(newOn != null) {
 				t.setCompleteBy(DateTimeParser.parse(parser.getDateTime(theEdit)));
-			} catch (IllegalArgumentException e) {
+			} else {
 				return ERROR_INVALID_DATE_FORMAT;
 			}
 			if (t.getTaskType().equals("event")) {
