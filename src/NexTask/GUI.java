@@ -51,13 +51,9 @@ public class GUI extends Application {
 	private static final String SEARCH_RESULTS = "Here are the search results!";
 	private static final String LOG_PROCESS = "going to start processing";
 	private static final String LOG_END = "end of processing";
-	private static final String LOG_ERROR = "processing error";
-	private static final String LOG_FILE_NAME = "LogicLogFile.log";
+	private static final String LOG_FILE_NAME = "GUILogFile.log";
 	private static final String LOG_ERROR_INITIALIZE = "Cannot intialize log file!";
-	
 	private static Logger logger = Logger.getLogger("GUI");
-	private static FileHandler fh;
-	private static SimpleFormatter formatter;
 	
 	private static Logic logic;
 	private Label incompletedLabel = new Label (INCOMPLETED_HEADING);
@@ -65,25 +61,22 @@ public class GUI extends Application {
 	public Label actionLabel = new Label();
 
 	public static void main(String[] args) {
-		launch(args);
-		try {
-			fh = new FileHandler("GUILogFile.log", true);
-		} catch (SecurityException | IOException e) {
-			System.out.println("Cannot intialize log file!");
-			System.exit(1);
-		}
-		logger.addHandler(fh);
-		formatter = new SimpleFormatter();  
-        fh.setFormatter(formatter);
+		launch(args);	    
 	}
 
 	public static void initialize() {
-		// scanner = new Scanner(System.in);
-		logger.log(Level.INFO, LOG_PROCESS);
 		Storage storage = Storage.getInstance();
 		logic = new Logic();
 		storage.addObserver(logic);
-		logger.log(Level.INFO, LOG_END);
+		 FileHandler fh;  
+	    try {   
+	        fh = new FileHandler(LOG_FILE_NAME);  
+	        logger.addHandler(fh);
+	        SimpleFormatter formatter = new SimpleFormatter();  
+	        fh.setFormatter(formatter);
+	    } catch (SecurityException | IOException e) {  
+	       System.out.println(LOG_ERROR_INITIALIZE);  
+	    }
 	}
 
 	@Override
