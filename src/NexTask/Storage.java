@@ -33,6 +33,16 @@ public class Storage implements java.io.Serializable, Observable {
 	private static final String INCOMPLETE_TASK = "Incompleted tasks:";
 	private static final String DASH_LINE = "-----------------";
 	private static final String COMPLETED_TASK = "Completed tasks:";
+	private static final String LOG_PROCESS = "going to start processing";
+	private static final String LOG_END = "end of processing";
+	private static final String LOG_ERROR = "processing error";
+	private static final String LOG_FILE_NAME = "StorageLogFile.log";
+	private static final String LOG_ERROR_INITIALIZE = "Cannot intialize log file!";
+	private static final String EXCEPTION_MESSAGE_1 = "Failed to create default file for incomplete tasks.";
+	private static final String EXCEPTION_MESSAGE_2 = "Failed to create default file for completed tasks.";
+	private static final String EXCEPTION_MESSAGE_3 = "Cannot retrieve incomplete tasks data from existing files or those files do not exist.";
+	private static final String EXCEPTION_MESSAGE_4 = "Cannot retrieve completed tasks data from existing files or those files do not exist.";
+	private static final String EXCEPTION_MESSAGE_5 = "Null Observer";
 	private static Logger logger = Logger.getLogger("Storage");
 	private static FileHandler fh;
 	private static SimpleFormatter formatter;
@@ -56,9 +66,9 @@ public class Storage implements java.io.Serializable, Observable {
 		this.completedTasks = new ArrayList<Task>();
 		this.observerList = new ArrayList<Observer>();
 		try {
-			this.fh = new FileHandler("StorageLogFile.log");
+			this.fh = new FileHandler(LOG_FILE_NAME);
 		} catch (SecurityException | IOException e) {
-			System.out.println("Cannot intialize log file!");
+			System.out.println(LOG_ERROR_INITIALIZE);
 			System.exit(1);
 		}
 		this.logger.addHandler(fh);
@@ -67,31 +77,31 @@ public class Storage implements java.io.Serializable, Observable {
 	}
 
 	public static Storage getInstance() {
-		logger.log(Level.INFO, "going to start processing");
+		logger.log(Level.INFO, LOG_PROCESS);
 		if (theOne == null) {
 			theOne = new Storage();
 		}
-		logger.log(Level.INFO, "end of processing");
+		logger.log(Level.INFO, LOG_END);
 		return theOne;
 	}
 
 	public String getPath() {
-		logger.log(Level.INFO, "going to start processing");
+		logger.log(Level.INFO, LOG_PROCESS);
 		return this.userPath;
 	}
 
 	public void setPath(String directory) {
-		logger.log(Level.INFO, "going to start processing");
+		logger.log(Level.INFO, LOG_PROCESS);
 		if (userPath.equals("")) {
 			this.userPath = FILE_NAME;
 		} else {
 			this.userPath = directory + USER_FILE_NAME;
 		}
-		logger.log(Level.INFO, "end of processing");
+		logger.log(Level.INFO, LOG_END);
 	}
 
 	public void storeToDefault() throws FileNotFoundException{
-		logger.log(Level.INFO, "going to start processing");
+		logger.log(Level.INFO, LOG_PROCESS);
 		try {
 	         FileOutputStream tasksOut = new FileOutputStream(TASK_FILE_TO_RETREIVE);
 	         ObjectOutputStream out = new ObjectOutputStream(tasksOut);
@@ -99,9 +109,8 @@ public class Storage implements java.io.Serializable, Observable {
 	         out.close();
 	         tasksOut.close();
 	      }catch(IOException i) {
-	    	  System.out.println("Failed to create default file for incomplete tasks.");
-	    	  logger.log(Level.WARNING, "processing error", i);
-	    	  System.exit(1);    	  
+	    	  System.out.println(EXCEPTION_MESSAGE_1);
+	    	  logger.log(Level.WARNING, LOG_ERROR, i);    	  
 	      }
 		try {
 	         FileOutputStream completedOut = new FileOutputStream(COMPLETED_FILE_TO_RETREIVE);
@@ -110,15 +119,14 @@ public class Storage implements java.io.Serializable, Observable {
 	         out.close();
 	         completedOut.close();
 	      } catch(IOException i) {
-	    	  System.out.println("Failed to create default file for completed tasks.");
-	    	  logger.log(Level.WARNING, "processing error", i);
-	    	  System.exit(1);	    	 
+	    	  System.out.println(EXCEPTION_MESSAGE_2);
+	    	  logger.log(Level.WARNING, LOG_ERROR, i);	    	 
 	      }
-		logger.log(Level.INFO, "end of processing");
+		logger.log(Level.INFO, LOG_END);
 	}
 	
 	public void storeToFile() {
-		logger.log(Level.INFO, "going to start processing");
+		logger.log(Level.INFO, LOG_PROCESS);
 		String savePath = getPath();
 		int incompletedIndex = 1;
 		int completedIndex = 1;
@@ -140,14 +148,13 @@ public class Storage implements java.io.Serializable, Observable {
 			}
 		} catch (FileNotFoundException e) {
 			System.out.println(String.format(FILE_NAME) + " is not found.");
-			logger.log(Level.WARNING, "processing error", e);
-			System.exit(1);		
+			logger.log(Level.WARNING, LOG_ERROR, e);	
 		}
-		logger.log(Level.INFO, "end of processing");
+		logger.log(Level.INFO, LOG_END);
 	}
 
 	public void retrieve() { 
-		logger.log(Level.INFO, "going to start processing");
+		logger.log(Level.INFO, LOG_PROCESS);
 		ArrayList<Task> retrievedTasks = null;
 		try {
 	         FileInputStream fileIn = new FileInputStream(TASK_FILE_TO_RETREIVE);
@@ -156,8 +163,9 @@ public class Storage implements java.io.Serializable, Observable {
 	         in.close();
 	         fileIn.close();
 	      } catch(ClassNotFoundException | IOException i) {
-	    	  System.out.println("Cannot retrieve incomplete tasks data from existing files or those files do not exist.");
-	    	  logger.log(Level.WARNING, "processing error", i);  
+	    	  System.out.println(EXCEPTION_MESSAGE_3);
+	    	  logger.log(Level.WARNING, LOG_ERROR, i);
+	    	  System.exit(1);
 	      }
 		
 		ArrayList<Task> retrievedCompleted = null;
@@ -168,21 +176,22 @@ public class Storage implements java.io.Serializable, Observable {
 	         in.close();
 	         fileIn.close();
 	      } catch(ClassNotFoundException | IOException i) {
-	    	  System.out.println("Cannot retrieve completed tasks data from existing files or those files do not exist.");
-	    	  logger.log(Level.WARNING, "processing error", i);  
+	    	  System.out.println(EXCEPTION_MESSAGE_4);
+	    	  logger.log(Level.WARNING, LOG_ERROR, i); 
+	    	  System.exit(1);
 	      }
 		this.taskArray = retrievedTasks;
 		this.completedTasks = retrievedCompleted;
-		logger.log(Level.INFO, "end of processing");
+		logger.log(Level.INFO, LOG_END);
 	}
 
 
 	public void markComplete(int taskNum) {
-		logger.log(Level.INFO, "going to start processing");
+		logger.log(Level.INFO, LOG_PROCESS);
 		completedTasks.add(taskArray.get(taskNum));
 		taskArray.remove(taskNum);
 		notifyObservers();
-		logger.log(Level.INFO, "end of processing");
+		logger.log(Level.INFO, LOG_END);
 	}
 
 	public int getCompletedSize() {
@@ -194,43 +203,43 @@ public class Storage implements java.io.Serializable, Observable {
 	}
 
 	public String getCompletedName(int num) {
-		logger.log(Level.INFO, "going to start processing");
+		logger.log(Level.INFO, LOG_PROCESS);
 		Task task = completedTasks.get(num);
 		String taskName = task.getName();
-		logger.log(Level.INFO, "end of processing");
+		logger.log(Level.INFO, LOG_END);
 		return taskName;
 	}
 
 	public void undoEdit() {
-		logger.log(Level.INFO, "going to start processing");
+		logger.log(Level.INFO, LOG_PROCESS);
 		Command cmd = getPrevCommand();
 		taskArray.set(cmd.getTaskNumber(), cmd.getTask());
 		prevCommands.remove(getCommandSize() - 1);
 		notifyObservers();
-		logger.log(Level.INFO, "end of processing");
+		logger.log(Level.INFO, LOG_END);
 	}
 
 	public void undoAdd() {
-		logger.log(Level.INFO, "going to start processing");
+		logger.log(Level.INFO, LOG_PROCESS);
 		taskArray.remove(getNumberOfTasks() - 1);
 		prevCommands.remove(getCommandSize() - 1);
 		notifyObservers();
-		logger.log(Level.INFO, "end of processing");
+		logger.log(Level.INFO, LOG_END);
 	}
 
 	public void undoDelete() {
-		logger.log(Level.INFO, "going to start processing");
+		logger.log(Level.INFO, LOG_PROCESS);
 		Command cmd = getPrevCommand();
 		taskArray.add(cmd.getTaskNumber() - 1, cmd.getTask());
 		prevCommands.remove(getCommandSize() - 1);
 		notifyObservers();
-		logger.log(Level.INFO, "end of processing");
+		logger.log(Level.INFO, LOG_END);
 	}
 
 	public void addCommand(Command cmd) {
-		logger.log(Level.INFO, "going to start processing");
+		logger.log(Level.INFO, LOG_PROCESS);
 		prevCommands.add(cmd);
-		logger.log(Level.INFO, "end of processing");
+		logger.log(Level.INFO, LOG_END);
 	}
 
 	public int getCommandSize() {
@@ -242,10 +251,10 @@ public class Storage implements java.io.Serializable, Observable {
 	}
 
 	public void add(Task task) {
-		logger.log(Level.INFO, "going to start processing");
+		logger.log(Level.INFO, LOG_PROCESS);
 		this.taskArray.add(task);
 		notifyObservers();
-		logger.log(Level.INFO, "end of processing");
+		logger.log(Level.INFO, LOG_END);
 	}
 
 	public Task getTaskObject(int num) {
@@ -253,24 +262,24 @@ public class Storage implements java.io.Serializable, Observable {
 	}
 
 	public void deleteIncompleted(int num) {
-		logger.log(Level.INFO, "going to start processing");
+		logger.log(Level.INFO, LOG_PROCESS);
 		taskArray.remove(num - 1);
 		notifyObservers();
-		logger.log(Level.INFO, "end of processing");
+		logger.log(Level.INFO, LOG_END);
 	}
 
 	public void deleteCompleted(int num) {
-		logger.log(Level.INFO, "going to start processing");
+		logger.log(Level.INFO, LOG_PROCESS);
 		completedTasks.remove(num - 1);
 		notifyObservers();
-		logger.log(Level.INFO, "end of processing");
+		logger.log(Level.INFO, LOG_END);
 	}
 	
 	public void edit(int num, Task task) {
-		logger.log(Level.INFO, "going to start processing");
+		logger.log(Level.INFO, LOG_PROCESS);
 		taskArray.set(num, task);
 		notifyObservers();
-		logger.log(Level.INFO, "end of processing");
+		logger.log(Level.INFO, LOG_END);
 	}
 
 	public ArrayList<Task> getTaskArray() {
@@ -283,10 +292,10 @@ public class Storage implements java.io.Serializable, Observable {
 	}
 
 	public String getTask(int index) {
-		logger.log(Level.INFO, "going to start processing");
+		logger.log(Level.INFO, LOG_PROCESS);
 		Task task = taskArray.get(index);
 		String taskName = task.getName();
-		logger.log(Level.INFO, "end of processing");
+		logger.log(Level.INFO, LOG_END);
 		return taskName;
 	}
 
@@ -294,21 +303,21 @@ public class Storage implements java.io.Serializable, Observable {
 //@@author A0145695R
 	@Override
 	public void addObserver(Observer obj) {
-		logger.log(Level.INFO, "going to start processing");
+		logger.log(Level.INFO, LOG_PROCESS);
 		if(obj == null) {
-			throw new NullPointerException("Null Observer");
+			throw new NullPointerException(EXCEPTION_MESSAGE_5);
 		} else if(!observerList.contains(obj)) {
 			observerList.add(obj);
 		}
-		logger.log(Level.INFO, "end of processing");
+		logger.log(Level.INFO, LOG_END);
 	}
 
 	@Override
 	public void notifyObservers() {
-		logger.log(Level.INFO, "going to start processing");
+		logger.log(Level.INFO, LOG_PROCESS);
 		for(Observer o : observerList) {
 			o.update();
 		}
-		logger.log(Level.INFO, "end of processing");
+		logger.log(Level.INFO, LOG_END);
 	}
 }
