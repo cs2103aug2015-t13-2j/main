@@ -18,17 +18,17 @@ import javafx.scene.layout.GridPane;
 public class TreeController {
 
 	private static final String RETRIEVE_COMMAND = "retrieve";
-	private static Logic logic = new Logic();
+	private static Logic logic;
 
 	public TreeController() {
-
 	}
 
 	/**
 	 * Initialises the Tree View of the GUI display
 	 */
-	public static TreeView<String> initialiseTree() {
+	public static TreeView<String> initialiseTree(Logic logic1) {
 		// Initialise Tree View
+		logic = logic1;
 		TreeItem<String> root = new TreeItem<>();
 		retrieveTaskList();
 		// root

@@ -31,10 +31,7 @@ import javafx.util.Duration;
 
 public class DisplayController {
 
-	private static Logic logic = new Logic();
-
 	public DisplayController() {
-
 	}
 
 	public static void initialiseStage(Stage primaryStage, GridPane grid) {
@@ -90,7 +87,7 @@ public class DisplayController {
 	}
 
 	public static void initialiseIncompletedHeading(TreeView<String> tree, Label incompletedLabel,
-			Label completedLabel) {
+			Label completedLabel, Logic logic) {
 		GridPane.setConstraints(incompletedLabel, 84, 0, 13, 2);
 		incompletedLabel.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
@@ -102,7 +99,7 @@ public class DisplayController {
 		});
 	}
 
-	public static void initialiseCompletedHeading(TreeView<String> tree, Label incompletedLabel, Label completedLabel) {
+	public static void initialiseCompletedHeading(TreeView<String> tree, Label incompletedLabel, Label completedLabel, Logic logic) {
 		GridPane.setConstraints(completedLabel, 84, 4, 12, 2);
 		completedLabel.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override

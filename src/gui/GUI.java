@@ -87,7 +87,7 @@ public class GUI extends Application {
 		TextField textBox = CommandController.initialiseTextBox();
 		Separator cmdSeperator = CommandController.initialiseCmdSeperator();
 
-		TreeView<String> tree = TreeController.initialiseTree();
+		TreeView<String> tree = TreeController.initialiseTree(logic);
 
 		GridPane grid = DisplayController.initialiseGridPane();
 		Label nexTaskLabel = DisplayController.initialiseNexTaskLabel();
@@ -96,8 +96,8 @@ public class GUI extends Application {
 
 		incompletedLabel.setFont((Font.font("Agency FB", FontWeight.BOLD, 15)));
 		completedLabel.setFont((Font.font("Agency FB", 15)));
-		DisplayController.initialiseCompletedHeading(tree, incompletedLabel, completedLabel);
-		DisplayController.initialiseIncompletedHeading(tree, incompletedLabel, completedLabel);
+		DisplayController.initialiseCompletedHeading(tree, incompletedLabel, completedLabel, logic);
+		DisplayController.initialiseIncompletedHeading(tree, incompletedLabel, completedLabel, logic);
 
 		grid.getChildren().addAll(commandLabel, textBox, clockLabel, nexTaskLabel, actionLabel, cmdSeperator,
 				completedLabel, incompletedLabel);
