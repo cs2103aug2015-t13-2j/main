@@ -7,6 +7,12 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+//@@author A0145695R
+
+/**
+ * Parses string into DateTime objects
+ *
+ */
 public class DateTimeParser {
 	// 3 PARAM DATES
 	private static final String DATE_FMT_3_1 = "dd MMMM yyyy"; // 14 November
@@ -64,6 +70,13 @@ public class DateTimeParser {
 
 	private static DateTime current = new DateTime();
 
+	/**
+	 * Parses user input into DateTime objects according to the number of
+	 * parameters in the input, whether or not a year was specified, or whether
+	 * or not a time was specified.
+	 * 
+	 * @return DateTime object if input can be parsed, null otherwise.
+	 */
 	public static DateTime parse(String input) {
 		DateTime dateTime;
 		String reformattedInput = reformatDate(replaceBadTimeInput(input));
@@ -85,6 +98,49 @@ public class DateTimeParser {
 			break;
 		default:
 			dateTime = null;
+		}
+		return dateTime;
+	}
+
+	private static DateTime parseDateTime(String input, String[] dates, String[] times, boolean hasYear) {
+		DateTime dateTime = null;
+		if (times.length > 0 && hasYear) {
+			for (int i = 0; i < dates.length; i++) {
+				for (int j = 0; j < times.length; j++) {
+					if (dateTime == null) {
+						dateTime = parseDateTimeWithYear(input, dates[i], times[j]);
+					} else {
+						break;
+					}
+				}
+			}
+		} else if (times.length > 0 && !hasYear) {
+			for (int i = 0; i < dates.length; i++) {
+				for (int j = 0; j < times.length; j++) {
+					if (dateTime == null) {
+						dateTime = parseDateTimeNoYear(input, dates[i], times[j]);
+					} else {
+						break;
+					}
+				}
+			}
+		} else if (times.length == 0 && hasYear) {
+			for (int i = 0; i < dates.length; i++) {
+				if (dateTime == null) {
+					dateTime = parseDateWithNoTime(input, dates[i]);
+				} else {
+					break;
+				}
+			}
+		} else if (times.length == 0 && !hasYear) {
+			for (int i = 0; i < dates.length; i++) {
+				if (dateTime == null) {
+					dateTime = parseDateNoTimeNoYear(input, dates[i]);
+				} else {
+					break;
+				}
+
+			}
 		}
 		return dateTime;
 	}
@@ -186,49 +242,6 @@ public class DateTimeParser {
 		return dateTime;
 	}
 
-	private static DateTime parseDateTime(String input, String[] dates, String[] times, boolean hasYear) {
-		DateTime dateTime = null;
-		if (times.length > 0 && hasYear) {
-			for (int i = 0; i < dates.length; i++) {
-				for (int j = 0; j < times.length; j++) {
-					if (dateTime == null) {
-						dateTime = parseDateTimeWithYear(input, dates[i], times[j]);
-					} else {
-						break;
-					}
-				}
-			}
-		} else if (times.length > 0 && !hasYear) {
-			for (int i = 0; i < dates.length; i++) {
-				for (int j = 0; j < times.length; j++) {
-					if (dateTime == null) {
-						dateTime = parseDateTimeNoYear(input, dates[i], times[j]);
-					} else {
-						break;
-					}
-				}
-			}
-		} else if (times.length == 0 && hasYear) {
-			for (int i = 0; i < dates.length; i++) {
-				if (dateTime == null) {
-					dateTime = parseDateWithNoTime(input, dates[i]);
-				} else {
-					break;
-				}
-			}
-		} else if (times.length == 0 && !hasYear) {
-			for (int i = 0; i < dates.length; i++) {
-				if (dateTime == null) {
-					dateTime = parseDateNoTimeNoYear(input, dates[i]);
-				} else {
-					break;
-				}
-
-			}
-		}
-		return dateTime;
-	}
-
 	/**
 	 * Helper method to determine how many parts did the user input date in.
 	 */
@@ -240,8 +253,6 @@ public class DateTimeParser {
 	 * When receive a date has numbers represented in ordinal manner, i.e. 1st,
 	 * 2nd... this method replaces that with 1, 2 ... so it can be parsed.
 	 * 
-	 * @param date
-	 * @return
 	 */
 	private static String reformatDate(String date) {
 		String ordinal = getOrdinal(date);
@@ -250,7 +261,7 @@ public class DateTimeParser {
 	}
 
 	/**
-	 * Retrieve the substring of user input that is in ordinal format.
+	 * Helper method to retrieve substring of cardinal time in ordinal format.
 	 * 
 	 * @return
 	 */
@@ -266,8 +277,6 @@ public class DateTimeParser {
 
 	/**
 	 * Retrieve the cardinal version of ordinal number
-	 * 
-	 * @return
 	 */
 	private static String getCardinal(String input) {
 		Pattern dateTimePattern = Pattern.compile(PATTERN_CARDINAL);
@@ -279,6 +288,9 @@ public class DateTimeParser {
 		}
 	}
 
+	/**
+	 * Identify inputs in bad time format such as 500 am.
+	 */
 	private static String getBadTimeInput(String input) {
 		Pattern dateTimePattern1 = Pattern.compile(BAD_TIME_FMT1);
 		Matcher m1 = dateTimePattern1.matcher(input);
@@ -293,6 +305,11 @@ public class DateTimeParser {
 		}
 	}
 
+	/**
+	 * Reformats bad time input by appending a 0 in front. That way it can be
+	 * parsed by JodaTime's parser.
+	 *
+	 */
 	private static String replaceBadTimeInput(String input) {
 		String hmma = getBadTimeInput(input);
 		if (hmma.equals(EMPTY_STRING)) {

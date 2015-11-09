@@ -46,16 +46,21 @@ public class Storage implements java.io.Serializable, Observable {
 	private static final String EXCEPTION_MESSAGE_3 = "Cannot retrieve incomplete tasks data from existing files or those files do not exist.";
 	private static final String EXCEPTION_MESSAGE_4 = "Cannot retrieve completed tasks data from existing files or those files do not exist.";
 	private static final String EXCEPTION_MESSAGE_5 = "Null Observer";
+	private String userPath;
+	private int taskNum;
+	
+	// Logger
 	private static Logger logger = Logger.getLogger("Storage");
 	private static FileHandler fh;
 	private static SimpleFormatter formatter;
 	
-	private static Storage theOne;
+	//Observer
+	private static Storage theOne;	
 	private final Object MUTEX= new Object();
 	
-	private String userPath;
-	private int taskNum;
+	// This arraylist stores incomplete tasks
 	private ArrayList<Task> taskArray;
+	// This arraylist records commands 
 	private ArrayList<Command> prevCommands;
 	private ArrayList<Task> completedTasks;
 	private ArrayList<Observer> observerList;
@@ -79,6 +84,7 @@ public class Storage implements java.io.Serializable, Observable {
         this.fh.setFormatter(formatter);
 	}
 
+	// Making storage singleton
 	public static Storage getInstance() {
 		logger.log(Level.INFO, LOG_PROCESS);
 		if (theOne == null) {
@@ -92,7 +98,9 @@ public class Storage implements java.io.Serializable, Observable {
 		logger.log(Level.INFO, LOG_PROCESS);
 		return this.userPath;
 	}
-
+	
+	
+	
 	public void setPath(String directory) {
 		logger.log(Level.INFO, LOG_PROCESS);
 		if (userPath.equals("")) {
@@ -103,6 +111,10 @@ public class Storage implements java.io.Serializable, Observable {
 		logger.log(Level.INFO, LOG_END);
 	}
 
+	/**
+	 * 
+	 * @throws FileNotFoundException
+	 */
 	public void storeToDefault() throws FileNotFoundException{
 		logger.log(Level.INFO, LOG_PROCESS);
 		try {
@@ -127,6 +139,7 @@ public class Storage implements java.io.Serializable, Observable {
 	      }
 		logger.log(Level.INFO, LOG_END);
 	}
+	
 	
 	public void storeToFile() {
 		logger.log(Level.INFO, LOG_PROCESS);
@@ -156,6 +169,9 @@ public class Storage implements java.io.Serializable, Observable {
 		logger.log(Level.INFO, LOG_END);
 	}
 
+	/**
+	 * Retrieve from serialize files to get previously saved objects.
+	 */
 	public void retrieve() { 
 		logger.log(Level.INFO, LOG_PROCESS);
 		ArrayList<Task> retrievedTasks = null;
@@ -213,6 +229,9 @@ public class Storage implements java.io.Serializable, Observable {
 		return taskName;
 	}
 
+	/**
+	 * Remove edit command from command records and undo it in tasks array.
+	 */
 	public void undoEdit() {
 		logger.log(Level.INFO, LOG_PROCESS);
 		Command cmd = getPrevCommand();

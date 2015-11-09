@@ -1,9 +1,9 @@
 package command;
 
-//@@author A0145035N
-
 import java.util.ArrayList;
 import NexTask.Task;
+
+//@@author A0145035N
 
 /**
  * The ViewCompleted command displays all the tasks that the user has marked as completed.

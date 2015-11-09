@@ -1,9 +1,11 @@
 package command;
 
 //@@author A0145035N
+
 /**
  * The ViewIncomplete command displays all the tasks that are incomplete.
  */
+
 public class ViewIncomplete extends Command {
 	private final String NO_CONTENT_TO_DISPLAY = "Incomplete task list is empty. There is no content to display!";
 	private static final String NO_INCOMPLETE_TASKS = "no incomplete tasks available";

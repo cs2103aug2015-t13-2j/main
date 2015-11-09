@@ -10,7 +10,21 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-
+/**
+ * Represents a Task in NexTask.
+ * 
+ * name = name of task
+ * taskType = type of task, can be either event, deadline, or todo
+ * start = start time for the task
+ * end = end time for the task
+ * completeBy = the time the task should be completed by
+ * 
+ * The fields are initialized according to the type of task. 
+ * Events will just have name, taskType, start, and end initialized
+ * Deadlines will just have name, taskType, and completeBy initialized
+ * Todo will just have name and taskType initialized
+ *
+ */
 public class Task implements Cloneable, java.io.Serializable{
 	private String name;
 	private String taskType;

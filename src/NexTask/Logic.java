@@ -23,8 +23,6 @@ import storage.Storage;
  * The logic class is in charge of handling user command, that is ensuring that 
  * what the user wants to be done is done. 
  * 
- * @author 
- *
  */
 
 //@@author A0145695R
@@ -77,6 +75,7 @@ public class Logic implements Observer {
 	public Logic() {
 		storage = Storage.getInstance();
 		parser = new CommandParser();
+		parser.initializeLogger();
 		hasUpdate = false;
 		try {
 			this.fh = new FileHandler(LOG_FILE_NAME, true);
@@ -92,6 +91,7 @@ public class Logic implements Observer {
 	public Logic(boolean clear) {
 		storage = Storage.getInstance();
 		parser = new CommandParser();
+		parser.initializeLogger();
 		hasUpdate = false;
 		try {
 			this.fh = new FileHandler(LOG_FILE_NAME, true);

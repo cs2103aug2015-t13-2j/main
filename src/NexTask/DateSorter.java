@@ -6,6 +6,10 @@ import java.util.Comparator;
 
 import org.joda.time.DateTime;
 
+/**
+ * DateSorter sorts from earliest go latest.
+ *
+ */
 public class DateSorter implements Comparator<Task>{
 	
 	public int compare(Task t1, Task t2) {

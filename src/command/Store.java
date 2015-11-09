@@ -4,6 +4,7 @@ package command;
 
 /**
  * The Store command stores the incomplete task list to a file as specified by the user.
+ * If a path is not specified, it would be stored in the same location as the program.
  *
  */
 public class Store extends Command{

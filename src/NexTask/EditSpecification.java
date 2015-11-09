@@ -4,8 +4,6 @@ package NexTask;
  * An Edit Specification is made up of three components: taskNumber: the id of
  * the task you want to edit fieldToEdit: the field you would like to edit, i.e.
  * name, startdate, etc. theEdit: the edit you would like to make to that task.
- * 
- * @author Jenny
  *
  */
 
