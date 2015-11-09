@@ -1,3 +1,4 @@
+/*
 package ui;
 
 import java.util.Scanner;
@@ -14,11 +15,8 @@ import NexTask.Logic;
  */
 
 //@@author A0124710W -unused because GUI has replaced UI functionalities
+/*
 public class UI {
-
-	private static final int WELCOME_COMMAND = 1;
-	private static final int WELCOME_CONDITION = 1;
-	private static final int PROMPT_CONDITION = 2;
 	private static Scanner scanner;
 	private static Logic logic;
 	private static DisplayManager display;
@@ -56,3 +54,4 @@ public class UI {
 		return userInput;
 	}
 }
+*/
