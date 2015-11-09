@@ -5,19 +5,20 @@ import NexTask.Task;
 import storage.Storage;
 
 /**
- * Represents a command object. Each command object has commandName and one
- * other field initialized. 
- * For add command, the "task" field will be initialized.
+ * Represents a Command in NexTask. Each Command object has commandName and one
+ * of the following field initialized if needed. 
+ * For add command, the task field will be initialized.
  * For delete and complete commands, the taskNumber field will be initialized.
  * For edit command, the editSpecification field will be initialized.
- * For search command, the searchSpecification will be initialized.
- * 
- *@author Jenny
+ * For search command, the searchSpecification field will be initialized.
+ * For sort command, the sortField field will be initialized.
+ * For store command, the directory field will be initialized.
+ * For invalid command, the errorMessage will be initialized.
  *
  */
 
 //@@author A0145695R
-public abstract class Command implements java.io.Serializable{
+public class Command implements java.io.Serializable{
 	private String commandName;
 	private String directory;
 	private int taskNumber;
@@ -74,7 +75,6 @@ public abstract class Command implements java.io.Serializable{
 		return taskNumber;
 	}
 	
-
 	public void setTaskNumber(int taskNumber) {
 		this.taskNumber = taskNumber;
 	}
@@ -111,52 +111,6 @@ public abstract class Command implements java.io.Serializable{
 
 	public void setSearchSpecification(String searchSpecification) {
 		this.searchSpecification = searchSpecification;
-	}
-
-	public boolean equals(Command other) {
-		boolean isArgEqual = false;
-		boolean isCmdNameEqual = (this.getCommandName().equals(other.getCommandName()));
-		if (isCmdNameEqual) {
-			String cmdName = this.getCommandName();
-			switch (cmdName) {
-			case "add":
-				isArgEqual = this.getTask().equals(other.getTask());
-				break;
-			case "edit":
-				isArgEqual = this.getEditSpecification().equals(other.getEditSpecification());
-				break;
-			case "delete":
-				isArgEqual = this.getTaskNumber() == other.getTaskNumber();
-				break;
-			case "complete":
-				isArgEqual = this.getTaskNumber() == other.getTaskNumber();
-				break;
-			case "search":
-				isArgEqual = this.getSearchSpecification().equals(other.getSearchSpecification());
-				break;	
-			case "sort":
-				isArgEqual = this.getSortField().equals(other.getSortField());
-				break;	
-			case "invalid":
-				isArgEqual = isCmdNameEqual;
-				break;
-			case "view incomplete":
-				isArgEqual = isCmdNameEqual;
-				break;
-			case "view completed":
-				isArgEqual = isCmdNameEqual;
-				break;
-			case "store":
-				isArgEqual = isCmdNameEqual;
-				break;
-			case "undo":
-				isArgEqual = isCmdNameEqual;
-				break;
-			}
-		} else {
-			return false;
-		}
-		return isArgEqual;
 	}
 
 	public String getSortField() {

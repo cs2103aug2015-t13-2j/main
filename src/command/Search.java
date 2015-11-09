@@ -4,6 +4,10 @@ package command;
 
 import NexTask.Task;
 
+/**
+ * Search command searches storage and retrieves all tasks that contain the
+ * keywords specified in the user input.
+ */
 public class Search extends Command {
 	private static final String PRINT_SEARCH_FORMAT = "Search results:\n" + "----------------\n" + "\n";
 	private static final String COMPLETED_FORMAT = "========== Completed ===========\n";

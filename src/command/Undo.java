@@ -2,15 +2,19 @@ package command;
 
 //@@author A0145035N
 
-public class Undo extends Command{
+/**
+ * The Undo commands reverses the program to previous states. Continuous undos
+ * is suupported.
+ */
+public class Undo extends Command {
 	private final String COMMAND_UNDO = "Previous task has been undone!";
 	private final String NO_CONTENT = "There is no task available to undo.";
-	
-	public Undo(){
+
+	public Undo() {
 		super();
 	}
-	
-	public String execute(){
+
+	public String execute() {
 		String undoMsg = "";
 		if (storage.getCommandSize() == 0) {
 			undoMsg = NO_CONTENT;

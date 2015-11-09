@@ -48,12 +48,7 @@ public class Logic implements Observer {
 	private static final String LOG_END = "end of processing";
 	private static final String LOG_ERROR = "processing error";
 	private static final String LOG_FILE_NAME = "LogicLogFile.log";
-	private static final String LOG_ERROR_INITIALIZE = "Cannot intialize log file!";
-	
-	private static Logger logger = Logger.getLogger("Logic");
-	private static FileHandler fh;
-	private static SimpleFormatter formatter;
-	
+	private static final String LOG_ERROR_INITIALIZE = "Cannot intialize log file!";	
 	private static final String COMMAND_HELP = "The following commands are as shown:\n"
 			+ "To add an event: add event start (date & time) end (date & time) (description of task).\n"
 			+ "To add a task with deadline: add deadline due by (date & time) (description of task).\n"
@@ -72,7 +67,9 @@ public class Logic implements Observer {
 	private static final String SUCCESSFUL_SORT = "Tasks has been sorted";
 	private static final String SUCCESSFUL_EDIT = "Task has been edited!";
 
-
+	private static Logger logger = Logger.getLogger("Logic");
+	private static FileHandler fh;
+	private static SimpleFormatter formatter;
 	private Storage storage;
 	private CommandParser parser;
 	private boolean hasUpdate;

@@ -1,7 +1,10 @@
 package command;
 
 //@@author A0124710W
-
+/**
+ * The Completed command moves a specified task from being active to archive. 
+ *
+ */
 public class Completed extends Command{
 	private static final String COMMAND_DONE = "Task has been marked as completed!";
 	private static final String INPUT_LARGER_THAN_TASK_NUMBER = "Sorry, the number you have entered is greater than the number of total tasks";

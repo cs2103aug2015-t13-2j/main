@@ -1,5 +1,7 @@
 package command;
 
+//@@author A0145695R
+
 import org.joda.time.DateTime;
 
 import parser.*;
@@ -9,7 +11,11 @@ import parser.*;
 
 import NexTask.EditSpecification;
 import NexTask.Task;
-
+/**
+ * The Edit command edits an existing task from storage.
+ * Tasks can be edited in two ways: clearing datetime fields or editing fields.
+ * 
+ */
 public class Edit extends Command {
 	private static final String FIELD_START = "start";
 	private static final String FIELD_END = "end";
@@ -53,6 +59,7 @@ public class Edit extends Command {
 		return editMsg;
 	}
 
+	
 	private String editAppropriateField(EditSpecification edit) {
 		String editMsg;
 		String fieldToEdit = edit.getFieldToEdit().trim().toLowerCase();

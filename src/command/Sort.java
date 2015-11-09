@@ -7,6 +7,10 @@ import java.util.Collections;
 import NexTask.DateSorter;
 import NexTask.NameSorter;
 
+/**
+ * The Sort commands sort tasks by name or by date as specified by the user.
+ *
+ */
 public class Sort extends Command{
 	private static final String FIELD_NAME = "name";
 	private static final String FIELD_DATE = "date";

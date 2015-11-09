@@ -1,5 +1,7 @@
 package parser;
 
+import java.util.logging.Logger;
+
 //@@author A0145695R
 
 import java.util.regex.Matcher;
@@ -13,10 +15,8 @@ import NexTask.EditSpecification;
 import NexTask.Task;
 
 /**
- * CommandParser parses user input and creates Command objects with fields
- * initialized accordingly.
- * 
- * @author Jenny
+ * CommandParser parses user input and create Command objects with appropriate
+ * fields initialized.
  *
  */
 public class CommandParser implements java.io.Serializable {
@@ -72,8 +72,13 @@ public class CommandParser implements java.io.Serializable {
 	private static final String LOG_MSG_INVALID_CMD = "Command Parser: Please enter a valid command.";
 	private static final String LOG_MSG_INVALID_DATE_FMT = "Command Parser: Error parsing date.";
 	private static final String LOG_MSG_NO_NAME_FOUND = "Command Parser: User did not provide task name.";
-	
-	
+
+	private static Logger logger = Logger.getLogger("CommandParser");
+
+	public void createLog() {
+
+	}
+
 	public Command parse(String userInput) {
 		String userCommand;
 		// check if user input empty
@@ -170,11 +175,14 @@ public class CommandParser implements java.io.Serializable {
 		}
 		return cmd;
 	}
+
 	/**
-	 * Parses user input, creates an EditSpecification, and initializes
-	 * an Command object with editSpecificatoin field initialized accordingly.
-	 * @param commandArgs details for the edit command
-	 * @return edit command if user inputs is valid, invalid command otherwise. 
+	 * Parses user input, creates an EditSpecification, and initializes an
+	 * Command object with editSpecificatoin field initialized accordingly.
+	 * 
+	 * @param commandArgs
+	 *            details for the edit command
+	 * @return edit command if user inputs is valid, invalid command otherwise.
 	 */
 	private Command initEditCommand(String commandArgs) {
 		Edit cmd = new Edit();
@@ -191,17 +199,17 @@ public class CommandParser implements java.io.Serializable {
 		} catch (IndexOutOfBoundsException e) {
 			return initInvalidCommand(ERROR_INVALID_NUM_ARGS);
 		}
-		
+
 		try {
 			edit.setTaskNumber(Integer.parseInt(taskNumber));
 		} catch (NumberFormatException e) {
 			return initInvalidCommand(ERROR_INTEGER_NOT_FOUND);
 		}
-		
-		if(argumentsForEdit.equals(EMPTY_STRING)) {
+
+		if (argumentsForEdit.equals(EMPTY_STRING)) {
 			return initInvalidCommand(ERROR_INVALID_NUM_ARGS);
 		}
-		
+
 		switch (fieldOrClear) {
 		case KW_CLEAR:
 			edit.setFieldToClear(argumentsForEdit);
@@ -264,7 +272,7 @@ public class CommandParser implements java.io.Serializable {
 		} else {
 			cmd.setCommandName(USER_COMMAND_SORT);
 			cmd.setSortField(commandArgs.trim());
-			
+
 		}
 		return cmd;
 	}
