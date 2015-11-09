@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import NexTask.*;
+import ui.DisplayManager;
 
 /*
  * Unit test file for DisplayManager

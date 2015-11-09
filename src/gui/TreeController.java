@@ -42,6 +42,9 @@ public class TreeController {
 		TreeView<String> tree = new TreeView<String>(root);
 		tree.setShowRoot(false);
 		tree.setEditable(true);
+		tree.setStyle("-fx-background-color: grey;" + "-fx-font-family: Helvetica;" + "-fx-font-size: 13;"
+				+ "-fx-text-fill: white;");
+
 		GridPane.setConstraints(tree, 2, 8, 94, 72);
 		return tree;
 	}

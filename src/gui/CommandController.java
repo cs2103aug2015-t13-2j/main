@@ -32,6 +32,8 @@ public class CommandController {
 		TextField userInputBox = new TextField();
 		userInputBox.setPromptText(USER_INPUT);
 		userInputBox.setFont(Font.font("Verdana", 12));
+		userInputBox.setStyle("-fx-border:10px solid #456879;" + "-fx-border-radius:15px;" + "-fx-border-color: grey;"
+				+ "-fx-height: 22px;" + "-fx-width: 230px;" + "-fx-background-color: #FFFFF0;");
 		GridPane.setConstraints(userInputBox, 7, 88, 89, 3);
 		// capture input
 		return userInputBox;
@@ -60,6 +62,7 @@ public class CommandController {
 	public static Separator initialiseCmdSeperator() {
 		Separator cmdSeperator = new Separator();
 		cmdSeperator.setHalignment(HPos.CENTER);
+		cmdSeperator.setStyle("-fx-background-color: #000000;" + "-fx-opacity: 0.5;");
 		GridPane.setConstraints(cmdSeperator, 2, 80, 94, 1);
 		return cmdSeperator;
 	}

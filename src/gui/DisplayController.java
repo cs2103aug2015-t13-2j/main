@@ -65,7 +65,7 @@ public class DisplayController {
 		Timeline timeline = initialiseTime(clockLabel, format);
 		timeline.setCycleCount(Animation.INDEFINITE);
 		timeline.play();
-		GridPane.setConstraints(clockLabel, 22, 4, 54, 4);
+		GridPane.setConstraints(clockLabel, 22, 3, 54, 4);
 		return clockLabel;
 	}
 
