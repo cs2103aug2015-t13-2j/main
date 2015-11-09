@@ -77,7 +77,6 @@ public class Logic implements Observer {
 	private CommandParser parser;
 	private boolean hasUpdate;
 
-
 	public Logic() {
 		storage = Storage.getInstance();
 		parser = new CommandParser();
@@ -91,6 +90,24 @@ public class Logic implements Observer {
 		this.logger.addHandler(fh);
 		formatter = new SimpleFormatter();  
         this.fh.setFormatter(formatter);
+
+	}
+	public Logic(boolean clear) {
+		storage = Storage.getInstance();
+		parser = new CommandParser();
+		hasUpdate = false;
+		try {
+			this.fh = new FileHandler(LOG_FILE_NAME, true);
+		} catch (SecurityException | IOException e) {
+			System.out.println(LOG_ERROR_INITIALIZE);
+			System.exit(1);
+		}
+		this.logger.addHandler(fh);
+		formatter = new SimpleFormatter();  
+        this.fh.setFormatter(formatter);
+        if(clear == true) {
+        	this.getTaskList().clear();
+        }
 
 	}
 	/**

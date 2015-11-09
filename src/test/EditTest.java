@@ -15,7 +15,7 @@ import NexTask.Task;
 //@@author A0124710W
 public class EditTest {
 
-	Logic logic = new Logic();
+	Logic logic = new Logic(true);
 	String addRes1 = logic.executeUserCommand("add meeting with boss start \"11 nov 2011\"");
 	String addRes2 = logic.executeUserCommand("add Laundry");
 	String addRes3 = logic.executeUserCommand("add company retreat start \"11 nov 2015 5pm\"");

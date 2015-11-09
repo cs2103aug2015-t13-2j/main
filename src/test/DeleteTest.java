@@ -22,12 +22,13 @@ public class DeleteTest {
 	String incorrectTaskNumber = "Please specify task number as an integer.";
 	String invalidCommand = "Please enter a valid command.";
 
-	Logic logic = new Logic();
+	String expectedAdd = "Task has been added!";
+	
+	Logic logic = new Logic(true);
 	String addRes1 = logic.executeUserCommand("add Company Lunch with Boss next month start \"11 nov 2011\"");
 	String addRes2 = logic.executeUserCommand("add Laundry");
 	String addRes3 = logic.executeUserCommand("add Company retreat start \"11 nov 2015 5pm\"");
 	String addRes4 = logic.executeUserCommand("add go to the gym start \"10 nov 2015 5pm\" end \"10 nov 2015 7pm\"");
-
 	String delRes1 = logic.executeUserCommand("delete 4");
 	String delRes2 = logic.executeUserCommand("delete 01");
 	String delRes3 = logic.executeUserCommand("delete 6");
@@ -35,9 +36,6 @@ public class DeleteTest {
 	String delRes5 = logic.executeUserCommand("delete $%@#");
 	String delRes6 = logic.executeUserCommand("delete two");
 	String delRes7 = logic.executeUserCommand("deleted 1");
-
-	String expectedAdd = "Task has been added!";
-
 	// Tests which allows users to delete a specified task
 	@Test
 	public void testDeletePositive() {
@@ -95,7 +93,6 @@ public class DeleteTest {
 		// There are only 2 tasks available so these test cases are to test
 		// either the integer is invalid or the task number input is
 		// bigger than the size of the array.
-
 		// input bigger than size of array
 		assertEquals(cantDelete, delRes3);
 

@@ -14,35 +14,32 @@ import NexTask.Task;
 
 //@@author A0124710W
 public class UndoTest {
-
-	Logic logic = new Logic();
-
+	Logic logic = new Logic(true);
 	String expectedAdd = "Task has been added!";
 	String expectedEdit = "Task has been edited!";
 	String expectedUndo = "Previous task has been undone!";
 	String expectedDelete = "Task has been deleted!";
 	String expectedDone = "Task has been marked as completed!";
 	String invalidCommand = "Please enter a valid command.";
+	String res1 = logic.executeUserCommand("add meeting with clients");
+	String res2 = logic.executeUserCommand("add big side project by next year");
+	String res3 = logic.executeUserCommand(
+			"add meeting with project mates start \"5 october 2015 5pm\" end \"5 october 2015 6pm\"");
+	String res4 = logic.executeUserCommand("add visit europe on \"7 december 2015 3:00 pm\"");
+
+	String res5 = logic.executeUserCommand("edit 4 name visit africa");
+	String res6 = logic.executeUserCommand("delete 3");
+	String res7 = logic.executeUserCommand("add catchup with friends");
+	String res8 = logic.executeUserCommand("complete 2");
+
+	String undoRes1 = logic.executeUserCommand("undo");
+	String undoRes2 = logic.executeUserCommand("undo");
+	String undoRes3 = logic.executeUserCommand("undo");
+	String undoRes4 = logic.executeUserCommand("undo");
+	String undoRes5 = logic.executeUserCommand("un do");
 
 	@Test
 	public void undoTest() {
-		String res1 = logic.executeUserCommand("add meeting with clients");
-		String res2 = logic.executeUserCommand("add big side project by next year");
-		String res3 = logic.executeUserCommand(
-				"add meeting with project mates start \"5 october 2015 5pm\" end \"5 october 2015 6pm\"");
-		String res4 = logic.executeUserCommand("add visit europe on \"7 december 2015 3:00 pm\"");
-
-		String res5 = logic.executeUserCommand("edit 4 name visit africa");
-		String res6 = logic.executeUserCommand("delete 3");
-		String res7 = logic.executeUserCommand("add catchup with friends");
-		String res8 = logic.executeUserCommand("complete 2");
-
-		String undoRes1 = logic.executeUserCommand("undo");
-		String undoRes2 = logic.executeUserCommand("undo");
-		String undoRes3 = logic.executeUserCommand("undo");
-		String undoRes4 = logic.executeUserCommand("undo");
-		String undoRes5 = logic.executeUserCommand("un do");
-
 		Task undoTask1 = new Task("meeting with clients");
 		undoTask1.setTaskType("todo");
 

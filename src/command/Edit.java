@@ -2,12 +2,13 @@ package command;
 
 import org.joda.time.DateTime;
 
+import parser.*;
+
+
 //@@author A0145035N
 
 import NexTask.EditSpecification;
 import NexTask.Task;
-import parser.CommandParser;
-import parser.DateTimeParser;
 
 public class Edit extends Command {
 	private static final String FIELD_START = "start";
@@ -71,8 +72,6 @@ public class Edit extends Command {
 			} else if (t.getTaskType().equals("todo")) {
 				t.setEnd(t.getStart().plusHours(1));
 				t.setTaskType("event");
-			} else if (t.getTaskType().equals("event")) {
-				t.setStart(DateTimeParser.parse(parser.getDateTime(theEdit)));
 			}
 			editMsg = EDIT_SUCCESSFUL;
 		} else if (fieldToEdit.equals(FIELD_END)) {
@@ -94,7 +93,7 @@ public class Edit extends Command {
 		} else if (fieldToEdit.equals("by")) {
 			DateTime newBy = DateTimeParser.parse(parser.getDateTime(theEdit));
 			if(newBy != null) {
-				t.setCompleteBy(DateTimeParser.parse(parser.getDateTime(theEdit)));
+				t.setCompleteBy(newBy);
 			} else {
 				return ERROR_INVALID_DATE_FORMAT;
 			}
@@ -107,7 +106,7 @@ public class Edit extends Command {
 		} else if (fieldToEdit.equals("on")) {
 			DateTime newOn = DateTimeParser.parse(parser.getDateTime(theEdit));
 			if(newOn != null) {
-				t.setCompleteBy(DateTimeParser.parse(parser.getDateTime(theEdit)));
+				t.setCompleteBy(newOn);
 			} else {
 				return ERROR_INVALID_DATE_FORMAT;
 			}

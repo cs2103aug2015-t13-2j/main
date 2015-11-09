@@ -17,7 +17,7 @@ import NexTask.Task;
 //@@author A0124710W
 public class CompletedTest {
 
-	Logic logic = new Logic();
+	Logic logic = new Logic(true);
 	String res1 = logic.executeUserCommand("add meeting with clients");
 	String res2 = logic.executeUserCommand("add big event");
 	String res3 = logic.executeUserCommand(

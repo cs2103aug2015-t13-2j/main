@@ -20,11 +20,14 @@ public class DateTimeParser {
 	// 1 PARAM DATES
 	private static final String DATE_FMT_1_1 = "ddMMyyyy"; // 14112015
 	private static final String DATE_FMT_1_2 = "dd/MM/yy"; // 14/11/15
+	private static final String DATE_FMT_1_2_5 = "dd/MM/yyyy"; // 14/11/2015
 	private static final String DATE_FMT_1_3 = "ddMMyy"; // 141115
 
 	// 1 PARAM DATES NO YEARS
 	private static final String DATE_FMT_1_4 = "dd/MM"; // 14/11 no year
 	private static final String DATE_FMT_1_5 = "ddMM"; // 1411 no year
+	private static final String DATE_FMT_1_6 = "ddMMM"; // 12Nov
+	private static final String DATE_FMT_1_7 = "ddMMMM"; // 12November
 
 	// 1 PARAM TIMES
 	private static final String TIME_FMT_1_1 = "hh:mma"; // 5:00am
@@ -42,8 +45,8 @@ public class DateTimeParser {
 	private static final String TIME_FMT_2_3 = "hhmm a"; // 500 am
 	private static final String TIME_FMT_2_4 = "hh a"; // 5 am
 
-	private static final String[] DATE_FMTS_1_PART = { DATE_FMT_1_1, DATE_FMT_1_2, DATE_FMT_1_3 };
-	private static final String[] DATE_FMTS_1_PART_NO_YEAR = { DATE_FMT_1_4, DATE_FMT_1_5 };
+	private static final String[] DATE_FMTS_1_PART = { DATE_FMT_1_1, DATE_FMT_1_2, DATE_FMT_1_2_5, DATE_FMT_1_3 };
+	private static final String[] DATE_FMTS_1_PART_NO_YEAR = { DATE_FMT_1_4, DATE_FMT_1_5, DATE_FMT_1_6, DATE_FMT_1_7 };
 	private static final String[] DATE_FMTS_2_PART_NO_YEAR = { DATE_FMT_2_1, DATE_FMT_2_2 };
 	private static final String[] DATE_FMTS_3_PARTS = { DATE_FMT_3_1, DATE_FMT_3_2 };
 
@@ -60,14 +63,6 @@ public class DateTimeParser {
 	private static final String EMPTY_STRING = "";
 
 	private static DateTime current = new DateTime();
-
-	/**
-	 * Creates instance of DateTime from a string in an appropriate DateTime
-	 * format.
-	 * 
-	 * @param input
-	 * @return
-	 */
 
 	public static DateTime parse(String input) {
 		DateTime dateTime;
