@@ -142,78 +142,13 @@ public class Logic implements Observer {
 
 	private String performCommand(Command cmd, Storage taskList) {
 		logger.log(Level.INFO, LOG_PROCESS);
-		String messageToPrint = "";
-		String commandName = cmd.getCommandName();
-		if (commandName == CMD_ADD) {
-			messageToPrint = cmd.execute();
-			try {
-				storage.storeToDefault();
-			} catch (FileNotFoundException e) {
-				System.out.println(String.format(FILE_TO_RETREIVE));
-				logger.log(Level.WARNING, LOG_ERROR, e);
-			}
-		} else if (commandName == CMD_EDIT) {
-			messageToPrint = cmd.execute();
-			if(messageToPrint.equals(SUCCESSFUL_EDIT)) {
-				hasUpdate = true;
-			}
-			try {
-				storage.storeToDefault();
-			} catch (FileNotFoundException e) {
-				System.out.println(String.format(FILE_TO_RETREIVE));
-				logger.log(Level.WARNING, LOG_ERROR, e);
-			}
-		} else if (commandName == CMD_DELETE) {
-			messageToPrint = cmd.execute();
-			try {
-				storage.storeToDefault();
-			} catch (FileNotFoundException e) {
-				System.out.println(String.format(FILE_TO_RETREIVE));
-				logger.log(Level.WARNING, LOG_ERROR, e);
-			}
-		} else if (commandName == CMD_VIEW_INCOMPLETE) {
-			messageToPrint = cmd.execute();
-		} else if (commandName == CMD_STORE) {
-			messageToPrint = cmd.execute();
-		} else if (commandName == CMD_EXIT) {
-			System.exit(0);
-		} else if (commandName == CMD_UNDO) {
-			messageToPrint = cmd.execute();
-			try {
-				storage.storeToDefault();
-			} catch (FileNotFoundException e) {
-				System.out.println(String.format(FILE_TO_RETREIVE));
-				logger.log(Level.WARNING, LOG_ERROR, e);
-			}
-		} else if (commandName == CMD_COMPLETE) {
-			messageToPrint = cmd.execute();
-			try {
-				storage.storeToDefault();
-			} catch (FileNotFoundException e) {
-				System.out.println(String.format(FILE_TO_RETREIVE));
-				logger.log(Level.WARNING, LOG_ERROR, e);
-			}
-		} else if (commandName == CMD_HELP) {
-			messageToPrint = COMMAND_HELP;
-		} else if (commandName == CMD_SORT) {
-			messageToPrint = cmd.execute();
-			if(messageToPrint.equals(SUCCESSFUL_SORT)) {
-				hasUpdate = true;
-			}
-			try {
-				storage.storeToDefault();
-			} catch (FileNotFoundException e) {
-				System.out.println(String.format(FILE_TO_RETREIVE));
-				logger.log(Level.WARNING, LOG_ERROR, e);
-			}
-		} else if (commandName == CMD_VIEW_COMPLETED) {
-			messageToPrint = cmd.execute();
-		} else if (commandName == CMD_SEARCH){
-			messageToPrint = cmd.execute();
-		} else if (commandName == CMD_RETRIEVE){
-			messageToPrint = cmd.execute();
+		String messageToPrint = cmd.execute();
+		try {
+			storage.storeToDefault();
+		} catch (FileNotFoundException e) {
+			System.out.println(String.format(FILE_TO_RETREIVE));
+			logger.log(Level.WARNING, LOG_ERROR, e);
 		}
-		
 		logger.log(Level.INFO, LOG_END);
 		return messageToPrint;
 	}
