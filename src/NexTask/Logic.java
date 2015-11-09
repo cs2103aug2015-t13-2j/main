@@ -80,6 +80,7 @@ public class Logic implements Observer {
 	public Logic() {
 		storage = Storage.getInstance();
 		parser = new CommandParser();
+		parser.initializeLogger();
 		hasUpdate = false;
 		try {
 			this.fh = new FileHandler(LOG_FILE_NAME, true);
@@ -95,6 +96,7 @@ public class Logic implements Observer {
 	public Logic(boolean clear) {
 		storage = Storage.getInstance();
 		parser = new CommandParser();
+		parser.initializeLogger();
 		hasUpdate = false;
 		try {
 			this.fh = new FileHandler(LOG_FILE_NAME, true);

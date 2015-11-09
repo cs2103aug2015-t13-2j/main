@@ -46,14 +46,17 @@ public class Storage implements java.io.Serializable, Observable {
 	private static final String EXCEPTION_MESSAGE_3 = "Cannot retrieve incomplete tasks data from existing files or those files do not exist.";
 	private static final String EXCEPTION_MESSAGE_4 = "Cannot retrieve completed tasks data from existing files or those files do not exist.";
 	private static final String EXCEPTION_MESSAGE_5 = "Null Observer";
-	
-	private static Logger logger = Logger.getLogger("Storage");
-	private static FileHandler fh;
-	private static SimpleFormatter formatter;	
-	private static Storage theOne;
-	private final Object MUTEX= new Object();
 	private String userPath;
 	private int taskNum;
+	
+	// Logger
+	private static Logger logger = Logger.getLogger("Storage");
+	private static FileHandler fh;
+	private static SimpleFormatter formatter;
+	
+	//Observer
+	private static Storage theOne;	
+	private final Object MUTEX= new Object();
 	
 	// This arraylist stores incomplete tasks
 	private ArrayList<Task> taskArray;
