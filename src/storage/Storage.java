@@ -17,12 +17,6 @@ import NexTask.Observable;
 import NexTask.Observer;
 import NexTask.Task;
 
-/**
- * This class is to save tasks into txt file.
- * 
- * @author Jingjing Wang
- *
- */
 
 //@@author A0145035N
 public class Storage implements java.io.Serializable, Observable {
@@ -114,6 +108,7 @@ public class Storage implements java.io.Serializable, Observable {
 	/**
 	 * 
 	 * @throws FileNotFoundException
+	 * This method is to store all the tasks arraylist into a default file everytime user commands.
 	 */
 	public void storeToDefault() throws FileNotFoundException{
 		logger.log(Level.INFO, LOG_PROCESS);
@@ -140,7 +135,9 @@ public class Storage implements java.io.Serializable, Observable {
 		logger.log(Level.INFO, LOG_END);
 	}
 	
-	
+	/**
+	 * This method is to store incomplete tasks and complelte tasks into a text file.
+	 */
 	public void storeToFile() {
 		logger.log(Level.INFO, LOG_PROCESS);
 		String savePath = getPath();
@@ -204,7 +201,10 @@ public class Storage implements java.io.Serializable, Observable {
 		logger.log(Level.INFO, LOG_END);
 	}
 
-
+	/**
+	 * Delete the task from incomplete task array and add it to completed tasks array.
+	 * @param taskNum
+	 */
 	public void markComplete(int taskNum) {
 		logger.log(Level.INFO, LOG_PROCESS);
 		completedTasks.add(taskArray.get(taskNum));
@@ -230,7 +230,7 @@ public class Storage implements java.io.Serializable, Observable {
 	}
 
 	/**
-	 * Remove edit command from command records and undo it in tasks array.
+	 * Remove edit command from command record and undo it in tasks array.
 	 */
 	public void undoEdit() {
 		logger.log(Level.INFO, LOG_PROCESS);
@@ -240,6 +240,10 @@ public class Storage implements java.io.Serializable, Observable {
 		notifyObservers();
 		logger.log(Level.INFO, LOG_END);
 	}
+	
+	/**
+	 * Remove add command from command record and delete the task in task array.
+	 */
 
 	public void undoAdd() {
 		logger.log(Level.INFO, LOG_PROCESS);
@@ -249,6 +253,9 @@ public class Storage implements java.io.Serializable, Observable {
 		logger.log(Level.INFO, LOG_END);
 	}
 
+	/**
+	 * Remove delete command from command record and add the task in task array.
+	 */
 	public void undoDelete() {
 		logger.log(Level.INFO, LOG_PROCESS);
 		Command cmd = getPrevCommand();
@@ -258,6 +265,10 @@ public class Storage implements java.io.Serializable, Observable {
 		logger.log(Level.INFO, LOG_END);
 	}
 	
+	/**
+	 * Remove complete command from command record and delete the task from completed task array.
+	 * Then add the task back to the incomplete task array.
+	 */
 	public void undoComplete(){
 		logger.log(Level.INFO, LOG_PROCESS);
 		Command cmd = getPrevCommand();
@@ -267,13 +278,18 @@ public class Storage implements java.io.Serializable, Observable {
 		notifyObservers();
 		logger.log(Level.INFO, LOG_END);
 	}
-
+	
+	/**
+	 * Add "add" command into command array.
+	 * @param cmd
+	 */
 	public void addCommand(Command cmd) {
 		logger.log(Level.INFO, LOG_PROCESS);
 		prevCommands.add(cmd);
 		logger.log(Level.INFO, LOG_END);
 	}
 
+	
 	public int getCommandSize() {
 		return prevCommands.size();
 	}
@@ -282,6 +298,10 @@ public class Storage implements java.io.Serializable, Observable {
 		return prevCommands.get(prevCommands.size() - 1);
 	}
 
+	/**
+	 * Add task to incomplete task array.
+	 * @param task
+	 */
 	public void add(Task task) {
 		logger.log(Level.INFO, LOG_PROCESS);
 		this.taskArray.add(task);
@@ -293,13 +313,21 @@ public class Storage implements java.io.Serializable, Observable {
 		return taskArray.get(num);
 	}
 
+	/**
+	 * Delete the task from incompleted task array.
+	 * @param num
+	 */
 	public void deleteIncompleted(int num) {
 		logger.log(Level.INFO, LOG_PROCESS);
 		taskArray.remove(num - 1);
 		notifyObservers();
 		logger.log(Level.INFO, LOG_END);
 	}
-
+	
+	/**
+	 * Delete the task from completed task array.
+	 * @param num
+	 */
 	public void deleteCompleted(int num) {
 		logger.log(Level.INFO, LOG_PROCESS);
 		completedTasks.remove(num - 1);
@@ -307,6 +335,11 @@ public class Storage implements java.io.Serializable, Observable {
 		logger.log(Level.INFO, LOG_END);
 	}
 	
+	/**
+	 * Edit task with it's task number indicated.
+	 * @param num
+	 * @param task
+	 */
 	public void edit(int num, Task task) {
 		logger.log(Level.INFO, LOG_PROCESS);
 		taskArray.set(num, task);
