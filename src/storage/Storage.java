@@ -173,10 +173,6 @@ public class Storage implements java.io.Serializable, Observable {
 		logger.log(Level.INFO, LOG_PROCESS);
 		ArrayList<Task> retrievedTasks = null;
 		try {
-			File f = new File(TASK_FILE_TO_RETREIVE);
-			if (!f.exists()){
-				f.createNewFile();
-			}
 	         FileInputStream fileIn = new FileInputStream(TASK_FILE_TO_RETREIVE);
 	         ObjectInputStream in = new ObjectInputStream(fileIn);
 	         retrievedTasks = (ArrayList<Task>) in.readObject();         
@@ -190,10 +186,6 @@ public class Storage implements java.io.Serializable, Observable {
 		
 		ArrayList<Task> retrievedCompleted = null;
 		try {
-			File f = new File(COMPLETED_FILE_TO_RETREIVE);
-			if (!f.exists()){
-				f.createNewFile();
-			}
 	         FileInputStream fileIn = new FileInputStream(COMPLETED_FILE_TO_RETREIVE);
 	         ObjectInputStream in = new ObjectInputStream(fileIn);
 	         retrievedCompleted = (ArrayList<Task>) in.readObject();
