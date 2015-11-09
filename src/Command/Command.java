@@ -1,8 +1,8 @@
-package Command;
+package command;
 
 import NexTask.EditSpecification;
-import NexTask.Storage;
 import NexTask.Task;
+import storage.Storage;
 
 /**
  * Represents a command object. Each command object has commandName and one

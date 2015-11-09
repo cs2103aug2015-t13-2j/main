@@ -11,8 +11,9 @@ import java.util.logging.SimpleFormatter;
 
 import org.joda.time.DateTime;
 
-import Command.Command;
-import Command.CommandParser;
+import command.Command;
+import parser.CommandParser;
+import storage.Storage;
 
 /**
  * Logic is the class where the user commands, once parsed by CommandParser,

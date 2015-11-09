@@ -7,9 +7,9 @@ import java.io.FileNotFoundException;
 
 import org.junit.Test;
 
-import Command.Add;
-import NexTask.Storage;
+import command.Add;
 import NexTask.Task;
+import storage.Storage;
 
 //@@author A0145035N
 public class StorageTest {

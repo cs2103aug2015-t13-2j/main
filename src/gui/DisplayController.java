@@ -1,9 +1,10 @@
-package NexTask;
+package gui;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import NexTask.Logic;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -21,12 +22,9 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-/**
+/*
  * DisplayController class initialises the display of the overall GUI excluding
  * the command section and the tree view.
- * 
- * @@author A0124710W
- *
  */
 
 //@@author A0124710W
@@ -34,11 +32,11 @@ import javafx.util.Duration;
 public class DisplayController {
 
 	private static Logic logic = new Logic();
-	
+
 	public DisplayController() {
-		
+
 	}
-	
+
 	public static void initialiseStage(Stage primaryStage, GridPane grid) {
 		primaryStage.setTitle("nexTask");
 		Scene mainScene = new Scene(grid, 650, 520);
@@ -50,7 +48,7 @@ public class DisplayController {
 		primaryStage.setMaxHeight(540);
 		primaryStage.show();
 	}
-	
+
 	public static GridPane initialiseGridPane() {
 		// Initialising gridpane
 		GridPane grid = new GridPane();
@@ -60,8 +58,7 @@ public class DisplayController {
 		grid.setStyle("-fx-background-color: transparent;");
 		return grid;
 	}
-	
-	
+
 	public static Label initialiseClock() {
 		Label clockLabel = new Label();
 		DateTimeFormatter format = DateTimeFormat.forPattern("EEEE, dd MMMM yyyy HH:mm:ss");
@@ -78,41 +75,42 @@ public class DisplayController {
 			public void handle(ActionEvent e) {
 				DateTime dt = new DateTime();
 				clockLabel.setText(format.print(dt));
-				clockLabel.setFont(Font.font("Agency FB",FontWeight.BOLD, 24));
+				clockLabel.setFont(Font.font("Agency FB", FontWeight.BOLD, 24));
 			}
 		}));
 		return timeline;
 	}
-	
+
 	public static Label initialiseNexTaskLabel() {
 		// nexTask label
 		Label nexTaskLabel = new Label("nexTask");
-		nexTaskLabel.setFont(Font.font("Agency FB",FontWeight.BOLD, 22));
+		nexTaskLabel.setFont(Font.font("Agency FB", FontWeight.BOLD, 22));
 		GridPane.setConstraints(nexTaskLabel, 0, 2, 9, 2);
 		return nexTaskLabel;
 	}
-	
-	public static void initialiseIncompletedHeading(TreeView<String> tree, Label incompletedLabel, Label completedLabel) {
+
+	public static void initialiseIncompletedHeading(TreeView<String> tree, Label incompletedLabel,
+			Label completedLabel) {
 		GridPane.setConstraints(incompletedLabel, 84, 0, 13, 2);
 		incompletedLabel.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-            	incompletedLabel.setFont((Font.font("Agency FB", FontWeight.BOLD, 17))); 
-            	completedLabel.setFont((Font.font("Agency FB", 15))); 
+			@Override
+			public void handle(MouseEvent event) {
+				incompletedLabel.setFont((Font.font("Agency FB", FontWeight.BOLD, 17)));
+				completedLabel.setFont((Font.font("Agency FB", 15)));
 				TreeController.updateTree(tree, logic.getTaskList());
-            }
-        });
+			}
+		});
 	}
 
 	public static void initialiseCompletedHeading(TreeView<String> tree, Label incompletedLabel, Label completedLabel) {
 		GridPane.setConstraints(completedLabel, 84, 4, 12, 2);
 		completedLabel.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-            	completedLabel.setFont((Font.font("Agency FB", FontWeight.BOLD, 17)));
-            	incompletedLabel.setFont((Font.font("Agency FB", 15)));
+			@Override
+			public void handle(MouseEvent event) {
+				completedLabel.setFont((Font.font("Agency FB", FontWeight.BOLD, 17)));
+				incompletedLabel.setFont((Font.font("Agency FB", 15)));
 				TreeController.updateTree(tree, logic.getCompletedTaskList());
-            }
-        });
+			}
+		});
 	}
 }

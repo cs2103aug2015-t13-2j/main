@@ -1,13 +1,13 @@
-package Command;
+package command;
 
 import org.joda.time.DateTime;
-
-import NexTask.DateTimeParser;
 
 //@@author A0145035N
 
 import NexTask.EditSpecification;
 import NexTask.Task;
+import parser.CommandParser;
+import parser.DateTimeParser;
 
 public class Edit extends Command {
 	private static final String FIELD_START = "start";
@@ -78,7 +78,7 @@ public class Edit extends Command {
 		} else if (fieldToEdit.equals(FIELD_END)) {
 			DateTime newEnd = DateTimeParser.parse(parser.getDateTime(theEdit));
 			if(newEnd != null) {
-				t.setStart(newEnd);
+				t.setEnd(newEnd);
 			} else {
 				return ERROR_INVALID_DATE_FORMAT;
 			}

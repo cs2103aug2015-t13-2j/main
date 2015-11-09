@@ -1,11 +1,10 @@
 package test;
 
-import NexTask.*;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
-import Command.Command;
-import Command.CommandParser;
+import command.Command;
+import parser.CommandParser;
 
 public class CommandParserTest {
 

@@ -7,11 +7,9 @@ import java.util.ArrayList;
  * GUI class will display the appropriate print messages required when user
  * input is processed and appropriate actions are executed. GUI is the main
  * interface for user interaction.
- * 
- *
  */
 
-//@@author A0124710W
+//@@author A0124710W unused as string constants are shifted to the different command classes.
 
 public class DisplayManager {
 	/*
